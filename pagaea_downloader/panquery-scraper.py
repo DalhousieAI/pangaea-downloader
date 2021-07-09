@@ -32,34 +32,37 @@ def fetch_query_data(query="seabed photographs", n_results=10, out_dir="query-ou
         ]  # TODO: ds_id can be used when we don't know the campaign name
         print(f"[INFO] Title: '{ds.title}'")
 
-        # Dataset access restricted
         if ds.loginstatus != "unrestricted":
+            # Dataset access is restricted
             print(f"\t[ERROR] Access restricted: '{ds.loginstatus}', DOI: {ds.doi}")
-        else:  # Can access dataset
-            if not ds.isParent:  # Does not have child datasets
-                if has_url_col(ds.data):  # Has the desired url column
-                    # Add metadata
-                    ds.data["Dataset"] = ds.title
-                    ds.data["DOI"] = ds.doi
-                    ds.data["Campaign"] = ds.events[0].campaign.name  # ds_id?
-                    ds.data["Site"] = ds.data["Event"]
-                    # Save to file
-                    file = os.path.join(out_dir, ds_id + ".csv")
-                    ds.data.to_csv(file, index=False)
-                    print(f"\t[INFO] Saved to '{file}'")
-                else:
-                    print(
-                        f"\t[WARNING] Image URL column NOT FOUND! Data will NOT be saved! DOI: {ds.doi}"
-                    )
-            else:  # Dataset has child datasets
-                df = fetch_child_datasets(ds)
-                if df is None:
-                    print("\t[ERROR] None of the child datasets had image URL column!")
-                else:
-                    # Save to file
-                    file = os.path.join(out_dir, ds_id + ".csv")
-                    df.to_csv(file, index=False)
-                    print(f"\t[INFO] Saved to '{file}'")
+            continue
+        if not ds.isParent:
+            # Does not have child datasets
+            if not has_url_col(ds.data):
+                # Does not have the necessary url column
+                print(
+                    f"\t[WARNING] Image URL column NOT FOUND! Data will NOT be saved! DOI: {ds.doi}"
+                )
+                continue
+            # Add metadata
+            ds.data["Dataset"] = ds.title
+            ds.data["DOI"] = ds.doi
+            ds.data["Campaign"] = ds.events[0].campaign.name  # ds_id?
+            ds.data["Site"] = ds.data["Event"]
+            # Save to file
+            file = os.path.join(out_dir, ds_id + ".csv")
+            ds.data.to_csv(file, index=False)
+            print(f"\t[INFO] Saved to '{file}'")
+        else:
+            # Dataset has child datasets
+            df = fetch_child_datasets(ds)
+            if df is None:
+                print("\t[ERROR] None of the child datasets had image URL column!")
+                continue
+            # Save to file
+            file = os.path.join(out_dir, ds_id + ".csv")
+            df.to_csv(file, index=False)
+            print(f"\t[INFO] Saved to '{file}'")
 
 
 if __name__ == "__main__":
