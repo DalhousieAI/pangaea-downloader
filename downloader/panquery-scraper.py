@@ -41,7 +41,8 @@ def fetch_query_data(query="seabed photographs", n_results=10, out_dir="query-ou
             if not has_url_col(ds.data):
                 # Does not have the necessary url column
                 print(
-                    f"\t[WARNING] Image URL column NOT FOUND! Data will NOT be saved! DOI: {ds.doi}"
+                    f"\t[WARNING] Image URL column NOT FOUND! "
+                    f"Data will NOT be saved! DOI: {ds.doi}"
                 )
                 continue
             # Add metadata

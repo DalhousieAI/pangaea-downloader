@@ -5,9 +5,9 @@ from pangaeapy import PanDataSet
 from requests.compat import urljoin
 
 
-# ----------------------------------------- Functions for PanQuery Scraper ----------------------------------------- #
+# -------------------------- Functions for PanQuery Scraper -------------------------- #
 def has_url_col(df: DataFrame) -> bool:
-    """Take a Pandas DataFrame and return True if it has a URL column"""
+    """Take a Pandas DataFrame and return True if it has a URL column."""
     return any(["url" in col.lower() for col in df.columns]) or any(
         ["image" in col.lower() for col in df.columns]
     )
@@ -15,8 +15,7 @@ def has_url_col(df: DataFrame) -> bool:
 
 def fetch_child_datasets(parent: PanDataSet) -> DataFrame:
     """
-    Take a PanDataSet object as input, fetch its child datasets, add relevant metadata,
-    concatenate the child datasets and return the full dataset as a Pandas DataFrame.
+    Fetch child datasets of a parent and return a merged dataset of all children.
     """
     df_list = []
     print(f"\t[INFO] Fetching {len(parent.children)} child datasets...")
@@ -37,7 +36,8 @@ def fetch_child_datasets(parent: PanDataSet) -> DataFrame:
             df_list.append(child.data)
         else:
             print(
-                f"\t[WARNING] Image URL column NOT FOUND! Data will NOT be saved! DOI: {child.doi}"
+                f"\t[WARNING] Image URL column NOT FOUND! "
+                f"Data will NOT be saved! DOI: {child.doi}"
             )
     # Join child datasets
     if len(df_list) > 0:
@@ -50,13 +50,13 @@ def fetch_child_datasets(parent: PanDataSet) -> DataFrame:
 
 
 def url_from_doi(doi):
-    """Take a Pangaea doi string and return the url to the dataset"""
+    """Take a Pangaea doi string and return the url to the dataset."""
     a, b = doi.split(":")
     url = "https://" + a + ".org/" + b
     return url
 
 
-# -------------- Functions for datasets with images hosted on website (instead of having a URL column) -------------- #
+# --------------- Functions for datasets with images hosted on website --------------- #
 def get_metadata(page_soup):
     coordinates = page_soup.find("div", attrs={"class": "hanging geo"})
     lat = float(coordinates.find("span", attrs={"class": "latitude"}).text)
@@ -117,31 +117,3 @@ def scrape_dataset(page_soup):
         urls = get_image_urls(soup, verbose=True)
         img_urls.extend(urls)
     return img_urls
-
-
-# ------------------------------------------------ OLDER FUNCTIONS ------------------------------------------------ #
-def get_ds_ids(file="datasets.txt"):
-    """
-    Parse text file containing list of seabed
-    photograph datasets and return a list  of urls.
-
-    Params
-    ------
-    file : str
-           name/full path to file with datasets urls.
-
-    Returns
-    -------
-    links : list of strs
-            urls to the seabed photograph datasets.
-    """
-    file = open(file, "r")
-    # Extract links to datasets from file
-    links = [
-        line.replace("\n", "")
-        for line in file.readlines()
-        # Ignore comments and blank lines
-        if not ((line.startswith("#")) or (line == "\n"))
-    ]
-    file.close()
-    return links
