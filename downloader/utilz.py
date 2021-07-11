@@ -13,37 +13,42 @@ def has_url_col(df: DataFrame) -> bool:
     )
 
 
+def set_metadata(df: DataFrame, alt="unknown") -> DataFrame:
+    """Add metadata to dataframe."""
+    df.data["Dataset"] = df.title
+    df.data["DOI"] = df.doi
+    df.data["Campaign"] = (
+        df.events[0].campaign.name if df.events[0].campaign is not None else alt
+    )
+    df.data["Site"] = df.data["Event"]
+    return df
+
+
 def fetch_child_datasets(parent: PanDataSet) -> DataFrame:
     """
     Fetch child datasets of a parent and return a merged dataset of all children.
     """
     df_list = []
     print(f"\t[INFO] Fetching {len(parent.children)} child datasets...")
+
     for doi in parent.children:
         # Fetch child dataset
         child = PanDataSet(doi)
-        if has_url_col(child.data):
-            # Add metadata
-            child.data["Dataset"] = child.title
-            child.data["DOI"] = child.doi
-            child.data["Campaign"] = (
-                child.events[0].campaign.name
-                if child.events[0].campaign is not None
-                else "Unknown"
-            )
-            child.data["Site"] = child.data["Event"]
-            # Add child dataset to list
-            df_list.append(child.data)
-        else:
+        if not has_url_col(child.data):
             print(
                 f"\t[WARNING] Image URL column NOT FOUND! "
                 f"Data will NOT be saved! DOI: {child.doi}"
             )
-    # Join child datasets
+        else:
+            child.data = set_metadata(child.data)
+            # Add child dataset to list
+            df_list.append(child.data)
+
+    # List not empty
     if len(df_list) > 0:
         print("\t[INFO] Joining child datasets...")
         df = concat(df_list, ignore_index=True)
-    else:
+    else:  # Empty
         df = None
 
     return df
