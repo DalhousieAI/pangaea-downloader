@@ -1,70 +1,58 @@
 import os
 
-import pangaeapy
-from utilz import fetch_child_datasets, has_url_col
+from downloader.utilz import (
+    fetch_child_datasets,
+    fetch_dataset,
+    get_result_info,
+    scrape_images,
+    search_pangaea,
+)
 
 
-def fetch_query_data(query="seabed photographs", n_results=10, out_dir="query-outputs"):
-    # Make output directory if it doesn't exist
+def main(query="seabed photographs", n_results=10, out_dir="../query-outputs"):
+    """Search www.pangaea.de for a given query string and download datasets for each result item."""
+    results = search_pangaea(query=query, n_results=n_results)
     os.makedirs(out_dir, exist_ok=True)
+    print("[INFO] Processing results...\n")
 
-    # Make a pangaea search query (returns max 500 results)
-    pq = pangaeapy.PanQuery(query=query, limit=n_results)
-    print("\n[INFO] Number of search results:", len(pq.result))
+    n_downloads = 0
+    for i, result in enumerate(results):
+        # Extract result information
+        citation, url, size, is_parent = get_result_info(result)
+        ds_id = result["URI"].split("PANGAEA.")[-1]
+        print(f"[{i+1}] Loading dataset: '{citation}'")
 
-    # List of dataset DOIs
-    result_dois = [r_item["URI"] for r_item in pq.result]
-
-    # Process each result item
-    print("[INFO] Processing each dataset...")
-    for i, doi in enumerate(result_dois):
-        # TODO: Check if dataset type (use size key of result dict)
-        # Load dataset
-        print(f"\n[{i+1}] Loading dataset DOI:'{doi}'...")
-        try:
-            ds = pangaeapy.PanDataSet(doi)
-        except MemoryError:
-            print("\t[ERROR] DATASET TOO LARGE!")
+        # ------------- ASSESS DATASET TYPE ------------- #
+        df = None
+        # Video dataset (ignore)
+        if "bytes" in size:
+            print("\t[WARNING] VIDEO dataset. Skipping...")
             continue
-        # Get dataset ID
-        ds_id = ds.doi.split(".")[
-            -1
-        ]  # TODO: ds_id can be used when we don't know the campaign name
-        print(f"[INFO] Title: '{ds.title}'")
 
-        if ds.loginstatus != "unrestricted":
-            # Dataset access is restricted
-            print(f"\t[ERROR] Access restricted: '{ds.loginstatus}', DOI: {ds.doi}")
+        # Paginated images (scrape urls and metadata)
+        elif "unknown" == size:
+            df = scrape_images(url)
+
+        # Parent dataset (fetch child datasets)
+        elif "datasets" in size:
+            df = fetch_child_datasets(url)
+
+        # Tabular dataset (fetch and save)
+        elif "data points" in size:
+            df = fetch_dataset(url)
+
+        # ----------------- SAVE TO FILE ----------------- #
+        if df is None:
             continue
-        if not ds.isParent:
-            # Does not have child datasets
-            if not has_url_col(ds.data):
-                # Does not have the necessary url column
-                print(
-                    f"\t[WARNING] Image URL column NOT FOUND! "
-                    f"Data will NOT be saved! DOI: {ds.doi}"
-                )
-                continue
-            # Add metadata
-            ds.data["Dataset"] = ds.title
-            ds.data["DOI"] = ds.doi
-            ds.data["Campaign"] = ds.events[0].campaign.name  # ds_id?
-            ds.data["Site"] = ds.data["Event"]
-            # Save to file
-            file = os.path.join(out_dir, ds_id + ".csv")
-            ds.data.to_csv(file, index=False)
-            print(f"\t[INFO] Saved to '{file}'")
         else:
-            # Dataset has child datasets
-            df = fetch_child_datasets(ds)
-            if df is None:
-                print("\t[ERROR] None of the child datasets had image URL column!")
-                continue
-            # Save to file
-            file = os.path.join(out_dir, ds_id + ".csv")
-            df.to_csv(file, index=False)
-            print(f"\t[INFO] Saved to '{file}'")
+            f_name = ds_id + ".csv"
+            path = os.path.join(out_dir, f_name)
+            df.to_csv(path, index=False)
+            print(f"\t[INFO] Saved to '{path}'")
+            n_downloads += 1
+
+    print(f"COMPLETE! Total files downloaded: {n_downloads}")
 
 
 if __name__ == "__main__":
-    fetch_query_data(query="seabed photographs", n_results=999)
+    main(query="seabed photographs", n_results=999)
