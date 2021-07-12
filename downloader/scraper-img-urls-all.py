@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 import pangaeapy
 import requests
@@ -12,10 +14,11 @@ dois = [
 ]
 
 
-def main(out_dir="outputs"):
+def main(out_dir="../outputs"):
+    os.makedirs(out_dir, exist_ok=True)
     for doi in dois:
         ds_id = doi.split(".")[-1]
-        dataset = pangaeapy.PanDataSet(ds_id)
+        dataset = pangaeapy.PanDataSet(doi)
         print("[INFO] Dataset title:", dataset.title)
         print("[INFO] Requesting:", doi)
 
