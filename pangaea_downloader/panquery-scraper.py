@@ -1,6 +1,6 @@
 import os
 
-from downloader.utilz import (
+from pangaea_downloader.utilz import (
     fetch_child_datasets,
     fetch_dataset,
     get_result_info,
