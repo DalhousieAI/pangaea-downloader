@@ -52,13 +52,13 @@ def scrape_images(url: str) -> DataFrame:
     img_urls = scrape_dataset(photos_page)
 
     # Store URLs and add metadata
-    df = DataFrame(img_urls, columns=["url"])
-    df["image"] = df["url"].apply(lambda link: link.split("/")[-1])
-    df["long"] = long
-    df["lat"] = lat
-    df["site"] = ds.events[0].label
-    df["campaign"] = ds.events[0].campaign.name
-    df["dataset"] = ds.title
+    df = DataFrame(img_urls, columns=["URL"])
+    df["Filename"] = df["URL"].apply(lambda link: link.split("/")[-1])
+    df["Longitude"] = long
+    df["Latitude"] = lat
+    df["Site"] = ds.events[0].label
+    df["Campaign"] = ds.events[0].campaign.name
+    df["Dataset"] = ds.title
     return df
 
 
@@ -128,6 +128,7 @@ def scrape_dataset(page_soup: BeautifulSoup) -> List[str]:
 # # Functions for Type: Parent
 def fetch_child_datasets(url: str) -> Optional[DataFrame]:
     ds = PanDataSet(url)
+    ds_id = ds.doi.split("PANGAEA.")[-1]
     print(f"\t[INFO] Fetching {len(ds.children)} child datasets...")
     # Dataset is restricted
     if ds.loginstatus != "unrestricted":
@@ -140,10 +141,12 @@ def fetch_child_datasets(url: str) -> Optional[DataFrame]:
         child = PanDataSet(doi)
         # Check for image URL column
         if not has_url_col(child.data):
-            print(f"\t\t[{i+1}] [WARNING] Image URL columns NOT found! Skipping...")
+            print(
+                f"\t\t[{i+1}] [WARNING] Image URL columns NOT found! DOI: {child.doi} Skipping..."
+            )
         else:
             # Add metadata
-            child.data = set_metadata(child, alt=ds.doi)
+            child.data = set_metadata(child, alt=ds_id)
             # Add child dataset to list
             df_list.append(child.data)
 
