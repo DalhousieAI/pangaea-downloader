@@ -167,6 +167,11 @@ def has_url_col(df: DataFrame) -> bool:
     )
 
 
+def get_url_cols(df: DataFrame) -> List[str]:
+    """Take a Pandas DataFrame and return a list of URL columns."""
+    return [col for col in df.columns if ("url" in col.lower())]
+
+
 def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
     """Add metadata to dataframe."""
     ds.data["Dataset"] = ds.title
