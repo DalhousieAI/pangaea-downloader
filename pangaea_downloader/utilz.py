@@ -79,12 +79,11 @@ def get_metadata(page_soup: BeautifulSoup) -> Tuple[float, float]:
     return lat, long
 
 
-def get_pagination(
-    page_soup: BeautifulSoup, src_url="https://www.pangaea.de/helpers/Benthos.php"
-) -> Optional[dict]:
+def get_pagination(page_soup: BeautifulSoup) -> Optional[dict]:
     """
     Take a BeautifulSoup object and return a dictionary with page number and URL key, value pairs.
     """
+    src_url = "https://www.pangaea.de/helpers/Benthos.php"
     # <p> tag containing pagination info
     pagination = page_soup.find("p", attrs={"class": "navigation"})
     if pagination is None:
