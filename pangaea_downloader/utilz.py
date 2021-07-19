@@ -136,7 +136,7 @@ def scrape_dataset(page_soup: BeautifulSoup) -> List[str]:
 # # Functions for Type: Parent
 def fetch_child_datasets(url: str) -> Optional[DataFrame]:
     ds = PanDataSet(url)
-    ds_id = ds.doi.split("PANGAEA.")[-1]
+    parent_doi = ds.doi.split("doi.org/")[-1]
     print(f"\t[INFO] Fetching {len(ds.children)} child datasets...")
     # Dataset is restricted
     if ds.loginstatus != "unrestricted":
@@ -154,7 +154,7 @@ def fetch_child_datasets(url: str) -> Optional[DataFrame]:
             )
         else:
             # Add metadata
-            child.data = set_metadata(child, alt=ds_id)
+            child.data = set_metadata(child, alt=parent_doi)
             # Add child dataset to list
             df_list.append(child.data)
 
@@ -196,6 +196,7 @@ def fetch_dataset(url: str) -> Optional[DataFrame]:
     """Fetch Pangaea dataset using provided URI/DOI and return DataFrame."""
     # Load data set
     ds = PanDataSet(url)
+    doi = ds.doi.split("doi.org/")[-1]
     # Dataset is restricted
     if ds.loginstatus != "unrestricted":
         print(f"\t[ERROR] Access restricted: '{ds.loginstatus}'. URL: {url}")
@@ -205,5 +206,5 @@ def fetch_dataset(url: str) -> Optional[DataFrame]:
         print("\t[WARNING] Image URL columns NOT found! Skipping...")
         return
     # Add metadata
-    ds.data = set_metadata(ds, alt=ds.doi)
+    ds.data = set_metadata(ds, alt=doi)
     return ds.data
