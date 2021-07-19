@@ -26,7 +26,7 @@ def search_pangaea(query: str, n_results: int) -> List[dict]:
 
 def get_result_info(result: dict) -> Tuple[str, str, str, bool]:
     """
-    Process result item and returns the dataset url, size and if it is a parent.
+    Process result item and returns the dataset citation, url, size and if it is a parent.
     """
     # Parse html
     soup = BeautifulSoup(result["html"], "lxml")
