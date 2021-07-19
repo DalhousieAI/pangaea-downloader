@@ -9,10 +9,19 @@ from requests.compat import urljoin
 
 #  --------- Basic functions for searching and parsing results --------- #
 def search_pangaea(query: str, n_results: int) -> List[dict]:
-    """Search Pangaea with given search query and return search results."""
-    pq = PanQuery(query=query, limit=n_results)
-    print(f"[INFO] Number of results returned: {len(pq.result)}")
-    return pq.result
+    """Search Pangaea with given query string and return a list of results."""
+    offset = 0
+    results = []
+    while True:
+        pq = PanQuery(query=query, limit=n_results, offset=offset)
+        results.extend(pq.result)
+        offset += len(pq.result)
+        if len(results) >= pq.totalcount:
+            break
+    # Sanity check
+    assert len(results) == pq.totalcount
+    print(f"[INFO] Number of results returned: {len(results)}")
+    return results
 
 
 def get_result_info(result: dict) -> Tuple[str, str, str, bool]:
