@@ -181,7 +181,7 @@ def get_url_cols(df: DataFrame) -> List[str]:
 
 
 def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
-    """Add metadata to dataframe."""
+    """Add metadata to a PanDataSet's dataframe."""
     ds.data["Dataset"] = ds.title
     ds.data["DOI"] = ds.doi
     ds.data["Campaign"] = (
