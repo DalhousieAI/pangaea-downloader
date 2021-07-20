@@ -151,7 +151,7 @@ def fetch_child_datasets(url: str) -> Optional[DataFrame]:
         # Check for image URL column
         if not has_url_col(child.data):
             print(
-                f"\t\t[{i+1}] [WARNING] Image URL columns NOT found! DOI: {child.doi} Skipping..."
+                f"\t\t[{i + 1}] [WARNING] Image URL columns NOT found! DOI: {child.doi} Skipping..."
             )
         else:
             # Add metadata
@@ -178,7 +178,11 @@ def has_url_col(df: DataFrame) -> bool:
 
 def get_url_cols(df: DataFrame) -> List[str]:
     """Take a Pandas DataFrame and return a list of URL columns."""
-    return [col for col in df.columns if ("url" in col.lower())]
+    return [
+        col
+        for col in df.columns
+        if (("url" in col.lower()) or ("image" in col.lower()))
+    ]
 
 
 def is_url(string: str) -> bool:
