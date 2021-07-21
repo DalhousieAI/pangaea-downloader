@@ -191,6 +191,8 @@ def is_url(string: str) -> bool:
 
     src: https://stackoverflow.com/questions/7160737/how-to-validate-a-url-in-python-malformed-or-not
     """
+    if not isinstance(string, str):
+        return False
     regex = re.compile(
         r"^(?:http|ftp)s?://"  # http:// or https://
         r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|"  # domain...
