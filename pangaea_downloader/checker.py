@@ -51,6 +51,6 @@ def is_img_url(url: str) -> bool:
 # --------------------------------------------- DataFrame Checkers --------------------------------------------- #
 def has_url_col(df: DataFrame) -> bool:
     """Take a Pandas DataFrame and return True if it has image URL column."""
-    return any(["url" in col.lower() for col in df.columns]) or any(
-        ["image" in col.lower() for col in df.columns]
-    )
+    condition1 = any(["url" in col.lower() for col in df.columns])
+    condition2 = any(["image" in col.lower() for col in df.columns])
+    return condition1 or condition2
