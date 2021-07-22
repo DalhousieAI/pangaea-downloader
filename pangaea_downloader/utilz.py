@@ -1,4 +1,3 @@
-import re
 from typing import List, Optional, Tuple
 
 import requests
@@ -6,6 +5,8 @@ from bs4 import BeautifulSoup
 from pandas import DataFrame, concat
 from pangaeapy import PanDataSet, PanQuery
 from requests.compat import urljoin
+
+from pangaea_downloader.checker import has_url_col
 
 
 #  --------- Basic functions for searching and parsing results --------- #
@@ -169,13 +170,6 @@ def fetch_child_datasets(url: str) -> Optional[DataFrame]:
         return concat(df_list, ignore_index=True)
 
 
-def has_url_col(df: DataFrame) -> bool:
-    """Take a Pandas DataFrame and return True if it has image URL column."""
-    return any(["url" in col.lower() for col in df.columns]) or any(
-        ["image" in col.lower() for col in df.columns]
-    )
-
-
 def get_url_cols(df: DataFrame) -> List[str]:
     """Take a Pandas DataFrame and return a list of URL columns."""
     return [
@@ -183,26 +177,6 @@ def get_url_cols(df: DataFrame) -> List[str]:
         for col in df.columns
         if (("url" in col.lower()) or ("image" in col.lower()))
     ]
-
-
-def is_url(string: str) -> bool:
-    """
-    Check if input string is a valid URL or not.
-
-    src: https://stackoverflow.com/questions/7160737/how-to-validate-a-url-in-python-malformed-or-not
-    """
-    if not isinstance(string, str):
-        return False
-    regex = re.compile(
-        r"^(?:http|ftp)s?://"  # http:// or https://
-        r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|"  # domain...
-        r"localhost|"  # localhost...
-        r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"  # ...or ip
-        r"(?::\d+)?"  # optional port
-        r"(?:/?|[/?]\S+)$",
-        re.IGNORECASE,
-    )
-    return re.match(regex, string) is not None
 
 
 def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
