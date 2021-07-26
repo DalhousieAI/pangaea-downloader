@@ -2,7 +2,7 @@
 
 This repository contains tools to search and download benthic habitat image datasets from [Pangaea](https://www.pangaea.de/).
 
-![Sample Images](./notebooks/sample_images.png)
+![Sample Images](./images/sample_images.png)
 
 ### Run downloader
 Run `pangaea_downloader/panquery-scraper.py` to download "seabed photograph" datasets from Pangaea.
