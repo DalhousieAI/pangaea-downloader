@@ -42,6 +42,7 @@ def kde_sklearn(
     full_grid=True,
     n_grid=100,
 ):
+    """Perform 2d kernel density estimate on longitude, latitude metadata."""
     if metric == "haversine":
         lon = x
         lat = y
