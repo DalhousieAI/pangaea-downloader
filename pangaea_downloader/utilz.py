@@ -34,6 +34,25 @@ def read_query_list(file="../pangaea_downloader/query_list"):
     return query_list
 
 
+def search_pangaea(verbose=False):
+    """Search Pangaea with multiple search queries and return a list of unique results."""
+    # Read in list of search queries
+    query_list = read_query_list()
+    # Search multiple queries
+    print("[INFO] Running multiple search queries...") if verbose else 0
+    results_list = []
+    for i, query in enumerate(query_list):
+        search_results = run_search_query(query=query, n_results=500)
+        if verbose:
+            print(f"\t[{i}] query: '{query}', results returned: {len(search_results)}")
+        results_list.extend(search_results)
+    # Keep only unique results
+    results_set = list({value["URI"]: value for value in results_list}.values())
+    if verbose:
+        print(f"[INFO] Number of unique search results: {len(results_set)}")
+    return results_set
+
+
 def get_result_info(result: dict) -> Tuple[str, str, str, bool]:
     """
     Process result item and returns the dataset citation, url, size and if it is a parent.
