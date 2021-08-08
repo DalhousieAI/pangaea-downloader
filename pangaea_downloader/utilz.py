@@ -10,10 +10,11 @@ from pangaea_downloader.checker import has_url_col
 
 
 #  --------- Basic functions for searching and parsing results --------- #
-def search_pangaea(query: str, n_results: int) -> List[dict]:
+def run_search_query(query: str, n_results=500) -> List[dict]:
     """Search Pangaea with given query string and return a list of results."""
     offset = 0
     results = []
+    # Iteratively retrieve search results
     while True:
         pq = PanQuery(query=query, limit=n_results, offset=offset)
         results.extend(pq.result)
@@ -22,7 +23,6 @@ def search_pangaea(query: str, n_results: int) -> List[dict]:
             break
     # Sanity check
     assert len(results) == pq.totalcount
-    print(f"[INFO] Number of results returned: {len(results)}")
     return results
 
 
