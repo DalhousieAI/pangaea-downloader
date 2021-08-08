@@ -26,6 +26,14 @@ def run_search_query(query: str, n_results=500) -> List[dict]:
     return results
 
 
+def read_query_list(file="../pangaea_downloader/query_list"):
+    """Read file with list of search queries and return it as a list."""
+    with open(file, "r") as f:
+        query_list = f.readlines()
+    query_list = [query.strip() for query in query_list]
+    return query_list
+
+
 def get_result_info(result: dict) -> Tuple[str, str, str, bool]:
     """
     Process result item and returns the dataset citation, url, size and if it is a parent.
