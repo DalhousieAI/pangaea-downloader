@@ -9,10 +9,9 @@ from pangaea_downloader.utilz import (
 )
 
 
-def main(query="seabed photographs", n_results=10, out_dir="../query-outputs"):
-    """Search www.pangaea.de for a given query string and download datasets for each result item."""
-    print(f"[INFO] Running search with query: '{query}'")
-    results = search_pangaea(query=query, n_results=n_results)
+def main(out_dir="../query-outputs"):
+    """Search www.pangaea.de and download datasets for each result item."""
+    results = search_pangaea(verbose=True)
     os.makedirs(out_dir, exist_ok=True)
     print("[INFO] Processing results...\n")
 
@@ -56,4 +55,4 @@ def main(query="seabed photographs", n_results=10, out_dir="../query-outputs"):
 
 
 if __name__ == "__main__":
-    main(query="seafloor photography", n_results=999)
+    main(out_dir="../query-outputs-2")
