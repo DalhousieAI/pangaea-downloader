@@ -20,7 +20,7 @@ def main(out_dir="../query-outputs"):
         # Extract result information
         citation, url, size, is_parent = get_result_info(result)
         ds_id = result["URI"].split("PANGAEA.")[-1]
-        print(f"[{i+1}] Loading dataset: '{citation}'")
+        print(f"[{i+1}] Loading dataset: '{citation}'. {url}")
 
         # ------------- ASSESS DATASET TYPE ------------- #
         df = None
