@@ -4,17 +4,26 @@ from pangaea_downloader.utilz import (
     fetch_child_datasets,
     fetch_dataset,
     get_result_info,
+    run_search_query,
     scrape_images,
     search_pangaea,
 )
 
 
-def main(out_dir="../query-outputs"):
+def main(query=None, out_dir="../query-outputs"):
     """Search www.pangaea.de and download datasets for each result item."""
-    results = search_pangaea(verbose=True)
-    os.makedirs(out_dir, exist_ok=True)
-    print("[INFO] Processing results...\n")
+    # Search pangaea
+    if query is None:
+        # Run multiple search queries
+        results = search_pangaea(verbose=True)
+    else:
+        # Run search using provided search query
+        results = run_search_query(query)
 
+    # Make sure output directory exists
+    os.makedirs(out_dir, exist_ok=True)
+
+    print("[INFO] Processing search results...\n")
     n_downloads = 0
     for i, result in enumerate(results):
         # Extract result information
