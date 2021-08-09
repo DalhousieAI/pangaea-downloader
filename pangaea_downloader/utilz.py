@@ -212,10 +212,16 @@ def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
     """Add metadata to a PanDataSet's dataframe."""
     ds.data["Dataset"] = ds.title
     ds.data["DOI"] = ds.doi
-    ds.data["Campaign"] = (
-        ds.events[0].campaign.name if ds.events[0].campaign is not None else alt
-    )
-    ds.data["Site"] = ds.data["Event"]
+    # Dataset campaign
+    if ds.events[0].campaign is not None:
+        ds.data["Campaign"] = ds.events[0].campaign.name
+    else:
+        ds.data["Campaign"] = alt
+    # Dataset site/event/deployment
+    if "Event" in ds.data.columns:
+        ds.data["Site"] = ds.data["Event"]
+    else:
+        ds.data["Site"] = alt + "_site"
     return ds.data
 
 
