@@ -6,7 +6,7 @@ from pandas import DataFrame, concat
 from pangaeapy import PanDataSet, PanQuery
 from requests.compat import urljoin
 
-from pangaea_downloader.checker import has_url_col
+from pangaea_downloader import checker
 
 
 #  --------- Basic functions for searching and parsing results --------- #
@@ -44,7 +44,9 @@ def search_pangaea(verbose=False):
     for i, query in enumerate(query_list):
         search_results = run_search_query(query=query, n_results=500)
         if verbose:
-            print(f"\t[{i}] query: '{query}', results returned: {len(search_results)}")
+            print(
+                f"\t[{i+1}] query: '{query}', results returned: {len(search_results)}"
+            )
         results_list.extend(search_results)
     # Keep only unique results
     results_set = list({value["URI"]: value for value in results_list}.values())
@@ -177,9 +179,9 @@ def fetch_child_datasets(url: str) -> Optional[DataFrame]:
         # Load child dataset
         child = PanDataSet(doi)
         # Check for image URL column
-        if not has_url_col(child.data):
+        if not checker.has_url_col(child.data):
             print(
-                f"\t\t[{i + 1}] [WARNING] Image URL columns NOT found! DOI: {child.doi} Skipping..."
+                f"\t\t[{i + 1}] [WARNING] Image URL column NOT found! DOI: {child.doi} Skipping..."
             )
         else:
             # Add metadata
@@ -228,8 +230,8 @@ def fetch_dataset(url: str) -> Optional[DataFrame]:
         print(f"\t[ERROR] Access restricted: '{ds.loginstatus}'. URL: {url}")
         return
     # Check for image URL column
-    if not has_url_col(ds.data):
-        print("\t[WARNING] Image URL columns NOT found! Skipping...")
+    if not checker.has_url_col(ds.data):
+        print("\t[WARNING] Image URL column NOT found! Skipping...")
         return
     # Add metadata
     ds.data = set_metadata(ds, alt=doi)
