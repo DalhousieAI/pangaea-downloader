@@ -215,7 +215,7 @@ def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
     ds.data["Dataset"] = ds.title
     ds.data["DOI"] = ds.doi
     # Dataset campaign
-    if ds.events[0].campaign is not None:
+    if (len(ds.events) > 0) and (ds.events[0].campaign is not None):
         ds.data["Campaign"] = ds.events[0].campaign.name
     else:
         ds.data["Campaign"] = alt
