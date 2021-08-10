@@ -28,7 +28,7 @@ def run_search_query(query: str, verbose=False, n_results=500) -> List[dict]:
     return results
 
 
-def read_query_list(file="../pangaea_downloader/query_list"):
+def read_query_list(file="../pangaea_downloader/query_list") -> List[str]:
     """Read file with list of search queries and return it as a list."""
     with open(file, "r") as f:
         query_list = f.readlines()
@@ -36,7 +36,7 @@ def read_query_list(file="../pangaea_downloader/query_list"):
     return query_list
 
 
-def search_pangaea(verbose=False):
+def search_pangaea(verbose=False) -> List[dict]:
     """Search Pangaea with multiple search queries and return a list of unique results."""
     # Read in list of search queries
     query_list = read_query_list()
