@@ -18,7 +18,7 @@ def main(query=None, out_dir="../query-outputs"):
         results = search_pangaea(verbose=True)
     else:
         # Run search using provided search query
-        results = run_search_query(query)
+        results = run_search_query(query, verbose=True)
 
     # Make sure output directory exists
     os.makedirs(out_dir, exist_ok=True)
