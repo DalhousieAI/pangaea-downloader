@@ -4,7 +4,7 @@ import pandas as pd
 import pangaeapy
 import requests
 from bs4 import BeautifulSoup
-from utilz import get_metadata, scrape_dataset
+from utilz import get_metadata, scrape_urls_from_each_page
 
 # Christiansen, B (2006)
 dois = [
@@ -38,7 +38,7 @@ def main(out_dir="../outputs"):
         resp = requests.get(download_link)
         photos_page = BeautifulSoup(resp.text, "lxml")
 
-        data = scrape_dataset(photos_page)
+        data = scrape_urls_from_each_page(photos_page)
 
         # Store data
         df = pd.DataFrame(data, columns=["url"])
