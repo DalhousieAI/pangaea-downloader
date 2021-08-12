@@ -91,7 +91,7 @@ def scrape_images(url: str) -> DataFrame:
     # Get to photos page (page 1)
     resp = requests.get(download_link)
     photos_page = BeautifulSoup(resp.text, "lxml")
-    img_urls = scrape_dataset(photos_page)
+    img_urls = scrape_urls_from_each_page(photos_page)
 
     # Store URLs and add metadata
     df = DataFrame(img_urls, columns=["URL"])
@@ -131,7 +131,7 @@ def get_pagination(page_soup: BeautifulSoup) -> Optional[dict]:
         return page_dict
 
 
-def get_image_urls(page_soup: BeautifulSoup, verbose=False) -> List[str]:
+def get_page_image_urls(page_soup: BeautifulSoup, verbose=False) -> List[str]:
     """Take a BeautifulSoup object and return list of image urls."""
     table = page_soup.find("table", class_="pictable")
     photos = table.find_all("td")
@@ -150,18 +150,18 @@ def get_image_urls(page_soup: BeautifulSoup, verbose=False) -> List[str]:
     return urls
 
 
-def scrape_dataset(page_soup: BeautifulSoup) -> List[str]:
+def scrape_urls_from_each_page(page_soup: BeautifulSoup) -> List[str]:
     """Scrape image URLs from each page."""
     pagination = get_pagination(page_soup)
     print("\t[INFO] Processing Page 1...")
-    img_urls = get_image_urls(page_soup, verbose=True)
+    img_urls = get_page_image_urls(page_soup, verbose=True)
     if pagination is not None:
         for n in pagination:
             print(f"\t[INFO] Processing Page {n}...")
             url = pagination[n]
             resp = requests.get(url)
             soup = BeautifulSoup(resp.text, "lxml")
-            urls = get_image_urls(soup, verbose=True)
+            urls = get_page_image_urls(soup, verbose=True)
             img_urls.extend(urls)
     return img_urls
 
