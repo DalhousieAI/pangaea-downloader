@@ -87,11 +87,12 @@ def scrape_images(url: str) -> DataFrame:
 
     # Get download link to photos page
     download_link = soup.find("div", attrs={"class": "text-block top-border"}).a["href"]
+    src_url = download_link.split("?")[0]
     print("\t[INFO] URL to photos page:", download_link)
     # Get to photos page (page 1)
     resp = requests.get(download_link)
     photos_page = BeautifulSoup(resp.text, "lxml")
-    img_urls = scrape_urls_from_each_page(photos_page)
+    img_urls = scrape_urls_from_each_page(photos_page, src_url)
 
     # Store URLs and add metadata
     df = DataFrame(img_urls, columns=["URL"])
@@ -112,11 +113,10 @@ def get_metadata(page_soup: BeautifulSoup) -> Tuple[float, float]:
     return lat, long
 
 
-def get_pagination(page_soup: BeautifulSoup) -> Optional[dict]:
+def get_pagination(page_soup: BeautifulSoup, src_url: str) -> Optional[dict]:
     """
     Take a BeautifulSoup object and return a dictionary with page number and URL key, value pairs.
     """
-    src_url = "https://www.pangaea.de/helpers/Benthos.php"
     # <p> tag containing pagination info
     pagination = page_soup.find("p", attrs={"class": "navigation"})
     if pagination is None:
@@ -150,9 +150,9 @@ def get_page_image_urls(page_soup: BeautifulSoup, verbose=False) -> List[str]:
     return urls
 
 
-def scrape_urls_from_each_page(page_soup: BeautifulSoup) -> List[str]:
+def scrape_urls_from_each_page(page_soup: BeautifulSoup, base_url: str) -> List[str]:
     """Scrape image URLs from each page."""
-    pagination = get_pagination(page_soup)
+    pagination = get_pagination(page_soup, base_url)
     print("\t[INFO] Processing Page 1...")
     img_urls = get_page_image_urls(page_soup, verbose=True)
     if pagination is not None:
