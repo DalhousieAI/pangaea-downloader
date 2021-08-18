@@ -28,7 +28,7 @@ def run_search_query(query: str, verbose=False, n_results=500) -> List[dict]:
     return results
 
 
-def read_query_list(file="query_list") -> List[str]:
+def read_query_list(file="../pangaea_downloader/query_list") -> List[str]:
     """Read file with list of search queries and return it as a list."""
     with open(file, "r") as f:
         query_list = f.readlines()
