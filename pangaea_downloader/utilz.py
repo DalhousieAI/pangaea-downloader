@@ -6,7 +6,7 @@ from pandas import DataFrame, concat
 from pangaeapy import PanDataSet, PanQuery
 from requests.compat import urljoin
 
-from pangaea_downloader import checker
+from pangaea_downloader.tools import checker
 
 
 #  --------- Basic functions for searching and parsing results --------- #
