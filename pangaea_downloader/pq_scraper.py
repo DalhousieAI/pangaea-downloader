@@ -4,7 +4,17 @@ from pangaea_downloader.tools import datasets, process, scraper, search
 
 
 def main(query=None, out_dir="../query-outputs"):
-    """Search www.pangaea.de and download datasets for each result item."""
+    """
+    Search www.pangaea.de and download datasets for each result item.
+
+    Parameters
+    ----------
+    query : None or str
+        if None then read in list of query strings and search for multiple queries.
+        if str provided, then search for that one query.
+    out_dir : str
+        the directory where files will be saved (default='../query-outputs').
+    """
     # Make sure output directory exists
     os.makedirs(out_dir, exist_ok=True)
 
