@@ -56,6 +56,11 @@ def fetch_children(parent_url: str) -> Optional[DataFrame]:
             df_list.append(df)
         elif typ == "tabular":
             child = PanDataSet(url)
+            if ds.loginstatus != "unrestricted":
+                print(
+                    f"\t\t[{i+1}] [ERROR] Access restricted: '{ds.loginstatus}'. {url}"
+                )
+                return
             if not checker.has_url_col(child.data):
                 print(
                     f"\t\t[{i+1}] [WARNING] Image URL column NOT found! {url} Skipping..."
