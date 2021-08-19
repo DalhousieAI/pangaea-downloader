@@ -1,5 +1,5 @@
 """Functions for processing each of the result items."""
-from typing import Tuple
+from typing import Optional, Tuple
 
 import requests
 from bs4 import BeautifulSoup
@@ -26,7 +26,8 @@ def get_result_info(res: dict) -> Tuple[str, str, str, str, bool]:
     return citation, url, ds_id, size, is_parent
 
 
-def get_html_info(url: str):
+def get_html_info(url: str) -> Optional[str]:
+    """Make get request to dataset webpage and return dataset size."""
     # Make get request to webpage
     resp = requests.get(url)
     if resp.status_code == 200:
@@ -35,6 +36,9 @@ def get_html_info(url: str):
         # Extract info
         size = soup.find_all("div", attrs={"class": "descr"})[-1].text.strip().lower()
         return size
+    else:
+        print(f"[ERROR] Response code: {resp.status_code}")
+        return
 
 
 def ds_type(size: str):
