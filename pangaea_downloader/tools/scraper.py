@@ -82,9 +82,12 @@ def get_pagination(page_soup: BeautifulSoup, src_url: str) -> Optional[dict]:
         return page_dict
 
 
-def get_page_image_urls(page_soup: BeautifulSoup, verbose=False) -> List[str]:
+def get_page_image_urls(page_soup: BeautifulSoup, verbose=False) -> Optional[List[str]]:
     """Take a BeautifulSoup object and return list of image urls."""
     table = page_soup.find("table", class_="pictable")
+    if table is None:
+        print("[ERROR] Image table not found: no <table> of class='pictable'!")
+        return
     photos = table.find_all("td")
     print("\t\t\t[INFO] Number of photos on page:", len(photos)) if verbose else 0
 
