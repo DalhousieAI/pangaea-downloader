@@ -94,12 +94,12 @@ def get_page_image_urls(page_soup: BeautifulSoup, verbose=False) -> Optional[Lis
     """Take a BeautifulSoup object and return list of image urls."""
     table = page_soup.find("table", class_="pictable")
     if table is None:
-        print("[ERROR] Image table not found: no <table> of class='pictable'!")
+        print("\t\t\t[ERROR] Image table not found: no <table> of class='pictable'!")
         return
     photos = table.find_all("td")
-    print("\t\t\t[INFO] Number of photos on page:", len(photos)) if verbose else 0
 
     urls = []
+    empty_tds = 0
     for td in photos:
         try:
             url = "https:" + td.a["href"]
@@ -108,5 +108,9 @@ def get_page_image_urls(page_soup: BeautifulSoup, verbose=False) -> Optional[Lis
             # The last <td> of the last page is sometimes empty
             # No photos, just a blank <td> tag
             print("\t\t\t[WARNING] Empty <td> tag encountered!")
-
+            empty_tds += 1
+    # Number of photos on page
+    if verbose:
+        n = len(photos) - empty_tds
+        print(f"\t\t\t[INFO] Number of photos on page: {n}")
     return urls
