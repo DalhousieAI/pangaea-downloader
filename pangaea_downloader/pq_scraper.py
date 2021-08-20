@@ -25,6 +25,7 @@ def main(query=None, out_dir="../query-outputs"):
         results = search.run_multiple_search_queries(verbose=True)
 
     # Process each result dictionary
+    n_files = 0
     n_downloads = 0
     for i, result in enumerate(results):
         # Extract result info
@@ -36,6 +37,7 @@ def main(query=None, out_dir="../query-outputs"):
         path = os.path.join(out_dir, f_name)
         if os.path.exists(path):
             print(f"\t[INFO] File: '{f_name}' already exists! Skipping...")
+            n_files += 1
             continue
 
         # ------------- ASSESS DATASET TYPE ------------- #
@@ -63,6 +65,8 @@ def main(query=None, out_dir="../query-outputs"):
             n_downloads += 1
 
     print(f"Complete! Total files downloaded: {n_downloads}.")
+    print(f"Number of files previously saved: {n_files}.")
+    print(f"Total dataset files: {n_files + n_downloads}")
 
 
 if __name__ == "__main__":
