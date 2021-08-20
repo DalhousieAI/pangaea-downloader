@@ -18,7 +18,7 @@ def scrape_image_data(url: str) -> DataFrame:
     # Parse response
     soup = BeautifulSoup(resp.text, "lxml")
     # Get coordinates of expedition
-    lat, long = get_metadata(soup)
+    coordinates = get_metadata(soup)
 
     # Get download link to photos page
     download_link = soup.find("div", attrs={"class": "text-block top-border"}).a["href"]
@@ -32,8 +32,10 @@ def scrape_image_data(url: str) -> DataFrame:
     # Store URLs and add metadata
     df = DataFrame(img_urls, columns=["URL"])
     df["Filename"] = df["URL"].apply(lambda link: link.split("/")[-1])
-    df["Longitude"] = long
-    df["Latitude"] = lat
+    if coordinates is not None:
+        lat, long = coordinates
+        df["Longitude"] = long
+        df["Latitude"] = lat
     df["Dataset"] = ds.title
     df["DOI"] = ds.doi
     doi = ds.doi.split("doi.org/")[-1]
@@ -48,12 +50,19 @@ def scrape_image_data(url: str) -> DataFrame:
     return df
 
 
-def get_metadata(page_soup: BeautifulSoup) -> Tuple[float, float]:
+def get_metadata(page_soup: BeautifulSoup) -> Optional[Tuple[float, float]]:
     """Extract dataset latitude and longitude from parsed BeautifulSoup object of page."""
     coordinates = page_soup.find("div", attrs={"class": "hanging geo"})
-    lat = float(coordinates.find("span", attrs={"class": "latitude"}).text)
-    long = float(coordinates.find("span", attrs={"class": "longitude"}).text)
-    return lat, long
+    if coordinates is not None:
+        lat = float(coordinates.find("span", attrs={"class": "latitude"}).text)
+        long = float(coordinates.find("span", attrs={"class": "longitude"}).text)
+        return lat, long
+    else:
+        print(
+            "\t\t\t[ERROR] Coordinate metadata not found on page!",
+            "Saved file won't have Longitude, Latitude columns!",
+        )
+        return None
 
 
 def get_urls_from_each_page(page_soup: BeautifulSoup, base_url: str) -> List[str]:
