@@ -55,6 +55,8 @@ def main(query=None, out_dir="../query-outputs"):
             print(f"\t[INFO] Saved to '{path}'")
             n_downloads += 1
 
+    print(f"Complete! Total files downloaded: {n_downloads}.")
+
 
 if __name__ == "__main__":
     main(
