@@ -7,8 +7,7 @@ from bs4 import BeautifulSoup
 
 def url_from_uri(uri: str, base_url="https://doi.pangaea.de/") -> str:
     """Take a pangaea uri/doi string as input and return its corresponding url string."""
-    url = base_url + uri.split(":")[-1]
-    return url
+    return base_url + uri.split(":")[-1]
 
 
 def get_result_info(res: dict) -> Tuple[str, str, str, str, bool]:
