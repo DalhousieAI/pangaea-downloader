@@ -31,6 +31,13 @@ def main(query=None, out_dir="../query-outputs"):
         citation, url, ds_id, size, is_parent = process.get_result_info(result)
         print(f"[{i+1}] Processing dataset: '{citation}'. {url}")
 
+        # Check if file already exists in downloads
+        f_name = ds_id + ".csv"
+        path = os.path.join(out_dir, f_name)
+        if os.path.exists(path):
+            print(f"\t[INFO] File: '{f_name}' already exists! Skipping...")
+            continue
+
         # ------------- ASSESS DATASET TYPE ------------- #
         df = None
         if is_parent:
