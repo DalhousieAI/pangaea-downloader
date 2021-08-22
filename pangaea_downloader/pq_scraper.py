@@ -70,6 +70,4 @@ def main(query=None, out_dir="../query-outputs"):
 
 
 if __name__ == "__main__":
-    main(
-        out_dir="../query-outputs-new",
-    )
+    main(out_dir="../query-outputs-new")
