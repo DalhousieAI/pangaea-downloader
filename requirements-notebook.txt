@@ -1,3 +1,5 @@
+cartopy
 jupyter[notebook]
 matplotlib
+scipy
 seaborn
