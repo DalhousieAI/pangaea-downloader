@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/PyCQA/isort
-    rev: 5.9.1
+    rev: 5.9.3
     hooks:
       - id: isort
         name: isort
@@ -33,13 +33,17 @@ repos:
       - id: nbstripout
 
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 0.13.1
+    rev: 1.1.0
     hooks:
-       - id: nbqa-black
-         args: [--nbqa-mutate]
-         additional_dependencies: [black==21.7b0]
-       - id: nbqa-isort
-         args: ["--nbqa-mutate", "--profile=black"]
+      - id: nbqa-isort
+        args: ["--profile=black"]
+      - id: nbqa-black
+        args:
+            - "--target-version=py36"
+            - "--target-version=py37"
+            - "--target-version=py38"
+            - "--target-version=py39"
+        additional_dependencies: [black==21.7b0]
 
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.9.0
