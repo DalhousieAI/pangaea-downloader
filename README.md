@@ -19,9 +19,12 @@ pip install .
 
 ## Run downloader
 
-Run `pangaea_downloader/pq_scraper.py` to download benthic habitat image datasets from Pangaea.
+After installing the package, our PANGAEA downloader can be run by using the command `pangaea-downloader`.
+The default behaviour of is to run a default list of search queries related to benthic habitat photographs, and downloaded the resulting datasets into a directory named `query-outputs`.
 
-The downloaded dataset files will be stored in the main project directory under `query-outputs`.
+Alternatively, you can run the package as an executable module using `python -m pangaea_downloader`.
+
+For details about the command line interface arguments, see the help available with `pangaea-downloader --help`.
 
 
 ## Developmental setup
