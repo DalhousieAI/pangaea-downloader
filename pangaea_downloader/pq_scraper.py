@@ -11,7 +11,7 @@ from pangaea_downloader import __meta__
 from pangaea_downloader.tools import datasets, process, scraper, search
 
 
-def search_and_download(query=None, output_dir="../query-outputs", verbose=1):
+def search_and_download(query=None, output_dir="query-outputs", verbose=1):
     """
     Search `PANGAEA`_ for a query, and download datasets for each result.
 
@@ -23,7 +23,7 @@ def search_and_download(query=None, output_dir="../query-outputs", verbose=1):
         The query to search for.
         The default behaviour is to search for the list of query strings
         specified in the file ``pangaea_downloader/query_list``.
-    output_dir : str, default="../query-outputs"
+    output_dir : str, default="query-outputs"
         The output directory where downloaded datasets will be saved.
         Any existing output datasets will be skipped instead of downloaded.
     verbose : int, default=1
