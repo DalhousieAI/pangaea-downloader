@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+Pangaea search and download user interface.
+"""
+
 import os
 
 from pangaea_downloader.tools import datasets, process, scraper, search
@@ -7,15 +11,19 @@ from pangaea_downloader.tools import datasets, process, scraper, search
 
 def main(query=None, out_dir="../query-outputs"):
     """
-    Search www.pangaea.de and download datasets for each result item.
+    Search `PANGAEA`_ for a query, and download datasets for each result.
+
+    .. _PANGAEA: https://pangaea.de/
 
     Parameters
     ----------
-    query : None or str
-        if None then read in list of query strings and search for multiple queries.
-        if str provided, then search for that one query.
-    out_dir : str
-        the directory where files will be saved (default='../query-outputs').
+    query : str, optional
+        The query to search for.
+        The default behaviour is to search for the list of query strings
+        specified in the file ``pangaea_downloader/query_list``.
+    out_dir : str, default="../query-outputs"
+        The output directory where downloaded datasets will be saved.
+        Any existing output datasets will be skipped instead of downloaded.
     """
     # Make sure output directory exists
     os.makedirs(out_dir, exist_ok=True)
