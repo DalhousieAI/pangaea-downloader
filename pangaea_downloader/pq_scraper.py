@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 
 from pangaea_downloader.tools import datasets, process, scraper, search
