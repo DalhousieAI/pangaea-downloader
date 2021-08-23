@@ -9,7 +9,7 @@ import os
 from pangaea_downloader.tools import datasets, process, scraper, search
 
 
-def main(query=None, out_dir="../query-outputs"):
+def search_and_download(query=None, out_dir="../query-outputs"):
     """
     Search `PANGAEA`_ for a query, and download datasets for each result.
 
@@ -80,4 +80,4 @@ def main(query=None, out_dir="../query-outputs"):
 
 
 if __name__ == "__main__":
-    main(out_dir="../query-outputs-new")
+    search_and_download(out_dir="../query-outputs-new")
