@@ -9,7 +9,7 @@ import os
 from pangaea_downloader.tools import datasets, process, scraper, search
 
 
-def search_and_download(query=None, out_dir="../query-outputs"):
+def search_and_download(query=None, out_dir="../query-outputs", verbose=1):
     """
     Search `PANGAEA`_ for a query, and download datasets for each result.
 
@@ -24,15 +24,17 @@ def search_and_download(query=None, out_dir="../query-outputs"):
     out_dir : str, default="../query-outputs"
         The output directory where downloaded datasets will be saved.
         Any existing output datasets will be skipped instead of downloaded.
+    verbose : int, default=1
+        Verbosity level.
     """
     # Make sure output directory exists
     os.makedirs(out_dir, exist_ok=True)
 
     # ----------------- SEARCH PANGAEA ----------------- #
     if query is not None:
-        results = search.run_search_query(query, verbose=True)
+        results = search.run_search_query(query, verbose=verbose)
     else:
-        results = search.run_multiple_search_queries(verbose=True)
+        results = search.run_multiple_search_queries(verbose=verbose)
 
     # Process each result dictionary
     n_files = 0
