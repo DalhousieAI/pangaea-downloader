@@ -1,13 +1,22 @@
 """
 Functions for searching Pangaea for benthic habitat images.
 """
+import os
+from inspect import getsourcefile
 from typing import List
 
 from pangaeapy import PanQuery
 
+# Determine the path to the directory containing this file
+TOOLS_DIRECTORY = os.path.dirname(os.path.abspath(getsourcefile(lambda: 0)))
+# Determine path to parent directory (package directory)
+PACKAGE_DIRECTORY = os.path.dirname(TOOLS_DIRECTORY)
 
-def read_query_list(file="../pangaea_downloader/query_list") -> List[str]:
+
+def read_query_list(file=None) -> List[str]:
     """Read file with list of search queries and return it as a list."""
+    if file is None:
+        file = os.path.join(PACKAGE_DIRECTORY, "query_list")
     with open(file, "r") as f:
         query_list = f.readlines()
     query_list = [query.strip() for query in query_list if query.strip() != ""]
