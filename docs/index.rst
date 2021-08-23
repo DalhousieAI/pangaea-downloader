@@ -5,6 +5,7 @@
     :maxdepth: 2
     :caption: Contents:
 
+    source/programs/programs
     source/packages/modules
     py-modindex
     genindex
