@@ -5,7 +5,9 @@ Pangaea search and download user interface.
 """
 
 import os
+import sys
 
+from pangaea_downloader import __meta__
 from pangaea_downloader.tools import datasets, process, scraper, search
 
 
@@ -81,5 +83,91 @@ def search_and_download(query=None, output_dir="../query-outputs", verbose=1):
     print(f"Total dataset files: {n_files + n_downloads}")
 
 
+def get_parser():
+    """
+    Build CLI parser for downloading PANGAEA datasets.
+
+    Returns
+    -------
+    parser : argparse.ArgumentParser
+        CLI argument parser.
+    """
+    import argparse
+    import textwrap
+
+    prog = os.path.split(sys.argv[0])[1]
+    if prog == "__main__.py" or prog == "__main__":
+        prog = os.path.split(__file__)[1]
+    parser = argparse.ArgumentParser(
+        prog=prog,
+        description="Download all PANGEAEA datasets discovered by a search query.",
+        add_help=False,
+    )
+
+    parser.add_argument(
+        "--help",
+        "-h",
+        action="help",
+        help="Show this help message and exit.",
+    )
+    parser.add_argument(
+        "--version",
+        "-V",
+        action="version",
+        version="%(prog)s {version}".format(version=__meta__.version),
+        help="Show program's version number and exit.",
+    )
+    parser.add_argument(
+        "--query",
+        type=str,
+        help="The query string to search for and download.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        default="query-outputs",
+        help="Directory for downloaded datasets. Default is %(default)s.",
+    )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="count",
+        default=1,
+        help=textwrap.dedent(
+            """
+            Increase the level of verbosity of the program. This can be
+            specified multiple times, each will increase the amount of detail
+            printed to the terminal. The default verbosity level is %(default)s.
+        """
+        ),
+    )
+    parser.add_argument(
+        "--quiet",
+        "-q",
+        action="count",
+        default=0,
+        help=textwrap.dedent(
+            """
+            Decrease the level of verbosity of the program. This can be
+            specified multiple times, each will reduce the amount of detail
+            printed to the terminal.
+        """
+        ),
+    )
+    return parser
+
+
+def main():
+    """
+    Run command line interface for downloading images.
+    """
+    parser = get_parser()
+    kwargs = vars(parser.parse_args())
+
+    kwargs["verbose"] -= kwargs.pop("quiet", 0)
+
+    return search_and_download(**kwargs)
+
+
 if __name__ == "__main__":
-    search_and_download(out_dir="../query-outputs-new")
+    main()
