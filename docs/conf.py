@@ -338,11 +338,14 @@ epub_exclude_files = ["search.html"]
 intersphinx_mapping = {
     "python": ("https://docs.python.org/{.major}".format(sys.version_info), None),
     "attrs": ("https://www.attrs.org/en/stable/", None),
+    "bs4": ("https://beautiful-soup-4.readthedocs.io/en/latest/", None),
+    "cv2": ("https://docs.opencv.org/2.4.11/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference/", None),
     "matplotlib": ("https://matplotlib.org/stable/", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
     "Pillow": ("https://pillow.readthedocs.io/en/stable/", None),
+    "requests": ("https://docs.python-requests.org/en/master/", None),
     "skimage": ("https://scikit-image.org/docs/stable/", None),
     "sklearn": ("https://scikit-learn.org/stable/", None),
 }
