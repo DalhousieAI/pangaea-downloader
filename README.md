@@ -1,9 +1,9 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-# Pangaea Downloader
+# PANGAEA Downloader
 
-This repository contains tools to search and download benthic habitat image datasets from [Pangaea](https://www.pangaea.de/).
+This repository contains tools to search and download benthic habitat image datasets from [PANGAEA](https://www.pangaea.de/).
 
 ![Sample Images](./images/sample_images.png)
 
