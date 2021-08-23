@@ -9,7 +9,7 @@ import os
 from pangaea_downloader.tools import datasets, process, scraper, search
 
 
-def search_and_download(query=None, out_dir="../query-outputs", verbose=1):
+def search_and_download(query=None, output_dir="../query-outputs", verbose=1):
     """
     Search `PANGAEA`_ for a query, and download datasets for each result.
 
@@ -21,14 +21,14 @@ def search_and_download(query=None, out_dir="../query-outputs", verbose=1):
         The query to search for.
         The default behaviour is to search for the list of query strings
         specified in the file ``pangaea_downloader/query_list``.
-    out_dir : str, default="../query-outputs"
+    output_dir : str, default="../query-outputs"
         The output directory where downloaded datasets will be saved.
         Any existing output datasets will be skipped instead of downloaded.
     verbose : int, default=1
         Verbosity level.
     """
     # Make sure output directory exists
-    os.makedirs(out_dir, exist_ok=True)
+    os.makedirs(output_dir, exist_ok=True)
 
     # ----------------- SEARCH PANGAEA ----------------- #
     if query is not None:
@@ -46,7 +46,7 @@ def search_and_download(query=None, out_dir="../query-outputs", verbose=1):
 
         # Check if file already exists in downloads
         f_name = ds_id + ".csv"
-        path = os.path.join(out_dir, f_name)
+        path = os.path.join(output_dir, f_name)
         if os.path.exists(path):
             print(f"\t[INFO] File: '{f_name}' already exists! Skipping...")
             n_files += 1
@@ -71,7 +71,7 @@ def search_and_download(query=None, out_dir="../query-outputs", verbose=1):
             continue
         else:
             f_name = ds_id + ".csv"
-            path = os.path.join(out_dir, f_name)
+            path = os.path.join(output_dir, f_name)
             df.to_csv(path, index=False)
             print(f"\t[INFO] Saved to '{path}'")
             n_downloads += 1
