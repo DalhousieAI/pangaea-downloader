@@ -166,7 +166,11 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
-    # Could also include keywords, download_url, project_urls, etc.
+    entry_points={
+        "console_scripts": [
+            "pangaea-downloader=pangaea_downloader.__main__:main",
+        ],
+    },
     # Custom commands
     cmdclass={
         "test": PyTest,
