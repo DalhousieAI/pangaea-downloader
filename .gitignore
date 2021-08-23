@@ -222,6 +222,11 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+
+##---------------------------------------------------
+# Custom .gitignore
+##---------------------------------------------------
+
 # Program output directories
 outputs
 query-outputs*
