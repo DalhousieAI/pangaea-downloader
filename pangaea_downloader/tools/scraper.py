@@ -40,13 +40,13 @@ def scrape_image_data(url: str) -> DataFrame:
     df["DOI"] = ds.doi
     doi = ds.doi.split("doi.org/")[-1]
     if (len(ds.events) > 0) and (ds.events[0].campaign is not None):
-        ds.data["Campaign"] = ds.events[0].campaign.name
+        df["Campaign"] = ds.events[0].campaign.name
     else:
-        ds.data["Campaign"] = doi
+        df["Campaign"] = doi
     if "Event" in ds.data.columns:
-        ds.data["Site"] = ds.data["Event"]
+        df["Site"] = ds.data["Event"]
     else:
-        ds.data["Site"] = doi + "_site"
+        df["Site"] = doi + "_site"
     return df
 
 
