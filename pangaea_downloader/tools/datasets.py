@@ -93,6 +93,7 @@ def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
 
 
 def save_df(df: DataFrame, ds_id: str, output_dir: str):
+    """Save a DataFrame to file in a provided output directory."""
     f_name = ds_id + ".csv"
     path = os.path.join(output_dir, f_name)
     df.to_csv(path, index=False)
