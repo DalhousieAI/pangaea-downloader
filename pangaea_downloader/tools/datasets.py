@@ -5,6 +5,7 @@ Note: this module is only for Parent and Child datasets.
       For paginated datasets (images hosted on webpages)
       use pangaea_downloader.tools.scraper module.
 """
+import os
 from typing import Optional
 
 from pandas import DataFrame, concat
@@ -98,3 +99,10 @@ def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
     else:
         ds.data["Site"] = alt + "_site"
     return ds.data
+
+
+def save_df(df: DataFrame, ds_id: str, output_dir: str):
+    f_name = ds_id + ".csv"
+    path = os.path.join(output_dir, f_name)
+    df.to_csv(path, index=False)
+    print(f"\t[INFO] Saved to '{path}'")
