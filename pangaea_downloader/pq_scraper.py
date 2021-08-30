@@ -57,7 +57,7 @@ def search_and_download(query=None, output_dir="query-outputs", verbose=1):
         # ------------- ASSESS DATASET TYPE ------------- #
         df = None
         if is_parent:
-            df = datasets.fetch_children(url)
+            datasets.fetch_children(url, output_dir)
         else:
             dataset_type = process.ds_type(size)
             if dataset_type == "video":
@@ -69,13 +69,8 @@ def search_and_download(query=None, output_dir="query-outputs", verbose=1):
                 df = datasets.fetch_child(url)
 
         # ----------------- SAVE TO FILE ----------------- #
-        if df is None:
-            continue
-        else:
-            f_name = ds_id + ".csv"
-            path = os.path.join(output_dir, f_name)
-            df.to_csv(path, index=False)
-            print(f"\t[INFO] Saved to '{path}'")
+        if df is not None:
+            datasets.save_df(df, ds_id, output_dir)
             n_downloads += 1
 
     print(f"Complete! Total files downloaded: {n_downloads}.")
