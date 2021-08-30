@@ -57,7 +57,7 @@ def search_and_download(query=None, output_dir="query-outputs", verbose=1):
         # ------------- ASSESS DATASET TYPE ------------- #
         df = None
         if is_parent:
-            df = datasets.fetch_children(url)
+            datasets.fetch_children(url, output_dir)
         else:
             dataset_type = process.ds_type(size)
             if dataset_type == "video":
