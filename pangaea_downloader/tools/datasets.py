@@ -6,7 +6,7 @@ Note: this module is only for Parent and Child datasets.
       use pangaea_downloader.tools.scraper module.
 """
 import os
-from typing import Optional
+from typing import List, Optional
 
 from pandas import DataFrame
 from pangaeapy import PanDataSet
@@ -32,8 +32,8 @@ def fetch_child(child_url: str) -> Optional[DataFrame]:
     return df
 
 
-def fetch_children(parent_url: str, out_dir: str):
-    """Take in url of a parent dataset and output directory path, fetch and save child datasets to file."""
+def fetch_children(parent_url: str) -> Optional[List[DataFrame]]:
+    """Take in url of a parent dataset, fetch and return list of child datasets."""
     # Fetch dataset
     ds = PanDataSet(parent_url)
     # Check restriction
@@ -42,6 +42,7 @@ def fetch_children(parent_url: str, out_dir: str):
         return
     # Process children
     print(f"\t[INFO] Fetching {len(ds.children)} child datasets...")
+    df_list = []
     for i, child_uri in enumerate(ds.children):
         url = process.url_from_uri(child_uri)
         size = process.get_html_info(url)
@@ -53,9 +54,7 @@ def fetch_children(parent_url: str, out_dir: str):
         elif typ == "paginated":
             print(f"\t\t[{i+1}] Scrapping dataset...")
             df = scraper.scrape_image_data(url)
-            child = PanDataSet(url)
-            # Save scrapped dataset
-            save_df(df, child.id, out_dir)
+            df_list.append(df)
         elif typ == "tabular":
             child = PanDataSet(url)
             if ds.loginstatus != "unrestricted":
@@ -71,8 +70,15 @@ def fetch_children(parent_url: str, out_dir: str):
                 # Add metadata
                 child_doi = child.doi.split("doi.org/")[-1]
                 df = set_metadata(child, alt=child_doi)
-                # Save child dataset
-                save_df(df, child.id, out_dir)
+                # Add child dataset to list
+                df_list.append(df)
+
+    # Return result
+    if len(df_list) > 0:
+        return df_list
+    else:
+        # Empty list
+        return None
 
 
 def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
@@ -92,9 +98,10 @@ def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
     return ds.data
 
 
-def save_df(df: DataFrame, ds_id: str, output_dir: str):
+def save_df(df: DataFrame, ds_id: str, output_dir: str, level=1):
     """Save a DataFrame to file in a provided output directory."""
     f_name = ds_id + ".csv"
     path = os.path.join(output_dir, f_name)
     df.to_csv(path, index=False)
-    print(f"\t\t[INFO] Saved to '{path}'")
+    tabs = "\t\t" if level == 2 else "\t"
+    print(f"{tabs}[INFO] Saved to '{path}'")
