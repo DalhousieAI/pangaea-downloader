@@ -71,12 +71,12 @@ def search_and_download(query=None, output_dir="query-outputs", verbose=1):
 
         # ----------------- SAVE TO FILE ----------------- #
         if df is not None:
-            datasets.save_df(df, ds_id, output_dir)
+            datasets.save_df(df, ds_id, output_dir, level=1)
             n_downloads += 1
         if df_list is not None:
             for child in df_list:
                 child_id = child["DOI"].iloc[0].split(".")[-1]
-                datasets.save_df(child, child_id, output_dir)
+                datasets.save_df(child, child_id, output_dir, level=2)
                 n_downloads += 1
 
     print(f"Complete! Total files downloaded: {n_downloads}.")
