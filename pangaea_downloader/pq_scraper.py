@@ -56,8 +56,9 @@ def search_and_download(query=None, output_dir="query-outputs", verbose=1):
 
         # ------------- ASSESS DATASET TYPE ------------- #
         df = None
+        df_list = None
         if is_parent:
-            datasets.fetch_children(url, output_dir)
+            df_list = datasets.fetch_children(url)
         else:
             dataset_type = process.ds_type(size)
             if dataset_type == "video":
@@ -70,8 +71,13 @@ def search_and_download(query=None, output_dir="query-outputs", verbose=1):
 
         # ----------------- SAVE TO FILE ----------------- #
         if df is not None:
-            datasets.save_df(df, ds_id, output_dir)
+            datasets.save_df(df, ds_id, output_dir, level=1)
             n_downloads += 1
+        if df_list is not None:
+            for ch_i, child in enumerate(df_list):
+                child_id = child["DOI"].iloc[0].split(".")[-1]
+                datasets.save_df(child, child_id, output_dir, level=2, index=ch_i + 1)
+                n_downloads += 1
 
     print(f"Complete! Total files downloaded: {n_downloads}.")
     print(f"Number of files previously saved: {n_files}.")
