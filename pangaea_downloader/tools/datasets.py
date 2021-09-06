@@ -29,6 +29,8 @@ def fetch_child(child_url: str) -> Optional[DataFrame]:
         return
     # Add metadata
     df = set_metadata(ds, alt=doi)
+    # Exclude unwanted rows
+    df = exclude_rows(df)
     return df
 
 
@@ -71,6 +73,7 @@ def fetch_children(parent_url: str) -> Optional[List[DataFrame]]:
                 child_doi = child.doi.split("doi.org/")[-1]
                 df = set_metadata(child, alt=child_doi)
                 # Add child dataset to list
+                df = exclude_rows(df)
                 df_list.append(df)
 
     # Return result

@@ -7,6 +7,8 @@ from pandas import DataFrame
 from pangaeapy import PanDataSet
 from requests.compat import urljoin
 
+from pangaea_downloader.tools.datasets import exclude_rows
+
 
 def scrape_image_data(url: str) -> DataFrame:
     """Scrape image URLs and metadata from webpage(s)."""
@@ -31,6 +33,7 @@ def scrape_image_data(url: str) -> DataFrame:
 
     # Store URLs and add metadata
     df = DataFrame(img_urls, columns=["URL"])
+    df = exclude_rows(df)
     df["Filename"] = df["URL"].apply(lambda link: link.split("/")[-1])
     if coordinates is not None:
         lat, long = coordinates
