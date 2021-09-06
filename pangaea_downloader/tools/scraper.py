@@ -60,12 +60,11 @@ def get_metadata(page_soup: BeautifulSoup) -> Optional[Tuple[float, float]]:
         lat = float(coordinates.find("span", attrs={"class": "latitude"}).text)
         long = float(coordinates.find("span", attrs={"class": "longitude"}).text)
         return lat, long
-    else:
-        print(
-            "\t\t\t[ERROR] Coordinate metadata not found on page!",
-            "Saved file won't have Longitude, Latitude columns!",
-        )
-        return None
+    print(
+        "\t\t\t[ERROR] Coordinate metadata not found on page!",
+        "Saved file won't have Longitude, Latitude columns!",
+    )
+    return None
 
 
 def get_urls_from_each_page(page_soup: BeautifulSoup, base_url: str) -> List[str]:
