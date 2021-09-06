@@ -117,3 +117,10 @@ def save_df(df: DataFrame, ds_id: str, output_dir: str, level=1, index=None) -> 
     df.to_csv(path, index=False)
     print(f"{tabs}[{idx}] Saved to '{path}'")
     return True
+
+
+def get_url_col(df: DataFrame) -> str:
+    """Take a Pandas DataFrame and return the first URL column."""
+    cols = [col for col in df.columns if "url" in col.lower()]
+    col = cols[0] if len(cols) > 0 else None
+    return col
