@@ -98,17 +98,22 @@ def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
     return ds.data
 
 
-def save_df(df: DataFrame, ds_id: str, output_dir: str, level=1, index=None):
-    """Save a DataFrame to a file in the provided output directory."""
+def save_df(df: DataFrame, ds_id: str, output_dir: str, level=1, index=None) -> bool:
+    """
+    Save a DataFrame to a file in the provided output directory.
+
+    Returns False if dataframe is empty, else returns True.
+    """
     # Print formatting
     tabs = "\t\t" if level == 2 else "\t"
     idx = "INFO" if index is None else index
     # Don't save empty dataframe
     if len(df) == 0:
         print(f"{tabs}[{idx}] Empty DataFrame! File not saved!")
-        return
+        return False
     # Save if dataframe not empty
     f_name = ds_id + ".csv"
     path = os.path.join(output_dir, f_name)
     df.to_csv(path, index=False)
     print(f"{tabs}[{idx}] Saved to '{path}'")
+    return True
