@@ -48,6 +48,16 @@ def is_img_url(url: str) -> bool:
     return url.lower().endswith(VALID_IMG_EXTENSIONS)
 
 
+def is_invalid_file_ext(filename: str) -> bool:
+    """Check if file has unwanted file extension."""
+    # TODO: read list of invalid file extensions from file
+    exclude_files = [".pdf", ".docx", ".doc", ".pptx", ".key", ".xlsx", ".mov", ".mp4"]
+    ext = "." + filename.split(".")[-1].lower()
+    if ext in exclude_files:
+        return True
+    return False
+
+
 # --------------------------------------------- DataFrame Checkers --------------------------------------------- #
 def has_url_col(df: DataFrame) -> bool:
     """Take a Pandas DataFrame and return True if it has image URL column."""
