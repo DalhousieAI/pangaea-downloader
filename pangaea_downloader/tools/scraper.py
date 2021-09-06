@@ -52,6 +52,9 @@ def scrape_image_data(url: str) -> DataFrame:
 
 def get_metadata(page_soup: BeautifulSoup) -> Optional[Tuple[float, float]]:
     """Extract dataset latitude and longitude from parsed BeautifulSoup object of page."""
+    assert isinstance(
+        page_soup, BeautifulSoup
+    ), f"invalid input type: {type(page_soup)}"
     coordinates = page_soup.find("div", attrs={"class": "hanging geo"})
     if coordinates is not None:
         lat = float(coordinates.find("span", attrs={"class": "latitude"}).text)
