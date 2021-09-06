@@ -124,3 +124,10 @@ def get_url_col(df: DataFrame) -> str:
     cols = [col for col in df.columns if "url" in col.lower()]
     col = cols[0] if len(cols) > 0 else None
     return col
+
+
+def exclude_rows(df: DataFrame) -> DataFrame:
+    """Remove rows with unwanted file extensions and return the resulting dataframe."""
+    url_col = get_url_col(df)
+    valid_rows = ~df[url_col].apply(checker.is_invalid_file_ext)
+    return df[valid_rows]
