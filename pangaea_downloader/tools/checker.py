@@ -7,6 +7,7 @@ import re
 from pandas import DataFrame
 
 VALID_IMG_EXTENSIONS = (".jpg", ".jpeg", ".png", ".tif", ".tiff")
+INVALID_FILE_EXTENSIONS = (".pdf", ".pptx", ".key", ".xlsx", ".mov", ".mp4")
 
 
 # --------------------------------------------- String Checkers --------------------------------------------- #
@@ -52,12 +53,7 @@ def is_invalid_file_ext(filename: str) -> bool:
     """Check if file has unwanted file extension."""
     if not isinstance(filename, str):
         return False
-    # TODO: read list of invalid file extensions from file
-    exclude_files = [".pdf", ".docx", ".doc", ".pptx", ".key", ".xlsx", ".mov", ".mp4"]
-    ext = "." + filename.split(".")[-1].lower()
-    if ext in exclude_files:
-        return True
-    return False
+    return filename.lower().endswith(INVALID_FILE_EXTENSIONS)
 
 
 # --------------------------------------------- DataFrame Checkers --------------------------------------------- #
