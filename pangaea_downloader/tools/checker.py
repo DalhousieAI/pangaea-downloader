@@ -50,6 +50,8 @@ def is_img_url(url: str) -> bool:
 
 def is_invalid_file_ext(filename: str) -> bool:
     """Check if file has unwanted file extension."""
+    if not isinstance(filename, str):
+        return False
     # TODO: read list of invalid file extensions from file
     exclude_files = [".pdf", ".docx", ".doc", ".pptx", ".key", ".xlsx", ".mov", ".mp4"]
     ext = "." + filename.split(".")[-1].lower()
