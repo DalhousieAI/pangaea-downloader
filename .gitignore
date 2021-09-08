@@ -237,6 +237,9 @@ Temporary Items
 # Custom .gitignore
 ##---------------------------------------------------
 
+# Draft notebooks
+~*.ipynb
+
 # Program output directories
 outputs
 query-outputs*
