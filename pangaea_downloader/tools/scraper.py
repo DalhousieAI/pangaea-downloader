@@ -10,7 +10,7 @@ from requests.compat import urljoin
 import pangaea_downloader.tools.datasets as datasets
 
 
-def scrape_image_data(url: str) -> DataFrame:
+def scrape_image_data(url: str) -> Optional[DataFrame]:
     """Scrape image URLs and metadata from webpage(s)."""
     # Load dataset
     ds = PanDataSet(url)
@@ -30,7 +30,8 @@ def scrape_image_data(url: str) -> DataFrame:
     resp = requests.get(download_link)
     photos_page = BeautifulSoup(resp.text, "lxml")
     img_urls = get_urls_from_each_page(photos_page, src_url)
-
+    if img_urls is None:
+        return
     # Store URLs and add metadata
     df = DataFrame(img_urls, columns=["URL"])
     df = datasets.exclude_rows(df)

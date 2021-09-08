@@ -56,7 +56,8 @@ def fetch_children(parent_url: str) -> Optional[List[DataFrame]]:
         elif typ == "paginated":
             print(f"\t\t[{i+1}] Scrapping dataset...")
             df = scraper.scrape_image_data(url)
-            df_list.append(df)
+            if df is not None:
+                df_list.append(df)
         elif typ == "tabular":
             child = PanDataSet(url)
             if ds.loginstatus != "unrestricted":
