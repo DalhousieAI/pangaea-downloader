@@ -101,7 +101,7 @@ def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
     return ds.data
 
 
-def save_df(df: DataFrame, ds_id: str, output_dir: str, level=1, index=None) -> bool:
+def save_df(df: DataFrame, output_dir: str, level=1, index=None) -> bool:
     """
     Save a DataFrame to a file in the provided output directory.
 
@@ -115,6 +115,7 @@ def save_df(df: DataFrame, ds_id: str, output_dir: str, level=1, index=None) -> 
         print(f"{tabs}[{idx}] Empty DataFrame! File not saved!")
         return False
     # Save if dataframe not empty
+    ds_id = df["DOI"].iloc[0].split(".")[-1]
     f_name = ds_id + ".csv"
     path = os.path.join(output_dir, f_name)
     df.to_csv(path, index=False)
