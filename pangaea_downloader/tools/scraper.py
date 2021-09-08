@@ -95,14 +95,13 @@ def get_pagination(page_soup: BeautifulSoup, src_url: str) -> Optional[dict]:
     pagination = page_soup.find("p", attrs={"class": "navigation"})
     if pagination is None:
         return None
-    else:
-        # Page numbers (strs)
-        page_nums = [i.strip() for i in pagination.text.split("|")][2:-1]
-        # List of page URLs
-        page_urls = [urljoin(src_url, a["href"]) for a in pagination.find_all("a")][:-1]
-        # Page number : Page URL
-        page_dict = {k: v for k, v in zip(page_nums, page_urls)}
-        return page_dict
+    # Page numbers (strs)
+    page_nums = [i.strip() for i in pagination.text.split("|")][2:-1]
+    # List of page URLs
+    page_urls = [urljoin(src_url, a["href"]) for a in pagination.find_all("a")][:-1]
+    # Page number : Page URL
+    page_dict = {k: v for k, v in zip(page_nums, page_urls)}
+    return page_dict
 
 
 def get_page_image_urls(page_soup: BeautifulSoup, verbose=False) -> Optional[List[str]]:
