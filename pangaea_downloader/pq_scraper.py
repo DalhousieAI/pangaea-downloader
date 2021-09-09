@@ -100,7 +100,7 @@ def get_parser():
         prog = os.path.split(__file__)[1]
     parser = argparse.ArgumentParser(
         prog=prog,
-        description="Download all PANGEAEA datasets discovered by a search query.",
+        description="Download all PANGAEA datasets discovered by a search query.",
         add_help=False,
     )
 
