@@ -121,7 +121,6 @@ def get_page_image_urls(page_soup: BeautifulSoup, verbose=False) -> Optional[Lis
         except TypeError:
             # The last <td> of the last page is sometimes empty
             # No photos, just a blank <td> tag
-            print("\t\t\t[WARNING] Empty <td> tag encountered!")
             empty_tds += 1
     # Number of photos on page
     if verbose:
