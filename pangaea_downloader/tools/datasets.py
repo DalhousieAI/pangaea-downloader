@@ -118,7 +118,12 @@ def save_df(df: DataFrame, output_dir: str, level=1, index=None) -> bool:
     # Save if dataframe not empty
     ds_id = df["DOI"].iloc[0].split(".")[-1]
     f_name = ds_id + ".csv"
-    path = os.path.join(output_dir, f_name)
+    # Make subdirectory by site name
+    site = df["Site"].iloc[0]
+    site_dir = os.path.join(output_dir, site)
+    os.makedirs(site_dir, exist_ok=True)
+    # Save to file
+    path = os.path.join(site_dir, f_name)
     df.to_csv(path, index=False)
     print(f"{tabs}[{idx}] Saved to '{path}'")
     return True
