@@ -145,3 +145,14 @@ def exclude_rows(df: DataFrame) -> DataFrame:
         valid_rows = ~df[url_col].apply(checker.is_invalid_file_ext)
         return df[valid_rows]
     return df
+
+
+def fix_text(text: str) -> str:
+    """
+    Replace back slash or forward slash characters in string with underscore.
+
+    Returns modified string.
+    """
+    text = text.replace("\\", "_")
+    text = text.replace("/", "_")
+    return text
