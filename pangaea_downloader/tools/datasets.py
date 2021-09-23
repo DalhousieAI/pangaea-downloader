@@ -118,7 +118,16 @@ def save_df(df: DataFrame, output_dir: str, level=1, index=None) -> bool:
     # Save if dataframe not empty
     ds_id = df["DOI"].iloc[0].split(".")[-1]
     f_name = ds_id + ".csv"
-    path = os.path.join(output_dir, f_name)
+    # Make subdirectory by campaign name
+    camp = fix_text(df["Campaign"].iloc[0])
+    camp_dir = os.path.join(output_dir, camp)
+    os.makedirs(camp_dir, exist_ok=True)
+    # Make subdirectory by site name
+    site = fix_text(df["Site"].iloc[0])
+    site_dir = os.path.join(camp_dir, site)
+    os.makedirs(site_dir, exist_ok=True)
+    # Save to file
+    path = os.path.join(site_dir, f_name)
     df.to_csv(path, index=False)
     print(f"{tabs}[{idx}] Saved to '{path}'")
     return True
@@ -140,3 +149,14 @@ def exclude_rows(df: DataFrame) -> DataFrame:
         valid_rows = ~df[url_col].apply(checker.is_invalid_file_ext)
         return df[valid_rows]
     return df
+
+
+def fix_text(text: str) -> str:
+    """
+    Replace back slash or forward slash characters in string with underscore.
+
+    Returns modified string.
+    """
+    text = text.replace("\\", "_")
+    text = text.replace("/", "_")
+    return text
