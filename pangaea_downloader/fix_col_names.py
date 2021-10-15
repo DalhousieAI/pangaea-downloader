@@ -30,6 +30,8 @@ def find_col_equivalent(col_name, mapping_dict):
 
 
 def fix_col_names(df, mapping_dict, verbose=False):
+    if not isinstance(df, pd.DataFrame):
+        return
     # Lists are mutable, indexes are not
     new_cols = df.columns.copy().to_list()
 
