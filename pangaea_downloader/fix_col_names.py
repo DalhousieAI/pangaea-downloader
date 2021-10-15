@@ -17,6 +17,18 @@ def load_column_mappings(file="mappings.xlsx", sheet_name="Data Fields"):
     return maps
 
 
+def find_col_equivalent(col_name, mapping_dict):
+    # Look for equivalency and return
+    for std_col in mapping_dict:
+        for eq in mapping_dict[std_col]:
+            if col_name.lower() == eq:
+                return std_col
+            elif col_name.lower() == "dataset":
+                return "dataset_title"
+    # If none found return original input in lower case
+    return col_name.lower()
+
+
 def fix_col_names(df):
     # Lists are mutable, indexes are not
     new_cols = df.columns.copy().to_list()
