@@ -48,12 +48,15 @@ def fix_col_names(df, mapping_dict, verbose=False):
 
 def walk_dir(directory="."):
     print("Checking directory:", directory)
+    maps = load_column_mappings()
     total_files = 0
     for root_path, _, files in os.walk(directory):
         for file in files:
             filepath = os.path.join(root_path, file)
-            df = pd.read_csv(filepath)
+            df = pd.read_csv(filepath) if filepath.endswith(".csv") else None
+            df = fix_col_names(df, maps)
             if df is not None:
+                df.to_csv(filepath, index=False)
                 total_files += 1
     print("Total files:", total_files)
 
