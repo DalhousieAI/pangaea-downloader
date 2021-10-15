@@ -47,7 +47,7 @@ def fix_col_names(df, mapping_dict, verbose=False):
 
 
 def walk_dir(directory="."):
-    if not os.path.isdir:
+    if not os.path.isdir(directory):
         raise NotADirectoryError(f"The directory '{directory}' doesn't exists")
     print("Checking directory:", directory)
     maps = load_column_mappings()
