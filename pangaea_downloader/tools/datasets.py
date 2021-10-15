@@ -87,18 +87,18 @@ def fetch_children(parent_url: str) -> Optional[List[DataFrame]]:
 
 def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
     """Add metadata to a PanDataSet's dataframe."""
-    ds.data["Dataset"] = ds.title
-    ds.data["DOI"] = ds.doi
+    ds.data["dataset_title"] = ds.title
+    ds.data["doi"] = ds.doi
     # Dataset campaign
     if (len(ds.events) > 0) and (ds.events[0].campaign is not None):
-        ds.data["Campaign"] = ds.events[0].campaign.name
+        ds.data["campaign"] = ds.events[0].campaign.name
     else:
-        ds.data["Campaign"] = alt
+        ds.data["campaign"] = alt
     # Dataset site/event/deployment
     if "Event" in ds.data.columns:
-        ds.data["Site"] = ds.data["Event"]
+        ds.data["site"] = ds.data["Event"]
     else:
-        ds.data["Site"] = alt + "_site"
+        ds.data["site"] = alt + "_site"
     return ds.data
 
 
@@ -116,14 +116,14 @@ def save_df(df: DataFrame, output_dir: str, level=1, index=None) -> bool:
         print(f"{tabs}[{idx}] Empty DataFrame! File not saved!")
         return False
     # Save if dataframe not empty
-    ds_id = df["DOI"].iloc[0].split(".")[-1]
+    ds_id = df["doi"].iloc[0].split(".")[-1]
     f_name = ds_id + ".csv"
     # Make subdirectory by campaign name
-    camp = fix_text(df["Campaign"].iloc[0])
+    camp = fix_text(df["campaign"].iloc[0])
     camp_dir = os.path.join(output_dir, camp)
     os.makedirs(camp_dir, exist_ok=True)
     # Make subdirectory by site name
-    site = fix_text(df["Site"].iloc[0])
+    site = fix_text(df["site"].iloc[0])
     site_dir = os.path.join(camp_dir, site)
     os.makedirs(site_dir, exist_ok=True)
     # Save to file
