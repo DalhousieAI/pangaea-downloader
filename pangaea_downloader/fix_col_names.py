@@ -3,6 +3,20 @@ import os
 import pandas as pd
 
 
+def load_column_mappings(file="mappings.xlsx", sheet_name="Data Fields"):
+    # Load CSV file
+    mappings_df = pd.read_excel(file, sheet_name=sheet_name)
+    mappings_df.drop(["Contents", "Mandatory/Optional"], axis="columns", inplace=True)
+
+    # Convert to dict
+    maps = {}
+    for _, row in mappings_df.iterrows():
+        col_name, equiv_list = row[0], row[1]
+        if isinstance(equiv_list, str):
+            maps[col_name] = [eq.strip() for eq in equiv_list.split(",")]
+    return maps
+
+
 def fix_col_names(df):
     # Lists are mutable, indexes are not
     new_cols = df.columns.copy().to_list()
