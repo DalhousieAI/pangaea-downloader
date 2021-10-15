@@ -29,17 +29,17 @@ def find_col_equivalent(col_name, mapping_dict):
     return col_name.lower()
 
 
-def fix_col_names(df):
+def fix_col_names(df, mapping_dict, verbose=False):
     # Lists are mutable, indexes are not
     new_cols = df.columns.copy().to_list()
 
     # Check each column name and map to appropriate name
     for i, col in enumerate(df.columns):
-        # TODO: Replace with mappings in the BenthicNet contacts and data file
-        # Match
-        if col == "Dataset":
-            # Replace
-            new_cols[i] = "dataset_title"
+        new_cols[i] = find_col_equivalent(col, mapping_dict)
+
+    if verbose:
+        print("Original columns:", df.columns.to_list())
+        print("After modifying :", new_cols)
 
     # Change columns
     df.columns = new_cols
