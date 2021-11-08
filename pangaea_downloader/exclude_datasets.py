@@ -27,13 +27,16 @@ def evaluate_dataset(df: pd.DataFrame) -> Tuple[str, str]:
     # Plot the middle image
     idx = urls.size // 2
     sample = urls.iloc[idx]
-    # Load image
-    print("Making get request...")
-    img = img_from_url(sample, verbose=True)
-    # Plot
-    plt.imshow(img)
-    plt.title(f"File: {filename}")
-    plt.show()
+    if is_url(sample):
+        # Load image
+        print("Making get request...")
+        img = img_from_url(sample, verbose=True)
+        # Plot
+        plt.imshow(img)
+        plt.title(f"File: {filename}")
+        plt.show()
+    else:
+        print(f"[ERROR] INVALID URL in {filename}: '{sample}'")
     # Take user input
     in_ = input("Write 'delete' to remove this dataset >> ").lower()
     return in_, filename
