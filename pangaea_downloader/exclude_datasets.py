@@ -42,5 +42,29 @@ def evaluate_dataset(df: pd.DataFrame) -> Tuple[str, str]:
     return in_, filename
 
 
+def exclude_datasets(data_dir: str):
+    """Take a directory, load the dataset files and discard irrelevant datasets."""
+    assert os.path.exists(data_dir), f"Directory does not exist: '{data_dir}'!"
+    # Create folder for discarded datasets
+    rem_dir = os.path.join(data_dir, "discarded")
+    os.makedirs(rem_dir, exist_ok=True)
+    # Load datasets
+    file_paths = get_file_paths(data_dir)
+    print(f"Total {len(file_paths)} files to process.")
+    # Dictionary of path: dataframe
+    datasets = {path: pd.read_csv(path) for path in file_paths}
+    # Sort dictionary by length of dataframes
+    sorted_datasets = dict(
+        sorted(datasets.items(), key=lambda item: len(item[1]), reverse=True)
+    )
+    # Evaluate each dataset
+    discards = 0
+    for i, (path, df) in enumerate(sorted_datasets.items()):
+        print(f"\n[{i+1}] Processing '{path}'...")
+        x, file = evaluate_dataset(df)
+        print("DEBUG :", x, file)
+    print(f"\nCOMPLETED! Files discarded: {discards}.")
+
+
 if __name__ == "__main__":
-    print(get_file_paths("../test-dir"))
+    print(exclude_datasets("../test-dir"))
