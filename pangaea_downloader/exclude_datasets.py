@@ -1,4 +1,5 @@
 import os
+import sys
 from typing import List, Tuple
 
 import matplotlib.pyplot as plt
@@ -65,6 +66,9 @@ def exclude_datasets(data_dir: str):
         if x == "delete":
             move_file(path, os.path.join(rem_dir, file))
             discards += 1
+        elif x == "exit":
+            print("Quitting program...")
+            sys.exit()
     print(f"\nCOMPLETED! Files discarded: {discards}.")
 
 
