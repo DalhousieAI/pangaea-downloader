@@ -79,4 +79,4 @@ def move_file(old_path: str, new_path: str):
 
 
 if __name__ == "__main__":
-    print(exclude_datasets("../test-dir"))
+    exclude_datasets("../query-outputs")
