@@ -160,3 +160,8 @@ def fix_text(text: str) -> str:
     text = text.replace("\\", "_")
     text = text.replace("/", "_")
     return text
+
+
+def get_dataset_id(df: DataFrame) -> str:
+    """Take a Pandas DataFrame as input and return the datasets Pangaea ID."""
+    return df["doi"].iloc[0].split(".")[-1]
