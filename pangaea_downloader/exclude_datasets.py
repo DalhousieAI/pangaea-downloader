@@ -66,5 +66,11 @@ def exclude_datasets(data_dir: str):
     print(f"\nCOMPLETED! Files discarded: {discards}.")
 
 
+def move_file(old_path: str, new_path: str):
+    """Move file from old path to new path."""
+    assert os.path.exists(old_path), f"Path does not exist: {old_path}"
+    os.replace(old_path, new_path)
+
+
 if __name__ == "__main__":
     print(exclude_datasets("../test-dir"))
