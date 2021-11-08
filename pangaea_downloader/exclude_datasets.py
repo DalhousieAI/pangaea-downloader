@@ -62,7 +62,9 @@ def exclude_datasets(data_dir: str):
     for i, (path, df) in enumerate(sorted_datasets.items()):
         print(f"\n[{i+1}] Processing '{path}'...")
         x, file = evaluate_dataset(df)
-        print("DEBUG :", x, file)
+        if x == "delete":
+            move_file(path, os.path.join(rem_dir, file))
+            discards += 1
     print(f"\nCOMPLETED! Files discarded: {discards}.")
 
 
