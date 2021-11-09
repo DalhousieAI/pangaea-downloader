@@ -1,3 +1,19 @@
+"""
+Exclude datasets that are not of benthic habitat images.
+
+- Load all csv files in input directory.
+- Plot middle image of each dataset.
+- After showing each image the program asks for user input.
+    1. Delete dataset
+    - If the image is not a seafloor photograph then the user should enter "delete" into the console.
+    - This will move the file to the following path: "input-directory/discarded/".
+    2. Keep dataset
+    - To keep the dataset, the user may press enter/return (or any input other than "delete").
+    3. Exit program
+    - The user may also exit the program while by entering "exit".
+- At the end of the loop the program shows the number of datasets discarded.
+"""
+
 import os
 import sys
 from typing import List, Tuple
