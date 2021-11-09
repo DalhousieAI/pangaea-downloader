@@ -83,6 +83,7 @@ def exclude_datasets(data_dir: str):
     discards = 0
     for i, (path, df) in enumerate(sorted_datasets.items()):
         print(f"\n[{i+1}] Processing '{path}'...")
+        print(f"\tDataset shape: {df.shape[0]} rows x {df.shape[1]} columns.")
         ret = evaluate_dataset(df)
         if ret is not None:
             x, file = ret
