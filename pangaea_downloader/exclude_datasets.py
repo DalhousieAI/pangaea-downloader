@@ -44,6 +44,9 @@ def evaluate_dataset(df: pd.DataFrame) -> Optional[Tuple[str, str]]:
     # Plot the middle image
     idx = urls.size // 2
     sample = urls.iloc[idx]
+    if not isinstance(sample, str):
+        print(f"[ERROR] Non-string image URL value! {sample}")
+        return
     if sample.endswith(COMPRESSED_FILE_EXTENSIONS):
         print(
             f"[WARNING] Zipped file dataset, might contain images. Keeping {filename}: '{sample}'"
