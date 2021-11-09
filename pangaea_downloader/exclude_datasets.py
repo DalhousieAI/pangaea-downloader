@@ -16,6 +16,7 @@ Exclude datasets that are not of benthic habitat images.
 
 import os
 import sys
+from datetime import datetime
 from typing import List, Optional, Tuple
 
 import matplotlib.pyplot as plt
@@ -84,7 +85,7 @@ def exclude_datasets(data_dir: str):
         sorted(datasets.items(), key=lambda item: len(item[1]), reverse=True)
     )
     # Evaluate each dataset
-    discards = 0
+    discards = {"datasets": [], "count": 0}
     for i, (path, df) in enumerate(sorted_datasets.items()):
         print(f"\n[{i+1}] Processing '{path}'...")
         print(f"Dataset shape: {df.shape[0]} rows x {df.shape[1]} columns.")
@@ -94,17 +95,32 @@ def exclude_datasets(data_dir: str):
             if x == "delete":
                 move_file(path, os.path.join(rem_dir, file))
                 print(f"Removed file ({len(df)} rows of data) to discards folder")
-                discards += 1
+                # Keep track of discarded dataset
+                discards["datasets"].append(path)
+                discards["count"] += 1
             elif x == "exit":
                 print("Quitting program...")
+                save_summary(discards, rem_dir)
                 sys.exit()
     print(f"\nCOMPLETED! Files discarded: {discards}.")
+    save_summary(discards, rem_dir)
 
 
 def move_file(old_path: str, new_path: str):
     """Move file from old path to new path."""
     assert os.path.exists(old_path), f"Path does not exist: {old_path}"
     os.replace(old_path, new_path)
+
+
+def save_summary(info: dict, log_path: str):
+    log_file = os.path.join(log_path, "log.txt")
+    with open(log_file, "w") as f:
+        f.write(f"[Timestamp] {datetime.now()}\n")
+        f.write(f"Number of discards: {info['count']}\n")
+        f.write("\nDatasets discarded:\n")
+        f.write("-------------------\n")
+        for file_path in info["datasets"]:
+            f.write(file_path + "\n")
 
 
 if __name__ == "__main__":
