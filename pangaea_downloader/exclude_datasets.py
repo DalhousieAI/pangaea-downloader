@@ -94,7 +94,7 @@ def exclude_datasets(data_dir: str):
             x, file = ret
             if x == "delete":
                 move_file(path, os.path.join(rem_dir, file))
-                print(f"Removed file ({len(df)} rows of data) to discards folder")
+                print(f"Removed file to discards folder ({len(df)} rows of data). ")
                 # Keep track of discarded dataset
                 discards["datasets"].append(path)
                 discards["count"] += 1
