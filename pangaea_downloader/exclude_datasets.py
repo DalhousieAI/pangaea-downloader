@@ -49,7 +49,8 @@ def evaluate_dataset(df: pd.DataFrame) -> Optional[Tuple[str, str]]:
         return
     if sample.endswith(COMPRESSED_FILE_EXTENSIONS):
         print(
-            f"[WARNING] Zipped file dataset, might contain images. Keeping {filename}: '{sample}'"
+            f"[WARNING] Zipped dataset might contain images."
+            f" Keeping {filename}: '{sample}'"
         )
         return
     elif is_img_url(sample):
@@ -86,7 +87,7 @@ def exclude_datasets(data_dir: str):
     discards = 0
     for i, (path, df) in enumerate(sorted_datasets.items()):
         print(f"\n[{i+1}] Processing '{path}'...")
-        print(f"\tDataset shape: {df.shape[0]} rows x {df.shape[1]} columns.")
+        print(f"Dataset shape: {df.shape[0]} rows x {df.shape[1]} columns.")
         ret = evaluate_dataset(df)
         if ret is not None:
             x, file = ret
