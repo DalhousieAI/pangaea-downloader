@@ -6,7 +6,7 @@ Exclude datasets that are not of benthic habitat images.
 - After showing each image the program asks for user input.
     1. Delete dataset
     - If the image is not a seafloor photograph then the user should enter "delete" into the console.
-    - This will move the file to the following path: "input-directory/discarded/".
+    - This will move the file to the following path: "input-directory/.discarded/".
     2. Keep dataset
     - To keep the dataset, the user may press enter/return (or any input other than "delete").
     3. Exit program
@@ -68,7 +68,7 @@ def exclude_datasets(data_dir: str):
     """Take a directory, load the dataset files and discard irrelevant datasets."""
     assert os.path.exists(data_dir), f"Directory does not exist: '{data_dir}'!"
     # Create folder for discarded datasets
-    rem_dir = os.path.join(data_dir, "discarded")
+    rem_dir = os.path.join(data_dir, ".discarded")
     os.makedirs(rem_dir, exist_ok=True)
     # Load datasets
     file_paths = get_file_paths(data_dir)
