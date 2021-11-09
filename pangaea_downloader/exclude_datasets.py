@@ -113,9 +113,13 @@ def move_file(old_path: str, new_path: str):
 
 
 def save_summary(info: dict, log_path: str):
-    log_file = os.path.join(log_path, "log.txt")
-    with open(log_file, "w") as f:
-        f.write(f"[Timestamp] {datetime.now()}\n")
+    # Unique filename for each log
+    log_time = datetime.now().strftime("%Y-%m-%d %H.%M.%S")
+    log_filename = f"log [{log_time}].txt"
+    log_filepath = os.path.join(log_path, log_filename)
+    # Write log info
+    with open(log_filepath, "w") as f:
+        f.write(f"[Timestamp] {log_time}\n")
         f.write(f"Number of discards: {info['count']}\n")
         f.write("\nDatasets discarded:\n")
         f.write("-------------------\n")
