@@ -16,12 +16,12 @@ Exclude datasets that are not of benthic habitat images.
 
 import os
 import sys
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from pangaea_downloader.tools.checker import is_url
+from pangaea_downloader.tools.checker import COMPRESSED_FILE_EXTENSIONS, is_img_url
 from pangaea_downloader.tools.datasets import get_dataset_id, get_url_col
 from pangaea_downloader.tools.eda import img_from_url
 
@@ -36,7 +36,7 @@ def get_file_paths(data_dir: str) -> List[str]:
     return file_paths
 
 
-def evaluate_dataset(df: pd.DataFrame) -> Tuple[str, str]:
+def evaluate_dataset(df: pd.DataFrame) -> Optional[Tuple[str, str]]:
     """Take a DataFrame, plot it's middle image and evaluate if it should be discarded."""
     filename = get_dataset_id(df) + ".csv"
     url_col = get_url_col(df)
@@ -44,7 +44,12 @@ def evaluate_dataset(df: pd.DataFrame) -> Tuple[str, str]:
     # Plot the middle image
     idx = urls.size // 2
     sample = urls.iloc[idx]
-    if is_url(sample):
+    if sample.endswith(COMPRESSED_FILE_EXTENSIONS):
+        print(
+            f"[WARNING] Zipped file dataset, might contain images. Keeping {filename}: '{sample}'"
+        )
+        return
+    elif is_img_url(sample):
         # Load image
         print("Making get request...")
         img = img_from_url(sample, verbose=True)
@@ -78,13 +83,16 @@ def exclude_datasets(data_dir: str):
     discards = 0
     for i, (path, df) in enumerate(sorted_datasets.items()):
         print(f"\n[{i+1}] Processing '{path}'...")
-        x, file = evaluate_dataset(df)
-        if x == "delete":
-            move_file(path, os.path.join(rem_dir, file))
-            discards += 1
-        elif x == "exit":
-            print("Quitting program...")
-            sys.exit()
+        ret = evaluate_dataset(df)
+        if ret is not None:
+            x, file = ret
+            if x == "delete":
+                move_file(path, os.path.join(rem_dir, file))
+                print(f"Removed file ({len(df)} rows of data) to discards folder")
+                discards += 1
+            elif x == "exit":
+                print("Quitting program...")
+                sys.exit()
     print(f"\nCOMPLETED! Files discarded: {discards}.")
 
 

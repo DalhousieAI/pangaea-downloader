@@ -8,6 +8,7 @@ from pandas import DataFrame
 
 VALID_IMG_EXTENSIONS = (".jpg", ".jpeg", ".png", ".tif", ".tiff")
 INVALID_FILE_EXTENSIONS = (".pdf", ".pptx", ".key", ".xlsx", ".mov", ".mp4")
+COMPRESSED_FILE_EXTENSIONS = (".zip", ".tar", ".gz", ".7z")
 
 
 # --------------------------------------------- String Checkers --------------------------------------------- #
