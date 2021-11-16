@@ -243,3 +243,6 @@ Temporary Items
 # Program output directories
 outputs
 query-outputs*
+
+# Test directories
+test-dir
