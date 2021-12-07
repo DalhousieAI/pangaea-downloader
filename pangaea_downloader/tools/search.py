@@ -23,34 +23,43 @@ def read_query_list(file=None) -> List[str]:
     return query_list
 
 
-def run_search_query(query: str, verbose=False, n_results=500) -> List[dict]:
+def run_search_query(query: str, verbose=0, n_results=500) -> List[dict]:
     """Search Pangaea with given query string and return a list of results."""
-    if verbose:
+    if verbose >= 1:
         print(f"[INFO] Running search with query string: '{query}'")
     offset = 0
     results = []
+    n_page = 0
     # Iteratively retrieve search results
     while True:
         pq = PanQuery(query=query, limit=n_results, offset=offset)
+        n_page += 1
+        if verbose >= 2:
+            print(f"\tResults page {n_page} (offset = {offset})")
         results.extend(pq.result)
         offset += len(pq.result)
         if len(results) >= pq.totalcount:
             break
     # Sanity check
     assert len(results) == pq.totalcount
-    if verbose:
+    if verbose >= 1:
         print(f"[INFO] Number of search results returned: {len(results)}\n")
     return results
 
 
-def run_multiple_search_queries(query_list, verbose=False) -> List[dict]:
+def run_multiple_search_queries(query_list, verbose=0) -> List[dict]:
     """Search Pangaea with multiple search queries and return a list of unique results."""
     # Search multiple queries
-    if verbose:
-        print(f"[INFO] Running {len(query_list)} search queries:")
+    if verbose >= 1:
+        ps = f"[INFO] Running {len(query_list)} search queries"
+        ps += ":" if verbose >= 2 else "..."
+        if verbose >= 2:
+            for query in query_list:
+                ps += f"\n    {query}"
+        print(ps)
     results_list = []
     for i, query in enumerate(query_list):
-        search_results = run_search_query(query=query)
+        search_results = run_search_query(query=query, verbose=verbose - 1)
         if verbose:
             print(
                 f"\t[{i+1}] query: '{query}', results returned: {len(search_results)}"
