@@ -50,7 +50,7 @@ def run_multiple_search_queries(query_list, verbose=False) -> List[dict]:
         print(f"[INFO] Running {len(query_list)} search queries:")
     results_list = []
     for i, query in enumerate(query_list):
-        search_results = run_search_query(query=query, n_results=500)
+        search_results = run_search_query(query=query)
         if verbose:
             print(
                 f"\t[{i+1}] query: '{query}', results returned: {len(search_results)}"
