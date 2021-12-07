@@ -7,6 +7,8 @@ from typing import List
 
 from pangaeapy import PanQuery
 
+from .checker import check_allclose_dict
+
 # Determine the path to the directory containing this file
 TOOLS_DIRECTORY = os.path.dirname(os.path.abspath(getsourcefile(lambda: 0)))
 # Determine path to parent directory (package directory)
@@ -29,6 +31,7 @@ def run_search_query(query: str, verbose=0, n_results=500) -> List[dict]:
         print(f"[INFO] Running search with query string: '{query}'")
     offset = 0
     results = []
+    last_top_result = {}
     n_page = 0
     # Iteratively retrieve search results
     while True:
@@ -36,12 +39,24 @@ def run_search_query(query: str, verbose=0, n_results=500) -> List[dict]:
         n_page += 1
         if verbose >= 2:
             print(f"\tResults page {n_page} (offset = {offset})")
+        if len(pq.result) == 0 or check_allclose_dict(
+            pq.result[0], last_top_result, exclude_keys=("position")
+        ):
+            # No more results to add
+            break
+        last_top_result = pq.result[0]
         results.extend(pq.result)
         offset += len(pq.result)
         if len(results) >= pq.totalcount:
             break
     # Sanity check
-    assert len(results) == pq.totalcount
+    if len(results) != pq.totalcount:
+        print(
+            "[WARNING]"
+            f" Mismatch between total number of results ({len(results)}) and"
+            f" expected number of results ({pq.totalcount})"
+            f" for search '{query}'"
+        )
     if verbose >= 1:
         print(f"[INFO] Number of search results returned: {len(results)}\n")
     return results
