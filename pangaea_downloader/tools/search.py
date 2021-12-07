@@ -25,7 +25,8 @@ def read_query_list(file=None) -> List[str]:
 
 def run_search_query(query: str, verbose=False, n_results=500) -> List[dict]:
     """Search Pangaea with given query string and return a list of results."""
-    print(f"[INFO] Running search with query string: '{query}'") if verbose else 0
+    if verbose:
+        print(f"[INFO] Running search with query string: '{query}'")
     offset = 0
     results = []
     # Iteratively retrieve search results
@@ -37,16 +38,16 @@ def run_search_query(query: str, verbose=False, n_results=500) -> List[dict]:
             break
     # Sanity check
     assert len(results) == pq.totalcount
-    print(
-        f"[INFO] Number of search results returned: {len(results)}\n"
-    ) if verbose else 0
+    if verbose:
+        print(f"[INFO] Number of search results returned: {len(results)}\n")
     return results
 
 
 def run_multiple_search_queries(query_list, verbose=False) -> List[dict]:
     """Search Pangaea with multiple search queries and return a list of unique results."""
     # Search multiple queries
-    print("[INFO] Running multiple search queries...") if verbose else 0
+    if verbose:
+        print(f"[INFO] Running {len(query_list)} search queries:")
     results_list = []
     for i, query in enumerate(query_list):
         search_results = run_search_query(query=query, n_results=500)
