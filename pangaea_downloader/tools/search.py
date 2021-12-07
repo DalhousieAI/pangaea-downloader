@@ -43,10 +43,8 @@ def run_search_query(query: str, verbose=False, n_results=500) -> List[dict]:
     return results
 
 
-def run_multiple_search_queries(verbose=False) -> List[dict]:
+def run_multiple_search_queries(query_list, verbose=False) -> List[dict]:
     """Search Pangaea with multiple search queries and return a list of unique results."""
-    # Read in list of search queries
-    query_list = read_query_list()
     # Search multiple queries
     print("[INFO] Running multiple search queries...") if verbose else 0
     results_list = []
