@@ -12,6 +12,8 @@ import colorama
 import pandas as pd
 from tqdm.auto import tqdm
 
+import pandas as pd
+
 from pangaea_downloader import __meta__
 from pangaea_downloader.tools import datasets, process, scraper, search
 
@@ -48,6 +50,10 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
     df_results = pd.DataFrame(results)
     os.makedirs(output_dir, exist_ok=True)
     df_results.to_csv(output_dir.rstrip("/") + "_search_results.csv", index=False)
+
+    df_results = pd.DataFrame(results)
+    os.makedirs(output_dir, exist_ok=True)
+    df_results.to_csv(output_dir.rtrim("/") + "_search_results.csv", index=False)
 
     # Process each result dictionary
     n_files = 0
