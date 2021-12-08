@@ -58,7 +58,15 @@ def search_and_download(query=None, output_dir="query-outputs", verbose=1):
 
         # ------------- ASSESS DATASET TYPE ------------- #
         if is_parent:
-            df = pd.concat(datasets.fetch_children(url))
+            df_list = datasets.fetch_children(url)
+            if df_list is None:
+                print(f"\t[INFO] No child datasets! Skipping {ds_id}")
+                continue
+            df_list = [df for df in df_list if df is not None]
+            if len(df_list) == 0:
+                print(f"\t[INFO] All children are empty! Skipping {ds_id}")
+                continue
+            df = pd.concat(df_list)
         else:
             dataset_type = process.ds_type(size)
             if dataset_type == "video":
