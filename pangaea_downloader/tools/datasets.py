@@ -121,8 +121,8 @@ def save_df(df: DataFrame, output_dir: str, level=1, index=None) -> bool:
     ds_id = get_dataset_id(df)
     fname = ds_id + ".csv"
     # Make subdirectory "<campaign>/<site>"
-    campaign = fix_text(df["campaign"].iloc[0])
-    site = fix_text(df["site"].iloc[0])
+    campaign = fix_text(df[find_column_match("campaign")].iloc[0])
+    site = fix_text(df[find_column_match("site")].iloc[0])
     sub_dir = os.path.join(output_dir, campaign, site)
     os.makedirs(sub_dir, exist_ok=True)
     # Save to file
@@ -139,6 +139,21 @@ def get_url_col(df: DataFrame) -> str:
     ]
     col = cols[0] if len(cols) > 0 else None
     return col
+
+
+def find_column_match(df: DataFrame, column: str) -> str:
+    """
+    Find a matching column name, changed by casing or non-alphanumeric characters.
+    """
+    if column in df.columns:
+        return column
+    for c in df.columns:
+        if c.lower().strip(" _-/\\") == column:
+            return c
+    else:
+        raise ValueError(
+            f"No column matching {column} in dataframe with columns: {df.columns}"
+        )
 
 
 def exclude_rows(df: DataFrame) -> DataFrame:
@@ -163,12 +178,5 @@ def fix_text(text: str) -> str:
 
 def get_dataset_id(df: DataFrame) -> str:
     """Take a Pandas DataFrame as input and return the datasets Pangaea ID."""
-    doicol = "doi"
-    if doicol not in df.columns:
-        for c in df.columns:
-            if c.lower().strip(" _-/\\") == doicol:
-                doicol = c
-                break
-        else:
-            raise ValueError(f"No doi column in dataframe with columns: {df.columns}")
-    return df[doicol].iloc[0].split(".")[-1]
+    col = find_column_match("doi")
+    return df[col].iloc[0].split(".")[-1]
