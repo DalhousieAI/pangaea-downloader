@@ -25,7 +25,9 @@ def fetch_child(child_url: str) -> Optional[DataFrame]:
         return
     # Check for image URL column
     if not checker.has_url_col(ds.data):
-        print("\t[WARNING] Image URL column NOT found! Skipping...")
+        print(
+            f"\t[WARNING] Image URL column NOT found! Columns: {list(ds.data.columns)}. Skipping..."
+        )
         return
     # Add metadata
     df = set_metadata(ds, alt=doi)
