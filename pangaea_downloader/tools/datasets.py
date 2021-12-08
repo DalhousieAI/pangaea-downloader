@@ -118,18 +118,15 @@ def save_df(df: DataFrame, output_dir: str, level=1, index=None) -> bool:
         print(f"{tabs}[{idx}] Empty DataFrame! File not saved!")
         return False
     # Save if dataframe not empty
-    ds_id = df["doi"].iloc[0].split(".")[-1]
-    f_name = ds_id + ".csv"
-    # Make subdirectory by campaign name
-    camp = fix_text(df["campaign"].iloc[0])
-    camp_dir = os.path.join(output_dir, camp)
-    os.makedirs(camp_dir, exist_ok=True)
-    # Make subdirectory by site name
+    ds_id = get_dataset_id(df)
+    fname = ds_id + ".csv"
+    # Make subdirectory "<campaign>/<site>"
+    campaign = fix_text(df["campaign"].iloc[0])
     site = fix_text(df["site"].iloc[0])
-    site_dir = os.path.join(camp_dir, site)
-    os.makedirs(site_dir, exist_ok=True)
+    sub_dir = os.path.join(output_dir, campaign, site)
+    os.makedirs(sub_dir, exist_ok=True)
     # Save to file
-    path = os.path.join(site_dir, f_name)
+    path = os.path.join(sub_dir, fname)
     df.to_csv(path, index=False)
     print(f"{tabs}[{idx}] Saved to '{path}'")
     return True
