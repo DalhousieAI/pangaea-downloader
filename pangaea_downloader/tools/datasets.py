@@ -163,4 +163,12 @@ def fix_text(text: str) -> str:
 
 def get_dataset_id(df: DataFrame) -> str:
     """Take a Pandas DataFrame as input and return the datasets Pangaea ID."""
-    return df["doi"].iloc[0].split(".")[-1]
+    doicol = "doi"
+    if doicol not in df.columns:
+        for c in df.columns:
+            if c.lower().strip(" _-/\\") == doicol:
+                doicol = c
+                break
+        else:
+            raise ValueError(f"No doi column in dataframe with columns: {df.columns}")
+    return df[doicol].iloc[0].split(".")[-1]
