@@ -111,7 +111,7 @@ def save_df(df: DataFrame, output_dir: str, level=1, index=None) -> bool:
     Returns False if dataframe is empty, else returns True.
     """
     # Print formatting
-    tabs = "\t\t" if level == 2 else "\t"
+    tabs = "\t" * level
     idx = "INFO" if index is None else index
     # Don't save empty dataframe
     if len(df) == 0:
