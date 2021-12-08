@@ -7,6 +7,8 @@ Pangaea search and download user interface.
 import os
 import sys
 
+import pandas as pd
+
 from pangaea_downloader import __meta__
 from pangaea_downloader.tools import datasets, process, scraper, search
 
@@ -48,17 +50,15 @@ def search_and_download(query=None, output_dir="query-outputs", verbose=1):
 
         # Check if file already exists in downloads
         f_name = ds_id + ".csv"
-        path = os.path.join(output_dir, f_name)
-        if os.path.exists(path):
+        output_path = os.path.join(output_dir, f_name)
+        if os.path.exists(output_path) and os.path.getsize(output_path):
             print(f"\t[INFO] File: '{f_name}' already exists! Skipping...")
             n_files += 1
             continue
 
         # ------------- ASSESS DATASET TYPE ------------- #
-        df = None
-        df_list = None
         if is_parent:
-            df_list = datasets.fetch_children(url)
+            df = pd.concat(datasets.fetch_children(url))
         else:
             dataset_type = process.ds_type(size)
             if dataset_type == "video":
@@ -70,13 +70,10 @@ def search_and_download(query=None, output_dir="query-outputs", verbose=1):
                 df = datasets.fetch_child(url)
 
         # ----------------- SAVE TO FILE ----------------- #
-        if df is not None:
-            saved = datasets.save_df(df, output_dir, level=1)
-            n_downloads += 1 if saved else 0
-        if df_list is not None:
-            for idx, child in enumerate(df_list):
-                saved = datasets.save_df(child, output_dir, level=2, index=(idx + 1))
-                n_downloads += 1 if saved else 0
+        if df is None:
+            continue
+        saved = datasets.save_df(df, output_path, level=1)
+        n_downloads += 1 if saved else 0
 
     print(f"Complete! Total files downloaded: {n_downloads}.")
     print(f"Number of files previously saved: {n_files}.")

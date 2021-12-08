@@ -104,7 +104,7 @@ def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
     return ds.data
 
 
-def save_df(df: DataFrame, output_dir: str, level=1, index=None) -> bool:
+def save_df(df: DataFrame, output_path: str, level=1, index=None) -> bool:
     """
     Save a DataFrame to a file in the provided output directory.
 
@@ -118,17 +118,8 @@ def save_df(df: DataFrame, output_dir: str, level=1, index=None) -> bool:
         print(f"{tabs}[{idx}] Empty DataFrame! File not saved!")
         return False
     # Save if dataframe not empty
-    ds_id = get_dataset_id(df)
-    fname = ds_id + ".csv"
-    # Make subdirectory "<campaign>/<site>"
-    campaign = fix_text(df[find_column_match("campaign")].iloc[0])
-    site = fix_text(df[find_column_match("site")].iloc[0])
-    sub_dir = os.path.join(output_dir, campaign, site)
-    os.makedirs(sub_dir, exist_ok=True)
-    # Save to file
-    path = os.path.join(sub_dir, fname)
-    df.to_csv(path, index=False)
-    print(f"{tabs}[{idx}] Saved to '{path}'")
+    df.to_csv(output_path, index=False)
+    print(f"{tabs}[{idx}] Saved to '{output_path}'")
     return True
 
 
