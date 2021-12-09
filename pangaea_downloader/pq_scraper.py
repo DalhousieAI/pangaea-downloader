@@ -80,7 +80,16 @@ def search_and_download(query=None, output_dir="query-outputs", verbose=1):
         # ----------------- SAVE TO FILE ----------------- #
         if df is None:
             continue
-        saved = datasets.save_df(df, output_path, level=1)
+        try:
+            saved = datasets.save_df(df, output_path, level=1)
+        except BaseException as err:
+            # Delete partially saved file, if present
+            if os.path.isfile(output_path):
+                try:
+                    os.remove(output_path)
+                except BaseException:
+                    pass
+            raise err
         n_downloads += 1 if saved else 0
 
     print(f"Complete! Total files downloaded: {n_downloads}.")
