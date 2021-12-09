@@ -46,7 +46,7 @@ def search_and_download(query=None, output_dir="query-outputs", verbose=1):
     for i, result in enumerate(results):
         # Extract result info
         citation, url, ds_id, size, is_parent = process.get_result_info(result)
-        print(f"[{i+1}] Processing dataset: '{citation}'. {url}")
+        print(f"[{i+1:5d}/{len(results)}] Processing dataset: '{citation}'. {url}")
 
         # Check if file already exists in downloads
         f_name = ds_id + ".csv"
