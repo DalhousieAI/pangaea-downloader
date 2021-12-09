@@ -25,7 +25,9 @@ def fetch_child(child_url: str) -> Optional[DataFrame]:
         return
     # Check for image URL column
     if not checker.has_url_col(ds.data):
-        print("\t[WARNING] Image URL column NOT found! Skipping...")
+        print(
+            f"\t[WARNING] Image URL column NOT found! Columns: {list(ds.data.columns)}. Skipping..."
+        )
         return
     # Add metadata
     df = set_metadata(ds, alt=doi)
@@ -109,25 +111,22 @@ def save_df(df: DataFrame, output_dir: str, level=1, index=None) -> bool:
     Returns False if dataframe is empty, else returns True.
     """
     # Print formatting
-    tabs = "\t\t" if level == 2 else "\t"
+    tabs = "\t" * level
     idx = "INFO" if index is None else index
     # Don't save empty dataframe
     if len(df) == 0:
         print(f"{tabs}[{idx}] Empty DataFrame! File not saved!")
         return False
     # Save if dataframe not empty
-    ds_id = df["doi"].iloc[0].split(".")[-1]
-    f_name = ds_id + ".csv"
-    # Make subdirectory by campaign name
-    camp = fix_text(df["campaign"].iloc[0])
-    camp_dir = os.path.join(output_dir, camp)
-    os.makedirs(camp_dir, exist_ok=True)
-    # Make subdirectory by site name
-    site = fix_text(df["site"].iloc[0])
-    site_dir = os.path.join(camp_dir, site)
-    os.makedirs(site_dir, exist_ok=True)
+    ds_id = get_dataset_id(df)
+    fname = ds_id + ".csv"
+    # Make subdirectory "<campaign>/<site>"
+    campaign = fix_text(df[find_column_match("campaign")].iloc[0])
+    site = fix_text(df[find_column_match("site")].iloc[0])
+    sub_dir = os.path.join(output_dir, campaign, site)
+    os.makedirs(sub_dir, exist_ok=True)
     # Save to file
-    path = os.path.join(site_dir, f_name)
+    path = os.path.join(sub_dir, fname)
     df.to_csv(path, index=False)
     print(f"{tabs}[{idx}] Saved to '{path}'")
     return True
@@ -140,6 +139,21 @@ def get_url_col(df: DataFrame) -> str:
     ]
     col = cols[0] if len(cols) > 0 else None
     return col
+
+
+def find_column_match(df: DataFrame, column: str) -> str:
+    """
+    Find a matching column name, changed by casing or non-alphanumeric characters.
+    """
+    if column in df.columns:
+        return column
+    for c in df.columns:
+        if c.lower().strip(" _-/\\") == column:
+            return c
+    else:
+        raise ValueError(
+            f"No column matching {column} in dataframe with columns: {df.columns}"
+        )
 
 
 def exclude_rows(df: DataFrame) -> DataFrame:
@@ -164,4 +178,5 @@ def fix_text(text: str) -> str:
 
 def get_dataset_id(df: DataFrame) -> str:
     """Take a Pandas DataFrame as input and return the datasets Pangaea ID."""
-    return df["doi"].iloc[0].split(".")[-1]
+    col = find_column_match("doi")
+    return df[col].iloc[0].split(".")[-1]
