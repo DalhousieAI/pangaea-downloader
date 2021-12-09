@@ -19,7 +19,7 @@ T_POLL_LAST = 0
 T_POLL_INTV = 0.1667
 
 
-def fetch_child(child_url: str, verbose=1) -> Optional[DataFrame]:
+def fetch_child(child_url: str, verbose=1, ensure_url=True) -> Optional[DataFrame]:
     """Fetch Pangaea child dataset using provided URI/DOI and return DataFrame."""
     # Load data set
     global T_POLL_LAST
@@ -39,7 +39,7 @@ def fetch_child(child_url: str, verbose=1) -> Optional[DataFrame]:
             )
         return
     # Check for image URL column
-    if not checker.has_url_col(ds.data):
+    if ensure_url and not checker.has_url_col(ds.data):
         if verbose >= 1:
             print(
                 colorama.Fore.YELLOW
@@ -54,7 +54,7 @@ def fetch_child(child_url: str, verbose=1) -> Optional[DataFrame]:
     return df
 
 
-def fetch_children(parent_url: str, verbose=1) -> Optional[List[DataFrame]]:
+def fetch_children(parent_url: str, verbose=1, ensure_url=True) -> Optional[List[DataFrame]]:
     """Take in url of a parent dataset, fetch and return list of child datasets."""
     # Fetch dataset
     global T_POLL_LAST
@@ -108,7 +108,7 @@ def fetch_children(parent_url: str, verbose=1) -> Optional[List[DataFrame]]:
                         + colorama.Fore.RESET
                     )
                 return
-            if not checker.has_url_col(child.data):
+            if ensure_url and not checker.has_url_col(child.data):
                 if verbose >= 1:
                     print(
                         colorama.Fore.YELLOW
