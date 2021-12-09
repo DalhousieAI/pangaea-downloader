@@ -51,7 +51,7 @@ def search_and_download(query=None, output_dir="query-outputs", verbose=1):
         # Check if file already exists in downloads
         f_name = ds_id + ".csv"
         output_path = os.path.join(output_dir, f_name)
-        if os.path.exists(output_path) and os.path.getsize(output_path):
+        if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
             print(f"\t[INFO] File: '{f_name}' already exists! Skipping...")
             n_files += 1
             continue
