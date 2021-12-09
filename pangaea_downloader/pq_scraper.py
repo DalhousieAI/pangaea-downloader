@@ -49,39 +49,48 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=1):
     # Process each result dictionary
     n_files = 0
     n_downloads = 0
+    errors = []
     for i, result in enumerate(results):
         # Extract result info
         citation, url, ds_id, size, is_parent = process.get_result_info(result)
-        print(f"[{i+1}] Processing dataset: '{citation}'. {url}")
+        print(f"[{i+1:5d}/{len(results)}] Processing dataset: '{citation}'. {url}")
 
         # Check if file already exists in downloads
         f_name = ds_id + ".csv"
         output_path = os.path.join(output_dir, f_name)
-        if os.path.exists(output_path) and os.path.getsize(output_path):
+        if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
             print(f"\t[INFO] File: '{f_name}' already exists! Skipping...")
             n_files += 1
             continue
 
         # ------------- ASSESS DATASET TYPE ------------- #
-        if is_parent:
-            df_list = datasets.fetch_children(url)
-            if df_list is None:
-                print(f"\t[INFO] No child datasets! Skipping {ds_id}")
-                continue
-            df_list = [df for df in df_list if df is not None]
-            if len(df_list) == 0:
-                print(f"\t[INFO] All children are empty! Skipping {ds_id}")
-                continue
-            df = pd.concat(df_list)
-        else:
-            dataset_type = process.ds_type(size)
-            if dataset_type == "video":
-                print(f"\t[WARNING] Video dataset! {url} skipping...")
-                continue
-            elif dataset_type == "paginated":
-                df = scraper.scrape_image_data(url)
-            elif dataset_type == "tabular":
-                df = datasets.fetch_child(url)
+        try:
+            if is_parent:
+                df_list = datasets.fetch_children(url)
+                if df_list is None:
+                    print(f"\t[INFO] No child datasets! Skipping {ds_id}")
+                    continue
+                df_list = [df for df in df_list if df is not None]
+                if len(df_list) == 0:
+                    print(f"\t[INFO] All children are empty! Skipping {ds_id}")
+                    continue
+                df = pd.concat(df_list)
+            else:
+                dataset_type = process.ds_type(size)
+                if dataset_type == "video":
+                    print(f"\t[WARNING] Video dataset! {url} skipping...")
+                    continue
+                elif dataset_type == "paginated":
+                    df = scraper.scrape_image_data(url)
+                elif dataset_type == "tabular":
+                    df = datasets.fetch_child(url)
+        except BaseException as err:
+            if isinstance(err, KeyboardInterrupt):
+                raise
+            msg = f"\t[ERROR] Could not process '{citation}', {url}:\n{err}"
+            print(msg)
+            errors.append(msg)
+            continue
 
         # ----------------- SAVE TO FILE ----------------- #
         if df is None:
@@ -101,6 +110,9 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=1):
     print(f"Complete! Total files downloaded: {n_downloads}.")
     print(f"Number of files previously saved: {n_files}.")
     print(f"Total dataset files: {n_files + n_downloads}")
+    print(f"Number of dataset errors (excluding access): {len(errors)}.")
+    for msg in errors:
+        print(msg)
 
 
 def get_parser():
