@@ -4,6 +4,7 @@ Contains helpful functions for checking various conditions.
 
 import re
 
+import numpy as np
 from pandas import DataFrame
 
 VALID_IMG_EXTENSIONS = (".jpg", ".jpeg", ".png", ".tif", ".tiff")
@@ -63,3 +64,38 @@ def has_url_col(df: DataFrame) -> bool:
     condition1 = any(["url" in col.lower() for col in df.columns])
     condition2 = any(["image" in col.lower() for col in df.columns])
     return condition1 or condition2
+
+
+# ---------------- Dict Checkers -----------------------------------------------
+def check_allclose_dict(
+    a, b, exclude_keys=None, rtol=1e-05, atol=1e-08, equal_nan=True
+):
+    """
+    Check to see if all elements in a dictionary are the same or close.
+
+    We need to allow leniancy for close values to support floating point values
+    which are not exactly equal under the == operator.
+    """
+    if not a.keys() == b.keys():
+        return False
+    for k in a.keys():
+        if exclude_keys is not None and k in exclude_keys:
+            continue
+        if isinstance(a[k], dict) and isinstance(b[k], dict):
+            if not check_allclose_dict(
+                a[k],
+                b[k],
+                exclude_keys=exclude_keys,
+                rtol=rtol,
+                atol=atol,
+                equal_nan=equal_nan,
+            ):
+                return False
+        elif isinstance(a[k], dict) or isinstance(b[k], dict):
+            return False
+        elif isinstance(a[k], str):
+            if a[k] != b[k]:
+                return False
+        elif not np.allclose(a[k], b[k], rtol=rtol, atol=atol, equal_nan=equal_nan):
+            return False
+    return True
