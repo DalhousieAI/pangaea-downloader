@@ -77,7 +77,7 @@ def search_and_download(query=None, output_dir="query-outputs", verbose=1):
                 elif dataset_type == "paginated":
                     df = scraper.scrape_image_data(url)
                 elif dataset_type == "tabular":
-                    df = datasets.fetch_child(url)
+                    df = datasets.fetch_child(url, ensure_url=False)
         except BaseException as err:
             if isinstance(err, KeyboardInterrupt):
                 raise
