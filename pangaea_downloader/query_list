@@ -1,137 +1,28 @@
--core -hole -drill ~seabed habitat* imag*
--core -hole -drill ~seabed habitat* photo*
--core -hole -drill ~seabed imag*
--core -hole -drill ~seabed photo*
--core -hole -drill ~seabed (jpg OR jpeg OR tif OR tiff)
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" (seabed OR "sea bed" OR "sea-bed") (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
 
--core -hole -drill sea?bed habitat* imag*
--core -hole -drill sea?bed habitat* photo*
--core -hole -drill sea?bed imag*
--core -hole -drill sea?bed image
--core -hole -drill sea?bed imagery
--core -hole -drill sea?bed imaging
--core -hole -drill sea?bed photo*
--core -hole -drill sea?bed photo
--core -hole -drill sea?bed photograph
--core -hole -drill sea?bed (jpg OR jpeg OR tif OR tiff)
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" (seafloor OR "sea floor" OR "sea-floor") (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
 
--core -hole -drill "sea bed" habitat* imag*
--core -hole -drill "sea bed" habitat* photo*
--core -hole -drill "sea bed" imag*
--core -hole -drill "sea bed" photo*
--core -hole -drill "sea bed" (jpg OR jpeg OR tif OR tiff)
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" ("ocean floor" OR "ocean-floor") (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
 
--core -hole -drill sea-bed habitat* imag*
--core -hole -drill sea-bed habitat* photo*
--core -hole -drill sea-bed imag*
--core -hole -drill sea-bed photo*
--core -hole -drill sea-bed (jpg OR jpeg OR tif OR tiff)
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" underwater (habitat* OR substrate OR sediment) (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
 
--core -hole -drill ~seafloor habitat* imag*
--core -hole -drill ~seafloor habitat* photo*
--core -hole -drill ~seafloor imag*
--core -hole -drill ~seafloor photo*
--core -hole -drill ~seafloor (jpg OR jpeg OR tif OR tiff)
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthic (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
 
--core -hole -drill sea?floor habitat* imag*
--core -hole -drill sea?floor habitat* photo*
--core -hole -drill sea?floor imag*
--core -hole -drill sea?floor image
--core -hole -drill sea?floor imagery
--core -hole -drill sea?floor imaging
--core -hole -drill sea?floor photo*
--core -hole -drill sea?floor photo
--core -hole -drill sea?floor photograph
--core -hole -drill sea?floor (jpg OR jpeg OR tif OR tiff)
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" (benthos or benthoz) (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
 
--core -hole -drill "sea floor" habitat* imag*
--core -hole -drill "sea floor" habitat* photo*
--core -hole -drill "sea floor" imag*
--core -hole -drill "sea floor" photo*
--core -hole -drill "sea floor" (jpg OR jpeg OR tif OR tiff)
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" (coral OR reef OR seagrass OR "sea grass") (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
 
--core -hole -drill sea-floor habitat* imag*
--core -hole -drill sea-floor habitat* photo*
--core -hole -drill sea-floor imag*
--core -hole -drill sea-floor photo*
--core -hole -drill sea-floor (jpg OR jpeg OR tif OR tiff)
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" (auv OR rov OR uuv OR "underwater vehicle") (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
 
--core -hole -drill ocean?floor habitat* imag*
--core -hole -drill ocean?floor habitat* photo*
--core -hole -drill ocean?floor imag*
--core -hole -drill ocean?floor image
--core -hole -drill ocean?floor imagery
--core -hole -drill ocean?floor imaging
--core -hole -drill ocean?floor photo*
--core -hole -drill ocean?floor photo
--core -hole -drill ocean?floor photograph
--core -hole -drill ocean?floor (jpg OR jpeg OR tif OR tiff)
-
--core -hole -drill "ocean floor" habitat* imag*
--core -hole -drill "ocean floor" habitat* photo*
--core -hole -drill "ocean floor" imag*
--core -hole -drill "ocean floor" photo*
--core -hole -drill "ocean floor" (jpg OR jpeg OR tif OR tiff)
-
--core -hole -drill ocean-floor habitat* imag*
--core -hole -drill ocean-floor habitat* photo*
--core -hole -drill ocean-floor imag*
--core -hole -drill ocean-floor photo*
--core -hole -drill ocean-floor (jpg OR jpeg OR tif OR tiff)
-
--core -hole -drill ocean sediment imag*
--core -hole -drill ocean sediment photo*
--core -hole -drill ocean sediment (jpg OR jpeg OR tif OR tiff)
-
--core -hole -drill ~bedrock imag*
--core -hole -drill ~bedrock photo*
--core -hole -drill ~bedrock (jpg OR jpeg OR tif OR tiff)
-
--core -hole -drill ~underwater habitat* imag*
--core -hole -drill ~underwater habitat* photo*
--core -hole -drill ~underwater habitat* (jpg OR jpeg OR tif OR tiff)
-
--core -hole -drill ~underwater ~substrate imag*
--core -hole -drill ~underwater ~substrate photo*
--core -hole -drill ~underwater ~substrate (jpg OR jpeg OR tif OR tiff)
-
--core -hole -drill ~underwater ~sediment imag*
--core -hole -drill ~underwater ~sediment photo*
--core -hole -drill ~underwater ~sediment (jpg OR jpeg OR tif OR tiff)
-
--core -hole -drill ~benthic habitat* imag*
--core -hole -drill ~benthic habitat* photo*
--core -hole -drill ~benthic imag*
--core -hole -drill ~benthic photo*
--core -hole -drill ~benthic (jpg OR jpeg OR tif OR tiff)
-
--core -hole -drill ~benthos habitat* imag*
--core -hole -drill ~benthos habitat* photo*
--core -hole -drill ~benthos imag*
--core -hole -drill ~benthos photo*
--core -hole -drill ~benthos (jpg OR jpeg OR tif OR tiff)
-
--core -hole -drill (coral OR reef OR seagrass OR "sea grass") (imag* OR photo* OR jpg OR jpeg OR tif OR tiff)
-
--core -hole -drill (auv OR rov OR uuv OR "underwater vehicle") habitat* imag*
--core -hole -drill (auv OR rov OR uuv OR "underwater vehicle") habitat* photo*
--core -hole -drill (auv OR rov OR uuv OR "underwater vehicle") imag*
--core -hole -drill (auv OR rov OR uuv OR "underwater vehicle") photo*
--core -hole -drill (auv OR rov OR uuv OR "underwater vehicle") (jpg OR jpeg OR tif OR tiff)
-
--core -hole -drill ~benthoscape habitat* imag*
--core -hole -drill ~benthoscape habitat* photo*
--core -hole -drill ~benthoscape habitat* image
--core -hole -drill ~benthoscape habitat* imagery
--core -hole -drill ~benthoscape habitat* imaging
--core -hole -drill ~benthoscape habitat* photo
--core -hole -drill ~benthoscape habitat* photograph
--core -hole -drill ~benthoscape habitat* (jpg OR jpeg OR tif OR tiff)
--core -hole -drill ~benthoscape imag*
--core -hole -drill ~benthoscape photo*
--core -hole -drill ~benthoscape image
--core -hole -drill ~benthoscape imagery
--core -hole -drill ~benthoscape imaging
--core -hole -drill ~benthoscape photo
--core -hole -drill ~benthoscape photograph
--core -hole -drill ~benthoscape (jpg OR jpeg OR tif OR tiff)
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape habitat* image
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape habitat* imagery
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape habitat* photo
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape habitat* photograph
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape habitat* ("photo-transect" OR photoquad*)
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape habitat* (jpg OR jpeg OR tiff)
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape image
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape imagery
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape photo
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape photograph
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape ("photo-transect" OR photoquad*)
+-core -drill -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape (jpg OR jpeg OR tiff)
