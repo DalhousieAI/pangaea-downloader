@@ -7,6 +7,8 @@ Pangaea search and download user interface.
 import os
 import sys
 
+import pandas as pd
+
 from pangaea_downloader import __meta__
 from pangaea_downloader.tools import datasets, process, scraper, search
 
@@ -39,6 +41,10 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=1):
     elif isinstance(queries, str):
         queries = [queries]
     results = search.run_multiple_search_queries(queries, verbose=verbose)
+
+    df_results = pd.DataFrame(results)
+    os.makedirs(output_dir, exist_ok=True)
+    df_results.to_csv(output_dir.rstrip("/") + "_search_results.csv", index=False)
 
     # Process each result dictionary
     n_files = 0
