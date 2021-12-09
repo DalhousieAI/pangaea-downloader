@@ -20,7 +20,7 @@ def get_result_info(res: dict) -> Tuple[str, str, str, str, bool]:
     citation = soup.find("div", attrs={"class": "citation"}).text
     url = soup.find("a", attrs={"class": "dataset-link"})["href"]
     size = soup.find_all("td", class_="content")[-1].text.lower()
-    is_parent = True if res["type"] == "parent" else False
+    is_parent = res["type"] == "parent"
     ds_id = res["URI"].split("PANGAEA.")[-1]
     return citation, url, ds_id, size, is_parent
 
