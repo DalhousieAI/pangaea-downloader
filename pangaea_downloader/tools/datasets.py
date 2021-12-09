@@ -14,7 +14,7 @@ from pangaeapy import PanDataSet
 from pangaea_downloader.tools import checker, process, scraper
 
 
-def fetch_child(child_url: str) -> Optional[DataFrame]:
+def fetch_child(child_url: str, ensure_url=True) -> Optional[DataFrame]:
     """Fetch Pangaea child dataset using provided URI/DOI and return DataFrame."""
     # Load data set
     ds = PanDataSet(child_url)
@@ -24,7 +24,7 @@ def fetch_child(child_url: str) -> Optional[DataFrame]:
         print(f"\t[ERROR] Access restricted: '{ds.loginstatus}'. URL: {child_url}")
         return
     # Check for image URL column
-    if not checker.has_url_col(ds.data):
+    if ensure_url and not checker.has_url_col(ds.data):
         print(
             f"\t[WARNING] Image URL column NOT found! Columns: {list(ds.data.columns)}. Skipping..."
         )
@@ -36,7 +36,7 @@ def fetch_child(child_url: str) -> Optional[DataFrame]:
     return df
 
 
-def fetch_children(parent_url: str) -> Optional[List[DataFrame]]:
+def fetch_children(parent_url: str, ensure_url=True) -> Optional[List[DataFrame]]:
     """Take in url of a parent dataset, fetch and return list of child datasets."""
     # Fetch dataset
     ds = PanDataSet(parent_url)
@@ -67,7 +67,7 @@ def fetch_children(parent_url: str) -> Optional[List[DataFrame]]:
                     f"\t\t[{i+1}] [ERROR] Access restricted: '{ds.loginstatus}'. {url}"
                 )
                 return
-            if not checker.has_url_col(child.data):
+            if ensure_url and not checker.has_url_col(child.data):
                 print(
                     f"\t\t[{i+1}] [WARNING] Image URL column NOT found! {url} Skipping..."
                 )
