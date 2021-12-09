@@ -11,16 +11,16 @@ from pangaea_downloader import __meta__
 from pangaea_downloader.tools import datasets, process, scraper, search
 
 
-def search_and_download(query=None, output_dir="query-outputs", verbose=1):
+def search_and_download(queries=None, output_dir="query-outputs", verbose=1):
     """
-    Search `PANGAEA`_ for a query, and download datasets for each result.
+    Search `PANGAEA`_ for a set of queries, and download datasets for each result.
 
     .. _PANGAEA: https://pangaea.de/
 
     Parameters
     ----------
-    query : str, optional
-        The query to search for.
+    queries : str or list of str, optional
+        The queries to search for.
         The default behaviour is to search for the list of query strings
         specified in the file ``pangaea_downloader/query_list``.
     output_dir : str, default="query-outputs"
@@ -33,10 +33,12 @@ def search_and_download(query=None, output_dir="query-outputs", verbose=1):
     os.makedirs(output_dir, exist_ok=True)
 
     # ----------------- SEARCH PANGAEA ----------------- #
-    if query is not None:
-        results = search.run_search_query(query, verbose=verbose)
-    else:
-        results = search.run_multiple_search_queries(verbose=verbose)
+    if queries is None or len(queries) == 0:
+        # Read in file containing default list of search queries
+        queries = search.read_query_list()
+    elif isinstance(queries, str):
+        queries = [queries]
+    results = search.run_multiple_search_queries(queries, verbose=verbose)
 
     # Process each result dictionary
     n_files = 0
@@ -120,7 +122,8 @@ def get_parser():
     parser.add_argument(
         "--query",
         type=str,
-        help="The query string to search for and download.",
+        nargs="+",
+        help="The query string(s) to search for and download.",
     )
     parser.add_argument(
         "--output-dir",
@@ -165,6 +168,7 @@ def main():
     kwargs = vars(parser.parse_args())
 
     kwargs["verbose"] -= kwargs.pop("quiet", 0)
+    kwargs["queries"] = kwargs.pop("query")
 
     return search_and_download(**kwargs)
 
