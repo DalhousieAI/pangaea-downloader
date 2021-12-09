@@ -56,17 +56,23 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=1):
 
         # Check if file already exists in downloads
         f_name = ds_id + ".csv"
-        path = os.path.join(output_dir, f_name)
-        if os.path.exists(path):
+        output_path = os.path.join(output_dir, f_name)
+        if os.path.exists(output_path) and os.path.getsize(output_path):
             print(f"\t[INFO] File: '{f_name}' already exists! Skipping...")
             n_files += 1
             continue
 
         # ------------- ASSESS DATASET TYPE ------------- #
-        df = None
-        df_list = None
         if is_parent:
             df_list = datasets.fetch_children(url)
+            if df_list is None:
+                print(f"\t[INFO] No child datasets! Skipping {ds_id}")
+                continue
+            df_list = [df for df in df_list if df is not None]
+            if len(df_list) == 0:
+                print(f"\t[INFO] All children are empty! Skipping {ds_id}")
+                continue
+            df = pd.concat(df_list)
         else:
             dataset_type = process.ds_type(size)
             if dataset_type == "video":
@@ -78,13 +84,19 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=1):
                 df = datasets.fetch_child(url)
 
         # ----------------- SAVE TO FILE ----------------- #
-        if df is not None:
-            saved = datasets.save_df(df, output_dir, level=1)
-            n_downloads += 1 if saved else 0
-        if df_list is not None:
-            for idx, child in enumerate(df_list):
-                saved = datasets.save_df(child, output_dir, level=2, index=(idx + 1))
-                n_downloads += 1 if saved else 0
+        if df is None:
+            continue
+        try:
+            saved = datasets.save_df(df, output_path, level=1)
+        except BaseException as err:
+            # Delete partially saved file, if present
+            if os.path.isfile(output_path):
+                try:
+                    os.remove(output_path)
+                except BaseException:
+                    pass
+            raise err
+        n_downloads += 1 if saved else 0
 
     print(f"Complete! Total files downloaded: {n_downloads}.")
     print(f"Number of files previously saved: {n_files}.")
