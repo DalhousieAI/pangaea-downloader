@@ -9,6 +9,22 @@ from matplotlib.pyplot import get_cmap
 from sklearn.neighbors import KernelDensity
 
 
+def url_from_doi(doi: str) -> str:
+    """
+    Convert Pangaea dataset URL from src DOI format to target format.
+
+    Source DOI format: https://doi.org/10.1594/PANGAEA.{dataset_id},
+    Target URL format: https://doi.pangaea.de/10.1594/PANGAEA.{dataset_id}.
+    """
+    # Already in desired format
+    if ".pangaea.de" in doi:
+        return doi
+    # Convert to desired format
+    start, end = doi.split(".org")
+    full = start + ".pangaea.de" + end
+    return full
+
+
 def img_from_url(url: str, verbose=False) -> np.array:
     """Take an image url and return retrieved image array."""
     success = False
