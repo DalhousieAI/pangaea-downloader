@@ -240,7 +240,8 @@ Temporary Items
 # Draft notebooks
 ~*.ipynb
 
-# Program output directories
+# Program output files/directories
+pangaea-labelled-datasets.*
 outputs
 query-outputs*
 full-dataset
