@@ -1,4 +1,5 @@
 """Functions for scraping image urls and metadata from paginated datasets."""
+import time
 from typing import List, Optional, Tuple
 
 import requests
@@ -13,7 +14,10 @@ import pangaea_downloader.tools.datasets as datasets
 def scrape_image_data(url: str) -> Optional[DataFrame]:
     """Scrape image URLs and metadata from webpage(s)."""
     # Load dataset
+    t_wait = max(0, datasets.T_POLL_LAST + datasets.T_POLL_INTV - time.time())
+    time.sleep(t_wait)  # Stay under 180 requests every 30s
     ds = PanDataSet(url)
+    datasets.T_POLL_LAST = time.time()
     # Request dataset url
     print("\t\t\t[INFO] Requesting:", url)
     resp = requests.get(url)
