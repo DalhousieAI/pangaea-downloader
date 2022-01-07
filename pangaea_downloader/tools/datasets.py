@@ -6,6 +6,7 @@ Note: this module is only for Parent and Child datasets.
       use pangaea_downloader.tools.scraper module.
 """
 import os
+import time
 from typing import List, Optional
 
 from pandas import DataFrame
@@ -13,11 +14,19 @@ from pangaeapy import PanDataSet
 
 from pangaea_downloader.tools import checker, process, scraper
 
+T_POLL_LAST = 0
+T_POLL_INTV = 0.1667
+
 
 def fetch_child(child_url: str) -> Optional[DataFrame]:
     """Fetch Pangaea child dataset using provided URI/DOI and return DataFrame."""
     # Load data set
+    global T_POLL_LAST
+    global T_POLL_INTV
+    t_wait = max(0, T_POLL_LAST + T_POLL_INTV - time.time())
+    time.sleep(t_wait)  # Stay under 180 requests every 30s
     ds = PanDataSet(child_url)
+    T_POLL_LAST = time.time()
     doi = ds.doi.split("doi.org/")[-1]
     # Dataset is restricted
     if ds.loginstatus != "unrestricted":
@@ -39,7 +48,12 @@ def fetch_child(child_url: str) -> Optional[DataFrame]:
 def fetch_children(parent_url: str) -> Optional[List[DataFrame]]:
     """Take in url of a parent dataset, fetch and return list of child datasets."""
     # Fetch dataset
+    global T_POLL_LAST
+    global T_POLL_INTV
+    t_wait = max(0, T_POLL_LAST + T_POLL_INTV - time.time())
+    time.sleep(t_wait)  # Stay under 180 requests every 30s
     ds = PanDataSet(parent_url)
+    T_POLL_LAST = time.time()
     # Check restriction
     if ds.loginstatus != "unrestricted":
         print(f"\t[ERROR] Access restricted: '{ds.loginstatus}'. URL: {parent_url}")
@@ -61,7 +75,10 @@ def fetch_children(parent_url: str) -> Optional[List[DataFrame]]:
             if df is not None:
                 df_list.append(df)
         elif typ == "tabular":
+            t_wait = max(0, T_POLL_LAST + T_POLL_INTV - time.time())
+            time.sleep(t_wait)  # Stay under 180 requests every 30s
             child = PanDataSet(url)
+            T_POLL_LAST = time.time()
             if ds.loginstatus != "unrestricted":
                 print(
                     f"\t\t[{i+1}] [ERROR] Access restricted: '{ds.loginstatus}'. {url}"
