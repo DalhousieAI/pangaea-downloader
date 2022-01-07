@@ -7,7 +7,7 @@ import re
 import numpy as np
 from pandas import DataFrame
 
-VALID_IMG_EXTENSIONS = (".jpg", ".jpeg", ".png", ".tif", ".tiff")
+VALID_IMG_EXTENSIONS = (".bmp", ".cr2", ".jpeg", ".jpg", ".png", ".tif", ".tiff")
 INVALID_FILE_EXTENSIONS = (".pdf", ".pptx", ".key", ".xlsx", ".mov", ".mp4")
 COMPRESSED_FILE_EXTENSIONS = (".zip", ".tar", ".gz", ".7z")
 
