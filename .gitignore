@@ -245,6 +245,7 @@ pangaea-labelled-datasets.*
 outputs
 query-outputs*
 full-dataset
+*.bib
 
 # Test directories
 test-dir
