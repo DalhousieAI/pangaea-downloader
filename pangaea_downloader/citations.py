@@ -9,9 +9,7 @@ def get_bibtex(ds_id: str) -> str:
     return resp.text
 
 
-def generate_citations_file(
-    pangaea_dataset: str, citations_file="../bibtex-citations.txt"
-) -> None:
+def generate_citations_file(pangaea_dataset: str, citations_file: str) -> None:
     """
     Generate a text file with BibTex citations for all Pangaea datasets in the `pangaea_dataset` CSV file.
 
@@ -40,4 +38,4 @@ if __name__ == "__main__":
     file = (
         "../pangaea_2022-01-02_filtered_subsampled-1.25m-1200-1000_remove-core-surf.csv"
     )
-    generate_citations_file(file, citations_file="../bibtex-citations.txt")
+    generate_citations_file(file, citations_file="../pangaea-citations.bib")
