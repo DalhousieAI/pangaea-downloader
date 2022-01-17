@@ -26,12 +26,13 @@ def generate_citations_file(pangaea_dataset: str, citations_file: str) -> None:
     ds_ids = [dataset.split("-")[-1] for dataset in pangaea_df.dataset.unique()]
 
     # Get bibtex citations and write to file
+    print(f"[INFO] Processing {len(ds_ids)} dataset citations...")
     with open(citations_file, "w") as f:
         for i, ds_id in enumerate(ds_ids):
             bibtex = get_bibtex(ds_id)
             f.write(bibtex)
-            print(f"{(i+1)}/{len(ds_ids)} complete.")
-    print(f"All dataset BibTex citations written to file: '{citations_file}'")
+            print(f"\t{str(i+1).zfill(len(str(len(ds_ids))))}/{len(ds_ids)} complete.")
+    print(f"[INFO] All dataset BibTex citations written to file: '{citations_file}'")
 
 
 if __name__ == "__main__":
