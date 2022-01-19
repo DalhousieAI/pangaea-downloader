@@ -2,10 +2,12 @@ import pandas as pd
 import requests
 
 
-def get_bibtex(ds_id: str) -> str:
+def get_bibtex(ds_id: str, verbose=False) -> str:
     """Get the BibTex Citation of a Pangaea dataset using the dataset ID."""
     bib_url = f"https://doi.pangaea.de/10.1594/PANGAEA.{ds_id}?format=citation_bibtex"
     resp = requests.get(bib_url)
+    if verbose:
+        print("\tStatus code:", resp.status_code)
     return resp.text
 
 
@@ -36,7 +38,5 @@ def generate_citations_file(pangaea_dataset: str, citations_file: str) -> None:
 
 
 if __name__ == "__main__":
-    file = (
-        "../pangaea_2022-01-02_filtered_subsampled-1.25m-1200-1000_remove-core-surf.csv"
-    )
+    file = "../full-dataset/pangaea_2022-01-02_filtered_subsampled-1.25m-1200-1000_remove-core-surf.csv"
     generate_citations_file(file, citations_file="../pangaea-citations.bib")
