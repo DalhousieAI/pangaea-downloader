@@ -1,3 +1,5 @@
+import pickle
+
 import pandas as pd
 import requests
 
@@ -11,7 +13,9 @@ def get_bibtex(ds_id: str, verbose=False) -> str:
     return resp.text
 
 
-def generate_citations_file(pangaea_dataset: str, citations_file: str) -> None:
+def generate_citations_file(
+    pangaea_dataset: str, citations_file: str, mappings_file: str
+) -> None:
     """
     Generate a text file with BibTex citations for all Pangaea datasets in the `pangaea_dataset` CSV file.
 
@@ -22,21 +26,44 @@ def generate_citations_file(pangaea_dataset: str, citations_file: str) -> None:
         It should contain a column called ``"datasets"`` with the dataset IDs.
 
     citations_file : str
-        The path to the output text file where all the citations will be written.
+        The path to the output bib file where all the citations will be written.
+
+    mappings_file : str
+        The path to the output pickle file to write the dataset ID to BibTex citation key mappings.
     """
     pangaea_df = pd.read_csv(pangaea_dataset, low_memory=False)
     ds_ids = [dataset.split("-")[-1] for dataset in pangaea_df.dataset.unique()]
 
-    # Get bibtex citations and write to file
+    # Get citations
+    citations = []
+    mappings = {}
     print(f"[INFO] Processing {len(ds_ids)} dataset citations...")
+    for i, ds_id in enumerate(ds_ids):
+        # Get BibTex citation
+        bibtex = get_bibtex(ds_id)
+        citations.append(bibtex)
+        # Extract BibTex tag
+        tag = bibtex.split("{")[1].split(",")[0]
+        mappings[int(ds_id)] = tag
+        print(f"{(i + 1)}/{len(ds_ids)} complete.")
+
+    # Write citations to file
     with open(citations_file, "w") as f:
-        for i, ds_id in enumerate(ds_ids):
-            bibtex = get_bibtex(ds_id)
-            f.write(bibtex)
-            print(f"\t{str(i+1).zfill(len(str(len(ds_ids))))}/{len(ds_ids)} complete.")
+        f.writelines(citations)
     print(f"[INFO] All dataset BibTex citations written to file: '{citations_file}'")
+    # Write mappings to file
+    pickle.dump(mappings, open(mappings_file, "wb"))
+    print(
+        f"[INFO] All dataset ID to BibTex tag mappings written to file: '{citations_file}'"
+    )
 
 
 if __name__ == "__main__":
-    file = "../full-dataset/pangaea_2022-01-02_filtered_subsampled-1.25m-1200-1000_remove-core-surf.csv"
-    generate_citations_file(file, citations_file="../pangaea-citations.bib")
+    pangaea_file = "../full-dataset/pangaea_2022-01-02_filtered_subsampled-1.25m-1200-1000_remove-core-surf.csv"
+    generate_citations_file(
+        # Input file
+        pangaea_file,
+        # Generated output files
+        "../pangaea-citations.bib",
+        "../bibtex-key-id-mappings.pickle",
+    )
