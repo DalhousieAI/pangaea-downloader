@@ -246,6 +246,7 @@ outputs
 query-outputs*
 full-dataset
 *.bib
+*.pickle
 
 # Test directories
 test-dir
