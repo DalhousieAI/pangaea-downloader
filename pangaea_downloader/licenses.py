@@ -49,7 +49,3 @@ def main(pangaea_file):
         f"../pangaea-dataset-licenses-{datetime.date.today()}.csv", index=False
     )
     print(f"License information scrapped for {len(license_df)} datasets.")
-
-
-if __name__ == "__main__":
-    main(pangaea_file="../pangaea_2022-01-27.csv")
