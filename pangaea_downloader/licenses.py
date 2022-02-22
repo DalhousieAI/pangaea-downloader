@@ -15,7 +15,7 @@ def get_dataset_url(ds_id: Union[str, int]) -> str:
     return f"https://doi.pangaea.de/10.1594/PANGAEA.{ds_id}"
 
 
-def get_license_info(url: str) -> Optional[Dict[str, str]]:
+def get_dataset_license_info(url: str) -> Optional[Dict[str, str]]:
     """Return a dictionary with license information given the dataset URL."""
     # Make a request to the URL and parse the html
     resp = requests.get(url)
@@ -27,7 +27,16 @@ def get_license_info(url: str) -> Optional[Dict[str, str]]:
     return {"url": license_tag["href"], "text": license_tag.text}
 
 
-def main(pangaea_file):
+def scrape_all(pangaea_file: str) -> None:
+    """
+    Scrape license information for all datasets.
+
+    Parameter
+    ---------
+    pangaea_file : str
+        Path to the CSV file containing Pangaea dataset IDs.
+        Expects the file to have a `dataset` column.
+    """
     # Load list of dataset IDs
     df = pd.read_csv(pangaea_file, low_memory=False)
     ds_ids = [ds_name.split("-")[-1] for ds_name in df.dataset.unique()]
@@ -37,7 +46,7 @@ def main(pangaea_file):
     license_list = []
     for ds_id in tqdm(ds_ids):
         ds_url = get_dataset_url(ds_id)
-        info = get_license_info(ds_url)
+        info = get_dataset_license_info(ds_url)
         if info is None:
             info = {"url": None, "text": None}
         info["id"] = "pangaea-" + ds_id
