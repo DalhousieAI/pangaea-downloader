@@ -15,12 +15,16 @@ import dateutil.parser
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from benthicnet.io import fixup_repeated_output_paths
 from IPython.display import display
 from tqdm.auto import tqdm
 
 from pangaea_downloader import __meta__
 from pangaea_downloader.tools import checker
+
+try:
+    from benthicnet.io import fixup_repeated_output_paths
+except ImportError:
+    fixup_repeated_output_paths = None
 
 TAXONOMY_RANKS = [
     ["Kingdom", "Regnum"],
@@ -807,9 +811,13 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
     df_all.drop_duplicates(subset="url", inplace=True, keep="first")
 
     # Fix repeated output paths by replacing with image field
-    if verbose >= 1:
-        print("Fix repeated output paths to prevent collisions")
-    df_all = fixup_repeated_output_paths(df_all, inplace=True, verbose=2)
+    if fixup_repeated_output_paths is None:
+        if verbose >= 1:
+            print("Skip fix repeated output paths step (requires benthicnet package)")
+    else:
+        if verbose >= 1:
+            print("Fix repeated output paths to prevent collisions")
+        df_all = fixup_repeated_output_paths(df_all, inplace=True, verbose=2)
 
     if os.path.dirname(output_path):
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
