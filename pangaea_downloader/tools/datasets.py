@@ -9,6 +9,7 @@ import os
 import time
 from typing import List, Optional
 
+import colorama
 from pandas import DataFrame
 from pangaeapy import PanDataSet
 
@@ -18,7 +19,7 @@ T_POLL_LAST = 0
 T_POLL_INTV = 0.1667
 
 
-def fetch_child(child_url: str) -> Optional[DataFrame]:
+def fetch_child(child_url: str, verbose=1) -> Optional[DataFrame]:
     """Fetch Pangaea child dataset using provided URI/DOI and return DataFrame."""
     # Load data set
     global T_POLL_LAST
@@ -30,13 +31,21 @@ def fetch_child(child_url: str) -> Optional[DataFrame]:
     doi = ds.doi.split("doi.org/")[-1]
     # Dataset is restricted
     if ds.loginstatus != "unrestricted":
-        print(f"\t[ERROR] Access restricted: '{ds.loginstatus}'. URL: {child_url}")
+        if verbose >= 1:
+            print(
+                colorama.Fore.YELLOW
+                + f"\t[ERROR] Access restricted: '{ds.loginstatus}'. URL: {child_url}"
+                + colorama.Fore.RESET
+            )
         return
     # Check for image URL column
     if not checker.has_url_col(ds.data):
-        print(
-            f"\t[WARNING] Image URL column NOT found! Columns: {list(ds.data.columns)}. Skipping..."
-        )
+        if verbose >= 1:
+            print(
+                colorama.Fore.YELLOW
+                + f"\t[WARNING] Image URL column NOT found! Columns: {list(ds.data.columns)}. Skipping..."
+                + colorama.Fore.RESET
+            )
         return
     # Add metadata
     df = set_metadata(ds, alt=doi)
@@ -45,7 +54,7 @@ def fetch_child(child_url: str) -> Optional[DataFrame]:
     return df
 
 
-def fetch_children(parent_url: str) -> Optional[List[DataFrame]]:
+def fetch_children(parent_url: str, verbose=1) -> Optional[List[DataFrame]]:
     """Take in url of a parent dataset, fetch and return list of child datasets."""
     # Fetch dataset
     global T_POLL_LAST
@@ -56,10 +65,16 @@ def fetch_children(parent_url: str) -> Optional[List[DataFrame]]:
     T_POLL_LAST = time.time()
     # Check restriction
     if ds.loginstatus != "unrestricted":
-        print(f"\t[ERROR] Access restricted: '{ds.loginstatus}'. URL: {parent_url}")
+        if verbose >= 1:
+            print(
+                colorama.Fore.YELLOW
+                + f"\t[ERROR] Access restricted: '{ds.loginstatus}'. URL: {parent_url}"
+                + colorama.Fore.RESET
+            )
         return
     # Process children
-    print(f"\t[INFO] Fetching {len(ds.children)} child datasets...")
+    if verbose >= 1:
+        print(f"\t[INFO] Fetching {len(ds.children)} child datasets...")
     df_list = []
     for i, child_uri in enumerate(ds.children):
         url = process.url_from_uri(child_uri)
@@ -67,10 +82,16 @@ def fetch_children(parent_url: str) -> Optional[List[DataFrame]]:
         # Assess type
         typ = process.ds_type(size)
         if typ == "video":
-            print(f"\t\t[{i+1}] [WARNING] Video dataset! {url} Skipping...")
+            if verbose >= 1:
+                print(
+                    colorama.Fore.YELLOW
+                    + f"\t\t[{i+1}] [WARNING] Video dataset! {url} Skipping..."
+                    + colorama.Fore.RESET
+                )
             continue
         elif typ == "paginated":
-            print(f"\t\t[{i+1}] Scrapping dataset...")
+            if verbose >= 1:
+                print(f"\t\t[{i+1}] Scrapping dataset...")
             df = scraper.scrape_image_data(url)
             if df is not None:
                 df_list.append(df)
@@ -80,14 +101,20 @@ def fetch_children(parent_url: str) -> Optional[List[DataFrame]]:
             child = PanDataSet(url)
             T_POLL_LAST = time.time()
             if ds.loginstatus != "unrestricted":
-                print(
-                    f"\t\t[{i+1}] [ERROR] Access restricted: '{ds.loginstatus}'. {url}"
-                )
+                if verbose >= 1:
+                    print(
+                        colorama.Fore.YELLOW
+                        + f"\t\t[{i+1}] [ERROR] Access restricted: '{ds.loginstatus}'. {url}"
+                        + colorama.Fore.RESET
+                    )
                 return
             if not checker.has_url_col(child.data):
-                print(
-                    f"\t\t[{i+1}] [WARNING] Image URL column NOT found! {url} Skipping..."
-                )
+                if verbose >= 1:
+                    print(
+                        colorama.Fore.YELLOW
+                        + f"\t\t[{i+1}] [WARNING] Image URL column NOT found! {url} Skipping..."
+                        + colorama.Fore.RESET
+                    )
             else:
                 # Add metadata
                 child_doi = child.doi.split("doi.org/")[-1]
@@ -121,7 +148,7 @@ def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
     return ds.data
 
 
-def save_df(df: DataFrame, output_path: str, level=1, index=None) -> bool:
+def save_df(df: DataFrame, output_path: str, level=1, index=None, verbose=1) -> bool:
     """
     Save a DataFrame to a file in the provided output directory.
 
@@ -132,7 +159,8 @@ def save_df(df: DataFrame, output_path: str, level=1, index=None) -> bool:
     idx = "INFO" if index is None else index
     # Don't save empty dataframe
     if len(df) == 0:
-        print(f"{tabs}[{idx}] Empty DataFrame! File not saved!")
+        if verbose >= 1:
+            print(f"{tabs}[{idx}] Empty DataFrame! File not saved!")
         return False
     # Save if dataframe not empty
     df.to_csv(output_path, index=False)

@@ -2,6 +2,7 @@
 import time
 from typing import List, Optional, Tuple
 
+import colorama
 import requests
 from bs4 import BeautifulSoup
 from pandas import DataFrame
@@ -11,7 +12,7 @@ from requests.compat import urljoin
 import pangaea_downloader.tools.datasets as datasets
 
 
-def scrape_image_data(url: str) -> Optional[DataFrame]:
+def scrape_image_data(url: str, verbose=1) -> Optional[DataFrame]:
     """Scrape image URLs and metadata from webpage(s)."""
     # Load dataset
     t_wait = max(0, datasets.T_POLL_LAST + datasets.T_POLL_INTV - time.time())
@@ -19,7 +20,8 @@ def scrape_image_data(url: str) -> Optional[DataFrame]:
     ds = PanDataSet(url)
     datasets.T_POLL_LAST = time.time()
     # Request dataset url
-    print("\t\t\t[INFO] Requesting:", url)
+    if verbose >= 1:
+        print("\t\t\t[INFO] Requesting:", url)
     resp = requests.get(url)
     # Parse response
     soup = BeautifulSoup(resp.text, "lxml")
@@ -29,11 +31,12 @@ def scrape_image_data(url: str) -> Optional[DataFrame]:
     # Get download link to photos page
     download_link = soup.find("div", attrs={"class": "text-block top-border"}).a["href"]
     src_url = download_link.split("?")[0]
-    print("\t\t\t[INFO] URL to photos page:", download_link)
+    if verbose >= 1:
+        print("\t\t\t[INFO] URL to photos page:", download_link)
     # Get to photos page (page 1)
     resp = requests.get(download_link)
     photos_page = BeautifulSoup(resp.text, "lxml")
-    img_urls = get_urls_from_each_page(photos_page, src_url)
+    img_urls = get_urls_from_each_page(photos_page, src_url, verbose=verbose)
     if img_urls is None:
         return
     # Store URLs and add metadata
@@ -69,24 +72,28 @@ def get_metadata(page_soup: BeautifulSoup) -> Optional[Tuple[float, float]]:
         long = float(coordinates.find("span", attrs={"class": "longitude"}).text)
         return lat, long
     print(
-        "\t\t\t[ERROR] Coordinate metadata not found on page!",
-        "Saved file won't have Longitude, Latitude columns!",
+        colorama.Fore.RED + "\t\t\t[ERROR] Coordinate metadata not found on page!"
+        " Saved file won't have Longitude, Latitude columns!" + colorama.For.RESET
     )
     return None
 
 
-def get_urls_from_each_page(page_soup: BeautifulSoup, base_url: str) -> List[str]:
+def get_urls_from_each_page(
+    page_soup: BeautifulSoup, base_url: str, verbose=1
+) -> List[str]:
     """Scrape image URLs from each page."""
     pagination = get_pagination(page_soup, base_url)
-    print("\t\t\t[INFO] Processing Page 1...")
-    img_urls = get_page_image_urls(page_soup, verbose=True)
+    if verbose >= 1:
+        print("\t\t\t[INFO] Processing Page 1...")
+    img_urls = get_page_image_urls(page_soup, verbose=verbose)
     if pagination is not None:
         for n in pagination:
-            print(f"\t\t\t[INFO] Processing Page {n}...")
+            if verbose >= 1:
+                print(f"\t\t\t[INFO] Processing Page {n}...")
             url = pagination[n]
             resp = requests.get(url)
             soup = BeautifulSoup(resp.text, "lxml")
-            urls = get_page_image_urls(soup, verbose=True)
+            urls = get_page_image_urls(soup, verbose=verbose)
             img_urls.extend(urls)
     return img_urls
 
@@ -108,11 +115,16 @@ def get_pagination(page_soup: BeautifulSoup, src_url: str) -> Optional[dict]:
     return page_dict
 
 
-def get_page_image_urls(page_soup: BeautifulSoup, verbose=False) -> Optional[List[str]]:
+def get_page_image_urls(page_soup: BeautifulSoup, verbose=1) -> Optional[List[str]]:
     """Take a BeautifulSoup object and return list of image urls."""
     table = page_soup.find("table", class_="pictable")
     if table is None:
-        print("\t\t\t[ERROR] Image table not found: no <table> of class='pictable'!")
+        if verbose >= 1:
+            print(
+                colorama.Fore.RED
+                + "\t\t\t[ERROR] Image table not found: no <table> of class='pictable'!"
+                + colorama.For.RESET
+            )
         return
     photos = table.find_all("td")
 
@@ -127,7 +139,7 @@ def get_page_image_urls(page_soup: BeautifulSoup, verbose=False) -> Optional[Lis
             # No photos, just a blank <td> tag
             empty_tds += 1
     # Number of photos on page
-    if verbose:
+    if verbose >= 2:
         n = len(photos) - empty_tds
         print(f"\t\t\t[INFO] Number of photos on page: {n}")
     return urls
