@@ -1,28 +1,28 @@
--microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" (seabed OR "sea bed" OR "sea-bed") (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
+-microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" (seabed OR "sea bed" OR "sea-bed") (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR photo-quad* OR jpg OR jpeg OR png OR tif OR tiff)
 
--microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" (seafloor OR "sea floor" OR "sea-floor") (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
+-microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" (seafloor OR "sea floor" OR "sea-floor") (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR photo-quad* OR jpg OR jpeg OR png OR tif OR tiff)
 
--microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" ("ocean floor" OR "ocean-floor") (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
+-microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" ("ocean floor" OR "ocean-floor") (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR photo-quad* OR jpg OR jpeg OR png OR tif OR tiff)
 
--microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" underwater (habitat* OR substrate OR sediment) (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
+-microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" underwater (habitat* OR substrate OR sediment) (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR photo-quad* OR jpg OR jpeg OR png OR tif OR tiff)
 
--microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthic (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
+-microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthic (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR photo-quad* OR jpg OR jpeg OR png OR tif OR tiff)
 
--microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" (benthos or benthoz) (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
+-microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" (benthos or benthoz) (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR photo-quad* OR jpg OR jpeg OR png OR tif OR tiff)
 
--microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" (coral OR reef OR seagrass OR "sea grass") (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
+-microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" (coral OR reef OR seagrass OR "sea grass") (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR photo-quad* OR jpg OR jpeg OR png OR tif OR tiff)
 
--microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" (auv OR rov OR uuv OR "underwater vehicle") (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR jpg OR jpeg OR tiff)
+-microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" (auv OR rov OR uuv OR "underwater vehicle") (image OR imagery OR photo OR photograph OR "photo-transect" OR photoquad* OR photo-quad* OR jpg OR jpeg OR png OR tif OR tiff)
 
 -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape habitat* image
 -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape habitat* imagery
 -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape habitat* photo
 -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape habitat* photograph
--microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape habitat* ("photo-transect" OR photoquad*)
--microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape habitat* (jpg OR jpeg OR tiff)
+-microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape habitat* ("photo-transect" OR photoquad* OR photo-quad*)
+-microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape habitat* (jpg OR jpeg OR png OR tif OR tiff)
 -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape image
 -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape imagery
 -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape photo
 -microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape photograph
--microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape ("photo-transect" OR photoquad*)
--microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape (jpg OR jpeg OR tiff)
+-microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape ("photo-transect" OR photoquad* OR photo-quad*)
+-microscop? -"Meteorological observations" -topsoil -soil -sky -"wind vector" -"wind stress" -"vertical profile" -"vertical distribution" benthoscape (jpg OR jpeg OR png OR tif OR tiff)
