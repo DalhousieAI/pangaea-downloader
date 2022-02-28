@@ -6,14 +6,17 @@ Pangaea search and download user interface.
 
 import os
 import sys
+import traceback
 
+import colorama
 import pandas as pd
+from tqdm.auto import tqdm
 
 from pangaea_downloader import __meta__
 from pangaea_downloader.tools import datasets, process, scraper, search
 
 
-def search_and_download(queries=None, output_dir="query-outputs", verbose=1):
+def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
     """
     Search `PANGAEA`_ for a set of queries, and download datasets for each result.
 
@@ -50,53 +53,76 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=1):
     n_files = 0
     n_downloads = 0
     errors = []
-    for i, result in enumerate(results):
+    for i, result in enumerate(tqdm(results, disable=verbose != 0)):
         # Extract result info
         citation, url, ds_id, size, is_parent = process.get_result_info(result)
-        print(f"[{i+1:5d}/{len(results)}] Processing dataset: '{citation}'. {url}")
+        if verbose >= 1:
+            print(f"[{i+1:5d}/{len(results)}] Processing dataset: '{citation}'. {url}")
 
         # Check if file already exists in downloads
         f_name = ds_id + ".csv"
         output_path = os.path.join(output_dir, f_name)
         if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
-            print(f"\t[INFO] File: '{f_name}' already exists! Skipping...")
+            if verbose >= 1:
+                print(
+                    colorama.Fore.CYAN
+                    + f"\t[INFO] File: '{f_name}' already exists! Skipping..."
+                    + colorama.Fore.RESET
+                )
             n_files += 1
             continue
 
         # ------------- ASSESS DATASET TYPE ------------- #
         try:
             if is_parent:
-                df_list = datasets.fetch_children(url)
+                df_list = datasets.fetch_children(url, verbose=verbose - 1)
                 if df_list is None:
-                    print(f"\t[INFO] No child datasets! Skipping {ds_id}")
+                    if verbose >= 1:
+                        print(
+                            colorama.Fore.CYAN
+                            + f"\t[INFO] No child datasets! Skipping {ds_id}"
+                            + colorama.Fore.RESET
+                        )
                     continue
                 df_list = [df for df in df_list if df is not None]
                 if len(df_list) == 0:
-                    print(f"\t[INFO] All children are empty! Skipping {ds_id}")
+                    if verbose >= 1:
+                        print(
+                            colorama.Fore.CYAN
+                            + f"\t[INFO] All children are empty! Skipping {ds_id}"
+                            + colorama.Fore.RESET
+                        )
                     continue
                 df = pd.concat(df_list)
             else:
                 dataset_type = process.ds_type(size)
                 if dataset_type == "video":
-                    print(f"\t[WARNING] Video dataset! {url} skipping...")
+                    if verbose >= 1:
+                        print(
+                            colorama.Fore.YELLOW
+                            + f"\t[WARNING] Video dataset! {url} skipping..."
+                            + colorama.Fore.RESET
+                        )
                     continue
                 elif dataset_type == "paginated":
-                    df = scraper.scrape_image_data(url)
+                    df = scraper.scrape_image_data(url, verbose=verbose - 1)
                 elif dataset_type == "tabular":
-                    df = datasets.fetch_child(url)
+                    df = datasets.fetch_child(url, verbose=verbose - 1)
         except BaseException as err:
             if isinstance(err, KeyboardInterrupt):
                 raise
-            msg = f"\t[ERROR] Could not process '{citation}', {url}:\n{err}"
-            print(msg)
-            errors.append(msg)
+            msg = f"\t[ERROR] Could not process '{citation}', {url}\n{err}"
+            msg += "\n\n" + traceback.format_exc()
+            errors.append(traceback.format_exc())
+            if verbose >= 0:
+                print(colorama.Fore.RED + msg + colorama.Fore.RESET)
             continue
 
         # ----------------- SAVE TO FILE ----------------- #
         if df is None:
             continue
         try:
-            saved = datasets.save_df(df, output_path, level=1)
+            saved = datasets.save_df(df, output_path, level=1, verbose=verbose - 1)
         except BaseException as err:
             # Delete partially saved file, if present
             if os.path.isfile(output_path):
@@ -107,12 +133,15 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=1):
             raise err
         n_downloads += 1 if saved else 0
 
-    print(f"Complete! Total files downloaded: {n_downloads}.")
-    print(f"Number of files previously saved: {n_files}.")
-    print(f"Total dataset files: {n_files + n_downloads}")
-    print(f"Number of dataset errors (excluding access): {len(errors)}.")
-    for msg in errors:
-        print(msg)
+    if verbose >= 0:
+        print(f"Complete! Total files downloaded: {n_downloads}.")
+        print(f"Number of files previously saved: {n_files}.")
+        print(f"Total dataset files: {n_files + n_downloads}")
+        print(f"Number of dataset errors (excluding access): {len(errors)}.")
+
+        for msg in errors:
+            print()
+            print(msg)
 
 
 def get_parser():
@@ -165,7 +194,7 @@ def get_parser():
         "--verbose",
         "-v",
         action="count",
-        default=1,
+        default=0,
         help=textwrap.dedent(
             """
             Increase the level of verbosity of the program. This can be

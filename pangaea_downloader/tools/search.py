@@ -5,7 +5,9 @@ import os
 from inspect import getsourcefile
 from typing import List
 
+import colorama
 from pangaeapy import PanQuery
+from tqdm.auto import tqdm
 
 from .checker import check_allclose_dict
 
@@ -52,10 +54,12 @@ def run_search_query(query: str, verbose=0, n_results=500) -> List[dict]:
     # Sanity check
     if len(results) != pq.totalcount:
         print(
-            "[WARNING]"
-            f" Mismatch between total number of results ({len(results)}) and"
-            f" expected number of results ({pq.totalcount})"
-            f" for search '{query}'"
+            colorama.Fore.YELLOW
+            + "[WARNING]"
+            + f" Mismatch between total number of results ({len(results)}) and"
+            + f" expected number of results ({pq.totalcount})"
+            + f" for search '{query}'"
+            + colorama.Fore.RESET
         )
     if verbose >= 1:
         print(f"[INFO] Number of search results returned: {len(results)}\n")
@@ -73,7 +77,7 @@ def run_multiple_search_queries(query_list, verbose=0) -> List[dict]:
                 ps += f"\n    {query}"
         print(ps)
     results_list = []
-    for i, query in enumerate(query_list):
+    for i, query in enumerate(tqdm(query_list, disable=verbose != 0, desc="Queries")):
         search_results = run_search_query(query=query, verbose=verbose - 1)
         if verbose:
             print(
