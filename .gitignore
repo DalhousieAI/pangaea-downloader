@@ -245,6 +245,7 @@ pangaea-labelled-datasets.*
 outputs
 query-outputs*
 full-dataset
+dataset_details
 *.bib
 *.pickle
 
