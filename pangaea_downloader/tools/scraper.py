@@ -48,8 +48,8 @@ def scrape_image_data(url: str, verbose=1) -> Optional[DataFrame]:
         df["Longitude"] = long
         df["Latitude"] = lat
     df["Dataset"] = ds.title
-    df["DOI"] = ds.doi
-    doi = ds.doi.split("doi.org/")[-1]
+    df["DOI"] = getattr(ds, "doi", "")
+    doi = getattr(ds, "doi", "").split("doi.org/")[-1]
     if (len(ds.events) > 0) and (ds.events[0].campaign is not None):
         df["Campaign"] = ds.events[0].campaign.name
     else:

@@ -28,7 +28,7 @@ def fetch_child(child_url: str, verbose=1) -> Optional[DataFrame]:
     time.sleep(t_wait)  # Stay under 180 requests every 30s
     ds = PanDataSet(child_url)
     T_POLL_LAST = time.time()
-    doi = ds.doi.split("doi.org/")[-1]
+    doi = getattr(ds, "doi", "").split("doi.org/")[-1]
     # Dataset is restricted
     if ds.loginstatus != "unrestricted":
         if verbose >= 1:
@@ -117,7 +117,7 @@ def fetch_children(parent_url: str, verbose=1) -> Optional[List[DataFrame]]:
                     )
             else:
                 # Add metadata
-                child_doi = child.doi.split("doi.org/")[-1]
+                child_doi = getattr(child, "doi", "").split("doi.org/")[-1]
                 df = set_metadata(child, alt=child_doi)
                 # Add child dataset to list
                 df = exclude_rows(df)
@@ -134,7 +134,7 @@ def fetch_children(parent_url: str, verbose=1) -> Optional[List[DataFrame]]:
 def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
     """Add metadata to a PanDataSet's dataframe."""
     ds.data["dataset_title"] = ds.title
-    ds.data["doi"] = ds.doi
+    ds.data["doi"] = getattr(ds, "doi", "")
     # Dataset campaign
     if (len(ds.events) > 0) and (ds.events[0].campaign is not None):
         ds.data["campaign"] = ds.events[0].campaign.name
