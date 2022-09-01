@@ -73,7 +73,7 @@ def get_metadata(page_soup: BeautifulSoup) -> Optional[Tuple[float, float]]:
         return lat, long
     print(
         colorama.Fore.RED + "\t\t\t[ERROR] Coordinate metadata not found on page!"
-        " Saved file won't have Longitude, Latitude columns!" + colorama.For.RESET
+        " Saved file won't have Longitude, Latitude columns!" + colorama.Fore.RESET
     )
     return None
 
@@ -123,7 +123,7 @@ def get_page_image_urls(page_soup: BeautifulSoup, verbose=1) -> Optional[List[st
             print(
                 colorama.Fore.RED
                 + "\t\t\t[ERROR] Image table not found: no <table> of class='pictable'!"
-                + colorama.For.RESET
+                + colorama.Fore.RESET
             )
         return
     photos = table.find_all("td")
