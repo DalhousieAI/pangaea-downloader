@@ -54,7 +54,9 @@ def fetch_child(child_url: str, verbose=1, ensure_url=True) -> Optional[DataFram
 
 
 def fetch_children(
-    parent_url: str, verbose=1, ensure_url=True
+    parent_url: str,
+    verbose=1,
+    ensure_url=True,
 ) -> Optional[List[DataFrame]]:
     """Take in url of a parent dataset, fetch and return list of child datasets."""
     # Fetch dataset
