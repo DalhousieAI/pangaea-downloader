@@ -95,7 +95,10 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
                     continue
                 df = pd.concat(df_list)
             else:
-                dataset_type = process.ds_type(size)
+                try:
+                    dataset_type = process.ds_type(size)
+                except Exception:
+                    raise ValueError(f"Can't process type from size for {ds_id}")
                 if dataset_type == "video":
                     if verbose >= 1:
                         print(

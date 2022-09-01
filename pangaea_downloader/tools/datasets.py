@@ -80,7 +80,10 @@ def fetch_children(parent_url: str, verbose=1) -> Optional[List[DataFrame]]:
         url = process.url_from_uri(child_uri)
         size = process.get_html_info(url)
         # Assess type
-        typ = process.ds_type(size)
+        try:
+            typ = process.ds_type(size)
+        except Exception:
+            raise ValueError(f"Can't process type from size for {url}")
         if typ == "video":
             if verbose >= 1:
                 print(
