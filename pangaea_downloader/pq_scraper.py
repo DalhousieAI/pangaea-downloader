@@ -75,9 +75,7 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
         # ------------- ASSESS DATASET TYPE ------------- #
         try:
             if is_parent:
-                df_list = datasets.fetch_children(
-                    url, verbose=verbose - 1, ensure_url=False
-                )
+                df_list = datasets.fetch_children(url, verbose=verbose - 1)
                 if df_list is None:
                     if verbose >= 1:
                         print(
