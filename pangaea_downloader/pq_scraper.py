@@ -75,7 +75,9 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
         # ------------- ASSESS DATASET TYPE ------------- #
         try:
             if is_parent:
-                df_list = datasets.fetch_children(url, verbose=verbose - 1)
+                df_list = datasets.fetch_children(
+                    url, verbose=verbose - 1, ensure_url=False
+                )
                 if df_list is None:
                     if verbose >= 1:
                         print(
@@ -110,7 +112,9 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
                 elif dataset_type == "paginated":
                     df = scraper.scrape_image_data(url, verbose=verbose - 1)
                 elif dataset_type == "tabular":
-                    df = datasets.fetch_child(url, verbose=verbose - 1)
+                    df = datasets.fetch_child(
+                        url, verbose=verbose - 1, ensure_url=False
+                    )
         except Exception as err:
             if isinstance(err, KeyboardInterrupt):
                 raise
