@@ -108,7 +108,7 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
                     df = scraper.scrape_image_data(url, verbose=verbose - 1)
                 elif dataset_type == "tabular":
                     df = datasets.fetch_child(url, verbose=verbose - 1)
-        except BaseException as err:
+        except Exception as err:
             if isinstance(err, KeyboardInterrupt):
                 raise
             msg = f"\t[ERROR] Could not process '{citation}', {url}\n{err}"
@@ -123,12 +123,12 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
             continue
         try:
             saved = datasets.save_df(df, output_path, level=1, verbose=verbose - 1)
-        except BaseException as err:
+        except Exception as err:
             # Delete partially saved file, if present
             if os.path.isfile(output_path):
                 try:
                     os.remove(output_path)
-                except BaseException:
+                except Exception:
                     pass
             raise err
         n_downloads += 1 if saved else 0
