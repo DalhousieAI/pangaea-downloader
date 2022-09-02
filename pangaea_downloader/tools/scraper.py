@@ -27,6 +27,30 @@ def scrape_image_data(url: str, verbose=1) -> Optional[DataFrame]:
     soup = BeautifulSoup(resp.text, "lxml")
     # Get coordinates of expedition
     coordinates = get_metadata(soup)
+    if coordinates is None and hasattr(ds, "geometryextent"):
+        print(
+            colorama.Fore.RED + "\t\t\t[ALERT] Trying to get coordinates from"
+            " PanDataSet.geometryextent" + colorama.Fore.RESET
+        )
+        lat = None
+        long = None
+        for k in ["meanLatitude", "latitude", "Latitude"]:
+            if k in ds.geometryextent:
+                lat = ds.geometryextent[k]
+                break
+        for k in ["meanLongitude", "longitude", "Latitude"]:
+            if k in ds.geometryextent:
+                long = ds.geometryextent[k]
+                break
+        if lat is None and long is None:
+            coordinates = None
+        coordinates = lat, long
+
+    if coordinates is None:
+        print(
+            colorama.Fore.RED + "\t\t\t[ERROR] Coordinate metadata not found on page!"
+            " Saved file won't have Longitude, Latitude columns!" + colorama.Fore.RESET
+        )
 
     # Get download link to photos page
     download_link = soup.find("div", attrs={"class": "text-block top-border"}).a["href"]
@@ -71,10 +95,6 @@ def get_metadata(page_soup: BeautifulSoup) -> Optional[Tuple[float, float]]:
         lat = float(coordinates.find("span", attrs={"class": "latitude"}).text)
         long = float(coordinates.find("span", attrs={"class": "longitude"}).text)
         return lat, long
-    print(
-        colorama.Fore.RED + "\t\t\t[ERROR] Coordinate metadata not found on page!"
-        " Saved file won't have Longitude, Latitude columns!" + colorama.Fore.RESET
-    )
     return None
 
 
