@@ -19,14 +19,19 @@ T_POLL_LAST = 0
 T_POLL_INTV = 0.1667
 
 
-def fetch_child(child_url: str, verbose=1, ensure_url=True) -> Optional[DataFrame]:
+def fetch_child(
+    child_url: str,
+    verbose=1,
+    ensure_url=True,
+    auth_token=None,
+) -> Optional[DataFrame]:
     """Fetch Pangaea child dataset using provided URI/DOI and return DataFrame."""
     # Load data set
     global T_POLL_LAST
     global T_POLL_INTV
     t_wait = max(0, T_POLL_LAST + T_POLL_INTV - time.time())
     time.sleep(t_wait)  # Stay under 180 requests every 30s
-    ds = PanDataSet(child_url)
+    ds = PanDataSet(child_url, auth_token=auth_token)
     T_POLL_LAST = time.time()
     # Dataset is restricted
     if ds.loginstatus != "unrestricted":
@@ -57,6 +62,7 @@ def fetch_children(
     parent_url: str,
     verbose=1,
     ensure_url=True,
+    auth_token=None,
 ) -> Optional[List[DataFrame]]:
     """Take in url of a parent dataset, fetch and return list of child datasets."""
     # Fetch dataset
@@ -64,7 +70,7 @@ def fetch_children(
     global T_POLL_INTV
     t_wait = max(0, T_POLL_LAST + T_POLL_INTV - time.time())
     time.sleep(t_wait)  # Stay under 180 requests every 30s
-    ds = PanDataSet(parent_url)
+    ds = PanDataSet(parent_url, auth_token=auth_token)
     T_POLL_LAST = time.time()
     # Check restriction
     if ds.loginstatus != "unrestricted":
@@ -104,7 +110,7 @@ def fetch_children(
         elif typ == "tabular":
             t_wait = max(0, T_POLL_LAST + T_POLL_INTV - time.time())
             time.sleep(t_wait)  # Stay under 180 requests every 30s
-            child = PanDataSet(url)
+            child = PanDataSet(url, auth_token=auth_token)
             T_POLL_LAST = time.time()
             if ds.loginstatus != "unrestricted":
                 if verbose >= 1:

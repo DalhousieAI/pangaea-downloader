@@ -16,7 +16,12 @@ from pangaea_downloader import __meta__
 from pangaea_downloader.tools import datasets, process, scraper, search
 
 
-def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
+def search_and_download(
+    queries=None,
+    output_dir="query-outputs",
+    auth_token=None,
+    verbose=0,
+):
     """
     Search `PANGAEA`_ for a set of queries, and download datasets for each result.
 
@@ -31,6 +36,8 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
     output_dir : str, default="query-outputs"
         The output directory where downloaded datasets will be saved.
         Any existing output datasets will be skipped instead of downloaded.
+    auth_token : str, optional
+        Bearer authentication token.
     verbose : int, default=1
         Verbosity level.
     """
@@ -75,7 +82,11 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
         # ------------- ASSESS DATASET TYPE ------------- #
         try:
             if is_parent:
-                df_list = datasets.fetch_children(url, verbose=verbose - 1)
+                df_list = datasets.fetch_children(
+                    url,
+                    verbose=verbose - 1,
+                    auth_token=auth_token,
+                )
                 if df_list is None:
                     if verbose >= 1:
                         print(
@@ -111,7 +122,10 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
                     df = scraper.scrape_image_data(url, verbose=verbose - 1)
                 elif dataset_type == "tabular":
                     df = datasets.fetch_child(
-                        url, verbose=verbose - 1, ensure_url=False
+                        url,
+                        verbose=verbose - 1,
+                        ensure_url=False,
+                        auth_token=auth_token,
                     )
         except Exception as err:
             if isinstance(err, KeyboardInterrupt):
@@ -194,6 +208,11 @@ def get_parser():
         type=str,
         default="query-outputs",
         help="Directory for downloaded datasets. Default is %(default)s.",
+    )
+    parser.add_argument(
+        "--auth-token",
+        type=str,
+        help="Bearer authentication token",
     )
     parser.add_argument(
         "--verbose",
