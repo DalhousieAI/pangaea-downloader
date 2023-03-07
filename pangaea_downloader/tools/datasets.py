@@ -176,7 +176,8 @@ def save_df(df: DataFrame, output_path: str, level=1, index=None, verbose=1) -> 
         return False
     # Save if dataframe not empty
     df.to_csv(output_path, index=False)
-    print(f"{tabs}[{idx}] Saved to '{output_path}'")
+    if verbose >= 1:
+        print(f"{tabs}[{idx}] Saved to '{output_path}'")
     return True
 
 
