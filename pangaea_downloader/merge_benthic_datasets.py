@@ -365,6 +365,10 @@ def reformat_df(df, remove_duplicate_columns=True):
     # if "timestamp" not in df.columns and "datetime" in df.columns:
     #     df["timestamp"] = df["datetime"].apply(datetime2timestamp)
 
+    # Add default site if it is missing
+    if "site" not in df.columns:
+        df["site"] = df["dataset"] + "_site"
+
     if any([c in clean_cols for c in ["Kingdom", "Phylum", "Genus"]]):
         df["taxonomy"] = df.apply(row2taxonomy, axis=1)
         df.drop(
