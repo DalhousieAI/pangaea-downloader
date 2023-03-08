@@ -147,16 +147,8 @@ def set_metadata(ds: PanDataSet) -> DataFrame:
     ds.data["dataset_title"] = ds.title
     ds.data["doi"] = getattr(ds, "doi", "")
     # Dataset campaign
-    alt = str(ds.id)
     if (len(ds.events) > 0) and (ds.events[0].campaign is not None):
         ds.data["campaign"] = ds.events[0].campaign.name
-    else:
-        ds.data["campaign"] = alt
-    # Dataset site/event/deployment
-    if "Event" in ds.data.columns:
-        ds.data["site"] = ds.data["Event"]
-    else:
-        ds.data["site"] = alt + "_site"
     return ds.data
 
 
