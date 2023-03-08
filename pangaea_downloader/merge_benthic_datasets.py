@@ -255,8 +255,8 @@ def reformat_df(df, remove_duplicate_columns=True):
     # is the output column name, and the value is a list of search names
     # in order of priority. The first match will be kept and others discarded.
     desired_columns = {
-        "dataset": ["ds_id", "dataset", "Campaign", "campaign"],
-        "site": ["Event", "event", "Site", "site", "deployment"],
+        "dataset": ["ds_id"],
+        "site": ["Event", "event", "deployment"],
         "image": ["image", "filename"],
         "datetime": [
             "Date/Time",
