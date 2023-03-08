@@ -15,7 +15,6 @@ import dateutil.parser
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from IPython.display import display
 from tqdm.auto import tqdm
 
 from pangaea_downloader import __meta__
