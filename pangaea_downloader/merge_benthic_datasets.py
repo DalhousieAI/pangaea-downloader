@@ -712,6 +712,8 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
     dfs_fnames = []
 
     for fname in tqdm(sorted(sorted(os.listdir(input_dirname)), key=len)):  # noqa: C414
+        if not fname.endswith(".csv"):
+            continue
         # for fname in tqdm(os.listdir(input_dirname)):
         ds_id = os.path.splitext(fname)[0]
         df = pd.read_csv(os.path.join(input_dirname, fname))
