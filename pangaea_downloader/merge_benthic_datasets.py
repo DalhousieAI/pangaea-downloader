@@ -273,7 +273,7 @@ def reformat_df(df, remove_duplicate_columns=True):
             "latitude+",
             "latitudemed",
             "latitudenorth",
-            "latitudesouth",
+            # "latitudesouth",  # special handling
         ],
         "longitude": [
             "Longitude",
@@ -282,8 +282,8 @@ def reformat_df(df, remove_duplicate_columns=True):
             "long",
             "longitude+",
             "longitudemed",
-            "longitudewest",
             "longitudeeast",
+            # "longitudewest",  # special handling
         ],
         "x_pos": [],
         "y_pos": [],
@@ -359,6 +359,16 @@ def reformat_df(df, remove_duplicate_columns=True):
     df.drop(labels=cols_to_drop, axis="columns", inplace=True)
     # Rename columns to canonical names
     df.rename(columns=mapping, inplace=True, errors="raise")
+
+    # Handle latitudesouth and longitudewest
+    if "latitude" not in df.columns and "latitudesouth" in df.columns:
+        df["latitude"] = -df["latitudesouth"]
+    if "latitude" not in df.columns and "latitude-" in df.columns:
+        df["latitude"] = -df["latitude-"]
+    if "longitude" not in df.columns and "longitudewest" in df.columns:
+        df["longitude"] = -df["longitudewest"]
+    if "longitude" not in df.columns and "longitude-" in df.columns:
+        df["longitude"] = -df["longitude-"]
 
     # Add file extension to image
     df["image"] = df.apply(add_file_extension, axis=1)
