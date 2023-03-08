@@ -157,7 +157,9 @@ def search_and_download(
         print(f"Number of files previously saved: {n_files}.")
         print(f"Total dataset files: {n_files + n_downloads}")
         print(f"Number of dataset errors (excluding access): {len(errors)}.")
-
+        if len(errors) > 0:
+            print()
+            print("Captured errors are now repeated as follows.")
         for msg in errors:
             print()
             print(msg)
