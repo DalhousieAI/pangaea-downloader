@@ -85,6 +85,7 @@ def search_and_download(
                 df_list = datasets.fetch_children(
                     url,
                     verbose=verbose - 1,
+                    ensure_url=False,
                     auth_token=auth_token,
                 )
                 if df_list is None:
