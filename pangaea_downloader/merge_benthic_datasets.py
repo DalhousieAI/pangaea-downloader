@@ -767,7 +767,7 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
             files_with_repeat_urls.append(fname)
 
         # Try to fix repeated URLs that are accidental dups but should differ
-        df = fixup_repeated_urls(df, url_column=url_col, verbose=1)
+        df = fixup_repeated_urls(df, url_column=url_col, verbose=verbose)
 
         if len(df) != len(df.drop_duplicates(subset=url_col)):
             files_with_repeat_urls2.append(fname)
@@ -832,7 +832,7 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
     else:
         if verbose >= 1:
             print("Fix repeated output paths to prevent collisions")
-        df_all = fixup_repeated_output_paths(df_all, inplace=True, verbose=2)
+        df_all = fixup_repeated_output_paths(df_all, inplace=True, verbose=verbose)
 
     if os.path.dirname(output_path):
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
