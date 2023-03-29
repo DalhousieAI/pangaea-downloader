@@ -1027,7 +1027,7 @@ def fix_missing_datetime_from_image_name(df, ds_id, verbose=1):
         dtstr = selected_image_no_ext.apply(lambda x: "_".join(x.split("_")[1:])[:20])
         df.loc[select, "datetime"] = pd.to_datetime(dtstr, format="%Y_%m_%dat%H_%M_%S")
 
-    elif ds_id in [896157]:
+    elif ds_id in [896157, 896160, 896164]:
         if verbose >= 1:
             print(
                 f"{ds_id}: Extracting missing datetime from filename for dataset {ds_id}"
