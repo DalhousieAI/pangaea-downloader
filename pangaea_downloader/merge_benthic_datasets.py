@@ -1434,7 +1434,7 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
             continue
         # for fname in tqdm(os.listdir(input_dirname)):
         ds_id = os.path.splitext(fname)[0]
-        if ds_id == "805690":
+        if ds_id in ["805690", "803979"]:
             # The title was not captured from this dataset for some reason,
             # so we can't exclude it via the title.
             continue
