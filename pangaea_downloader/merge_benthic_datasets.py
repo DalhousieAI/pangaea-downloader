@@ -199,6 +199,13 @@ def check_title(title):
         return False
     if title.startswith("Images of shell cross sections"):
         return False
+    if (
+        "early biofouling processes in a coastal lagoon" in title.lower()
+        or "early biofouling processes in a coastal la goon" in title.lower()
+    ):
+        return False
+    if "photographs of tiles" in title.lower():
+        return False
 
     return True
 
