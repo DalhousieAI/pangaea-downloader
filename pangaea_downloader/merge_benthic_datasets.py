@@ -1595,7 +1595,7 @@ def get_parser():
         "--verbose",
         "-v",
         action="count",
-        default=0,
+        default=1,
         help=textwrap.dedent(
             """
             Increase the level of verbosity of the program. This can be
