@@ -10,20 +10,24 @@ import datetime
 import os
 import re
 from collections import defaultdict
+from functools import partial
 
 import dateutil.parser
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import scipy.interpolate
+from pangaeapy import PanDataSet
 from tqdm.auto import tqdm
 
 from pangaea_downloader import __meta__
 from pangaea_downloader.tools import checker
 
 try:
-    from benthicnet.io import fixup_repeated_output_paths
+    from benthicnet.io import fixup_repeated_output_paths, row2basename
 except ImportError:
     fixup_repeated_output_paths = None
+    row2basename = None
 
 TAXONOMY_RANKS = [
     ["Kingdom", "Regnum"],
@@ -695,6 +699,698 @@ def fixup_repeated_urls(
     return df
 
 
+def fixup_favourite_images(df, verbose=1):
+    """
+    Drop duplicated favourite images.
+
+    These occur in Ingo Schewe's datasets along OFOS profiles during POLARSTERN
+    cruises, PANGAEA dataset ids 849814--849816 and 873995--874002.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        A PANGAEA dataframe with Type column.
+    verbose : int, default=1
+        Level of verbosity.
+
+    Returns
+    -------
+    df : pandas.DataFrame
+        As input dataframe, but with all Type entries starting with favourite
+        removed (case-insensitive).
+    """
+    if "Type" not in df.columns:
+        return df
+    # Remove all Favourite timer, Favourite hotkey, FAVOURITE_TIMER, and
+    # FAVOURITE_HOTKEY entries, which although they have unique URLs for their
+    # images are actually identical images to the ones occuring immediately
+    # after them in the dataframe.
+    n_samples_before = len(df)
+    df = df[~df["Type"].str.lower().str.startswith("favourite")]
+    n_samples_after = len(df)
+    if verbose >= 1 and n_samples_after != n_samples_before:
+        print(
+            f"{df.iloc[0]['dataset']}:"
+            f" Removed {n_samples_before - n_samples_after} favourited images."
+            f" {n_samples_before} -> {n_samples_after} rows"
+        )
+    return df
+
+
+def get_dataset_datetime(ds_id):
+    """
+    Determine a generic date for a dataset from the min and max extent datetimes.
+
+    Parameters
+    ----------
+    ds_id : int
+        The identifier of a PANGAEA dataset.
+
+    Returns
+    -------
+    dt_avg : str
+        The average datetime between the min and max extent, with precision
+        reduced to reflect what can accurately be represented.
+    """
+    ds = PanDataSet(ds_id)
+    dt_min = pd.to_datetime(ds.mintimeextent)
+    dt_max = pd.to_datetime(ds.maxtimeextent)
+    if dt_min is None and dt_max is None:
+        return pd.NaT
+    elif dt_min is None:
+        return dt_max.strftime("%Y-%m-%d")
+    elif dt_max is None:
+        return dt_min.strftime("%Y-%m-%d")
+    delta = dt_max - dt_min
+    dt_avg = dt_min + delta / 2
+    if delta > datetime.timedelta(days=90):
+        return dt_avg.strftime("%Y")
+    if delta > datetime.timedelta(days=4):
+        return dt_avg.strftime("%Y-%m")
+    if delta > datetime.timedelta(hours=3):
+        return dt_avg.strftime("%Y-%m-%d")
+    if delta > datetime.timedelta(minutes=5):
+        return dt_avg.strftime("%Y-%m-%d %H:00:00")
+    if delta > datetime.timedelta(seconds=5):
+        return dt_avg.strftime("%Y-%m-%d %H:%M:00")
+    return dt_avg.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def fix_missing_datetime_from_image_name(df, ds_id, verbose=1):
+    """
+    Extract datetime information from the contents of the image column in the dataframe.
+
+    Note that the extraction operation is only performed on dataset IDs for
+    which the image naming scheme has been manually evaluated, and is not
+    applied blindly to datasets which have not been inspected.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Input dataframe.
+    ds_id : int
+        The identifier of the PANGAEA dataset.
+    verbose : int, default=1
+        Verbosity level.
+
+    Returns
+    -------
+    df : pandas.DataFrame
+        As input, but with missing datetime cells filled in from the image.
+        Existing datetime values are unchanged.
+    """
+    if "datetime" not in df.columns:
+        df["datetime"] = pd.NaT
+
+    ds_id = int(ds_id)
+
+    select = df["datetime"].isna()
+
+    if row2basename is None:
+        selected_image = df.loc[select, "image"]
+    else:
+        selected_image = df[select].apply(
+            partial(row2basename, use_url_extension=True), axis=1
+        )
+
+    selected_image_no_ext = selected_image.apply(lambda x: os.path.splitext(x)[0])
+
+    if ds_id in [
+        785104,
+        785105,
+        785108,
+        785109,
+        785110,
+        836457,
+        867771,
+        867772,
+        867773,
+        867774,
+        867775,
+        867776,
+        867777,
+        867778,
+        867806,
+        867807,
+        867808,
+        867852,
+        867853,
+        867861,
+        873541,
+        875713,
+        875714,
+        876422,
+        876423,
+        876511,
+        876512,
+        876513,
+        876514,
+        876515,
+        876516,
+        876517,
+        876518,
+        880043,
+        880044,
+        885666,
+        885667,
+        885668,
+        885669,
+        885670,
+        885672,
+        885674,
+        885675,
+        885709,
+        885712,
+        885713,
+        885714,
+        885715,
+        885716,
+        885717,
+        885718,
+        885719,
+        885720,
+    ]:
+        if verbose >= 1:
+            print(
+                f"{ds_id}: Extracting missing datetime from filename for dataset {ds_id}"
+            )
+        # e.g. PP_107-100_2012-03-19.png
+        # e.g. PP_100_2012-06-05a.jpg
+        # e.g. TH_122_2012-03-27.jpg
+        # e.g. J_05_2017_05_24a.jpg
+        # e.g. J_overview_2017-05-24za.jpg
+        # e.g. J_40_2017_08_11a.jpg
+        # e.g. J_05_2017-08-11a.jpg
+        # e.g. LG_OVERVIEW_01_05_06_07_09_2013_02_24a.jpg
+        # e.g. LG_01_07_2010_11_11a.jpg
+        # e.g. LG_01_2010_11_11a.jpg
+        # e.g. LG_Cluster1_2012_01_31a.jpg
+        # e.g. LG_01_07_2012_04_22a.jpg
+        # e.g. LG_SCREW_2012_04_22a.jpg
+        # e.g. So_01_2014_02_15b.jpg
+        # e.g. XH_01_2013_01_12_a.jpg
+        # e.g. XH_01%2B09_2013_11_19_a.jpg
+        # e.g. XH_01_2010_04_22_a.jpg
+        # e.g. LH_020_2015_01_28a_counted.jpg
+        # e.g. LH_020_2015_01_28xx.jpg
+        # e.g. J_J40%2BJ46%2BJ41_2016_09_25_a.jpg
+        dtstr = selected_image_no_ext.str.lower().str.rstrip(
+            "abcdefghijklmnopqrstuvwxyz_-"
+        )
+        dtstr = dtstr.str[-11:].str.replace("_", "-").str.lstrip("-")
+        df.loc[select, "datetime"] = pd.to_datetime(dtstr, format="%Y-%m-%d")
+
+    elif ds_id in [
+        789211,
+        789212,
+        789213,
+        789214,
+        789215,
+        789216,
+        789219,
+        819234,
+    ]:
+        if verbose >= 1:
+            print(
+                f"{ds_id}: Extracting missing datetime from filename for dataset {ds_id}"
+            )
+        # e.g. 2003_W01-2.jpg
+        # e.g. 2004_B_bewachsen.jpg
+        # e.g. 2005_B.jpg
+        # e.g. 2013_B01-1.jpg
+        dtstr = selected_image_no_ext.str[:4]
+        # Test the format is correct; we will get an error if not
+        _ = pd.to_datetime(dtstr, format="%Y")
+        # But we actually want to keep the lower precision string
+        df.loc[select, "datetime"] = dtstr
+
+    elif ds_id in [
+        789217,
+        793210,
+        793211,
+        818906,
+        818907,
+        836263,
+        836264,
+        836265,
+        836266,
+        837653,
+    ]:
+        if verbose >= 1:
+            print(
+                f"{ds_id}: Extracting missing datetime from filename for dataset {ds_id}"
+            )
+        # e.g. 04_2011.jpg
+        # e.g. 04a_2011_analog.jpg
+        # e.g. 04.2-2008.jpg
+        # e.g. 08-2008.jpg
+        # e.g. 04a_2013.jpg
+        # e.g. 05a_2003.jpg
+        # e.g. 04_2007.jpg
+        dtstr = selected_image_no_ext.str.lower().str.rstrip(
+            "abcdefghijklmnopqrstuvwxyz_-"
+        )
+        dtstr = dtstr.str[-4:]
+        # Test the format is correct; we will get an error if not
+        _ = pd.to_datetime(dtstr, format="%Y")
+        # But we actually want to keep the lower precision string
+        df.loc[select, "datetime"] = dtstr
+
+    elif ds_id in [836024, 836025]:
+        if verbose >= 1:
+            print(
+                f"{ds_id}: Extracting missing datetime from filename for dataset {ds_id}"
+            )
+        # e.g. 00setting_2014-08.jpg
+        # e.g. 39.9_2014.jpg
+        # e.g. 2014_B01-1.jpg
+        df.loc[select, "datetime"] = "2014"
+
+    elif ds_id in [840699, 840700, 840702, 840703, 840742, 840743]:
+        if verbose >= 1:
+            print(
+                f"{ds_id}: Extracting missing datetime from filename for dataset {ds_id}"
+            )
+        # e.g. J_001_2012-01-31.jpg
+        # e.g. J_003_2012-01-31_2.jpg
+        # e.g. J_115_2012-01-31_a.jpg
+        # e.g. J_033_2012-08-08.jpg
+        dtstr = selected_image_no_ext.apply(lambda x: x.split("_")[2])
+        dtstr = dtstr.str[:10]
+        df.loc[select, "datetime"] = pd.to_datetime(dtstr, format="%Y-%m-%d")
+
+    elif ds_id in [840701, 849298]:
+        if verbose >= 1:
+            print(
+                f"{ds_id}: Extracting missing datetime from filename for dataset {ds_id}"
+            )
+        # e.g. J_002_2013-03_03a.jpg
+        # e.g. J_001_2015-01.jpg
+        # e.g. J_001_2015-01_a.jpg
+        # e.g. J_056_2013-03_06logger.jpg
+        dtstr = selected_image_no_ext.apply(lambda x: x.split("_")[2])
+        # Test the format is correct; we will get an error if not
+        _ = pd.to_datetime(dtstr, format="%Y-%m")
+        # But we actually want to keep the lower precision string
+        df.loc[select, "datetime"] = dtstr
+
+    elif ds_id in [872407, 872408, 872409, 872410, 872411]:
+        if verbose >= 1:
+            print(
+                f"{ds_id}: Extracting missing datetime from filename for dataset {ds_id}"
+            )
+        # e.g. J_40_2017-01-12_a.jpg
+        # e.g. J_overview2_2017-02-02_x.jpg
+        # e.g. J_xx_2017-01-12_x-62.jpg
+        # e.g. J_17_2017-01-14.jpg
+        # e.g. J_23_2017-01-14_b-1.jpg
+        dtstr = selected_image_no_ext.apply(lambda x: x.split("_")[2])
+        df.loc[select, "datetime"] = pd.to_datetime(dtstr, format="%Y-%m-%d")
+
+    elif ds_id in [878045, 888410]:
+        # Nothing to do
+        pass
+
+    elif ds_id in [894734]:
+        if verbose >= 1:
+            print(
+                f"{ds_id}: Extracting missing datetime from filename for dataset {ds_id}"
+            )
+        # e.g. HOTKEY_2018_03_27at21_09_21CP4A4682
+        # e.g. TIMER_2018_03_18at04_04_09CP4A3970
+        dtstr = selected_image_no_ext.apply(lambda x: "_".join(x.split("_")[1:])[:20])
+        df.loc[select, "datetime"] = pd.to_datetime(dtstr, format="%Y_%m_%dat%H_%M_%S")
+
+    elif ds_id in [896157]:
+        if verbose >= 1:
+            print(
+                f"{ds_id}: Extracting missing datetime from filename for dataset {ds_id}"
+            )
+        # e.g. 2016-08-2600000.jpg
+        dtstr = selected_image_no_ext.str[:10]
+        df.loc[select, "datetime"] = pd.to_datetime(dtstr, format="%Y-%m-%d")
+
+    if ds_id in [
+        918232,
+        918233,
+        918327,
+        918340,
+        918341,
+        918382,
+        918383,
+        918385,
+    ]:
+        if verbose >= 1:
+            print(
+                f"{ds_id}: Extracting missing datetime from filename for dataset {ds_id}"
+            )
+        # e.g. XH_01_2010_04_22_a.jpg
+        # e.g. XH_01_2010_04_28a.jpg
+        # e.g. XH_03_2018_10_18_a-1.jpg
+        dtstr = selected_image_no_ext.apply(lambda x: "-".join(x.split("_")[2:5])[:10])
+        df.loc[select, "datetime"] = pd.to_datetime(dtstr, format="%Y-%m-%d")
+
+    return df
+
+
+def add_missing_datetime(df, ds_id=None, verbose=1):
+    """
+    Add missing datetime values using either the mean extent or extraction from the file name.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Input dataframe.
+    ds_id : int, optional
+        The identifier of the PANGAEA dataset. The default behaviour is to
+        extract this from the dataset column of the dataframe.
+    verbose : int, default=1
+        Verbosity level.
+
+    Returns
+    -------
+    df : pandas.DataFrame
+        As input, but with missing datetime cells completed, either by using the
+        average from the datetime extent metadata, or by extracting it from the
+        image name.
+        All existing datetime values are left unchanged.
+    """
+    if "datetime" not in df.columns:
+        df["datetime"] = pd.NaT
+
+    if ds_id is None:
+        # Get dataset id from first row
+        ds_id = df.iloc[0]["dataset"].split("-")[-1]
+    ds_id = int(ds_id)
+
+    # Add datetimes that are still missing by inferring from the image filename
+    df = fix_missing_datetime_from_image_name(df, ds_id, verbose=verbose)
+
+    if all(df["datetime"].isna()):
+        # This dataset has no datetime values
+        # Try to determine average datetime from the datetime extent metadata on
+        # the dataset record
+        dt_avg = get_dataset_datetime(ds_id)
+        if dt_avg is not None:
+            if verbose >= 1:
+                print(
+                    f"{ds_id}: Using average datetime from extent"
+                    f" - filenames look like {df.iloc[0]['image']}"
+                )
+            df["datetime"] = dt_avg
+
+    if not any(df["datetime"].isna()):
+        # This dataframe already has all datetime information
+        return df
+
+    select = df["datetime"].isna()
+    if ds_id in [889035, 889025]:
+        if verbose >= 1:
+            print(f"{ds_id}: Adding manual missing datetime for {ds_id}")
+        # From the abstract on PANGAEA (sic):
+        # Experimet was setup during 2007-02-15 and 2007-06-13.
+        df.loc[select, "datetime"] = "2007"
+
+    if ds_id in [896160, 896164]:
+        if verbose >= 1:
+            print(f"{ds_id}: Adding manual missing datetime for {ds_id}")
+        # From the INDEX 2016 ROV (see dataset title and paper
+        # https://doi.org/10.3389/fmars.2019.00096)
+        df.loc[select, "datetime"] = "2016"
+
+    return df
+
+
+def interpolate_by_datetime(df, columns):
+    """
+    Use datetime column to interpolate values for selected columns.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Dataframe with ``"datetime"`` column, which may contain missing values
+        in other columns.
+    columns : str or iterable of str
+        Name of column or columns to fill in missing values with interpolation.
+
+    Returns
+    -------
+    df : pandas.DataFrame
+        Like input, but with missing values in specified columns completed by
+        linear interpolation over datetime.
+    """
+    # Convert datetime string to a datetime object
+    datetime_actual = pd.to_datetime(df["datetime"])
+    has_datetime = ~datetime_actual.isna()
+    if isinstance(columns, str):
+        columns = [columns]
+    for col in columns:
+        has_col = ~df[col].isna()
+        has_dt_and_col = has_datetime & has_col
+        has_dt_not_col = has_datetime & ~has_col
+        df.loc[has_dt_not_col, col] = np.interp(
+            datetime_actual[has_dt_not_col],
+            datetime_actual[has_dt_and_col],
+            df.loc[has_dt_and_col, col],
+        )
+    return df
+
+
+def fixup_incomplete_metadata(df, ds_id=None, verbose=1):
+    """
+    Fix datasets which have partial, but incomplete, lat/lon/datetime metadata.
+
+    Interpolation is performed as appropriate to the dataset. The methodology
+    was determined by manually inspecting each dataset.
+    Any latitude and longitude values which can not be resolved are filled in
+    with the dataset-level mean latitude and longitude as reported by PANGAEA.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Input dataframe.
+    ds_id : int, optional
+        The identifier of the PANGAEA dataset. The default behaviour is to
+        extract this from the dataset column of the dataframe.
+    verbose : int, default=1
+        Verbosity level.
+
+    Returns
+    -------
+    df : pandas.DataFrame
+        As input, but with missing datetime, latitude, longitude, and/or depth
+        cells completed by interpolation or similar.
+        All existing datetime values are left unchanged.
+    """
+    if ds_id is None:
+        # Get dataset id from first row
+        ds_id = df.iloc[0]["dataset"].split("-")[-1]
+    ds_id = int(ds_id)
+
+    if ds_id in [753197]:
+        if verbose >= 1:
+            print(f"{ds_id}: Fixing missing metadata for dataset {ds_id}")
+            print("Nothing to be done.")
+
+    if ds_id in [805606, 805607, 805611, 805612]:
+        if verbose >= 1:
+            print(f"{ds_id}: Fixing missing metadata for dataset {ds_id}")
+            print(f"{ds_id}: Interpolating by index")
+        indices = np.arange(len(df))
+        col = "datetime"
+        select_not_col = df[col].isna()
+        select_has_col = ~select_not_col
+        if any(select_has_col) and any(select_not_col):
+            missing_timestamps = np.interp(
+                indices[select_not_col],
+                indices[select_has_col],
+                pd.to_datetime(df.loc[select_has_col, "datetime"]).apply(
+                    lambda x: x.timestamp()
+                ),
+            )
+            df.loc[select_not_col, col] = [
+                datetime.datetime.fromtimestamp(int(ts)) for ts in missing_timestamps
+            ]
+
+    if ds_id == 875080:
+        # N.B. There is date metadata in the csv, but not time. But there is time
+        # metadata in the filename, so we could extract this if we wanted to.
+        if verbose >= 1:
+            print(f"{ds_id}: Fixing missing metadata for dataset {ds_id}")
+            print("Nothing to be done.")
+        # lat/lon was only recorded for the first 11 images. Fill in the rest
+        # with the median latitude and longitude for the record at the end
+        # of this function.
+
+    if 873995 <= ds_id <= 874002:
+        if verbose >= 1:
+            print(f"Interpolating latitude, longitude, and depth for dataset {ds_id}")
+        # Interpolate lat, lon, and depth based on datetime
+        df = interpolate_by_datetime(df, ["latitude", "longitude", "depth"])
+
+    if ds_id in [875071, 875073]:
+        if verbose >= 1:
+            print(f"{ds_id}: Fixing missing metadata for dataset {ds_id}")
+        # Drop rows without datetime values (these have missing lat/lon as well)
+        # For 875071, these images are of the deck of the ship.
+        # For 875073, these images have a translation of less than half an image
+        # from the subsequent image, so we don't need the ones without metadata.
+        df = df[~df["datetime"].isna()]
+        # Interpolate missing depth values
+        df = interpolate_by_datetime(df, ["depth"])
+
+    if ds_id in [875084]:
+        if verbose >= 1:
+            print(f"{ds_id}: Fixing missing metadata for dataset {ds_id}")
+        # For 875084, images without latitude and longitude are not useful.
+        # The first three are of the deck, the rest are dark watercolumn shots.
+        df = df[~df["longitude"].isna()]
+        # Interpolate missing depth values
+        df = interpolate_by_datetime(df, ["depth"])
+
+    if (878001 <= ds_id <= 878019) or ds_id == 878045:
+        if verbose >= 1:
+            print(f"{ds_id}: Dropping rows missing metadata for dataset {ds_id}")
+        # Images without metadata are of the water column and highly redundant.
+        df = df[~df["longitude"].isna()]
+
+    if ds_id in [894732, 894734]:
+        if verbose >= 1:
+            print(f"{ds_id}: Dropping rows missing metadata for dataset {ds_id}")
+        # It's not clear to me that any of these images are of the seafloor.
+        df = df[~df["longitude"].isna()]
+
+    if ds_id in [895557, 903782, 903788, 903850, 907025, 894801]:
+        if verbose >= 1:
+            print(f"{ds_id}: Fixing missing metadata for dataset {ds_id}")
+            print(
+                f"{ds_id}: Interpolating by index over subset of images in the same series"
+            )
+        indices = np.arange(len(df))
+        image_no_ext = df["image"].apply(lambda x: os.path.splitext(x)[0])
+        image_major = image_no_ext.str[:-3]
+        missing_dt = df["datetime"].isna()
+        missing_lat = df["latitude"].isna()
+        missing_lon = df["longitude"].isna()
+        for image_major_i in image_major.unique():
+            select = image_major == image_major_i
+            col = "latitude"
+            select_and_col = select & ~missing_lat
+            select_not_col = select & missing_lat
+            if any(select_and_col) and any(select_not_col):
+                df.loc[select_not_col, col] = np.interp(
+                    indices[select_not_col],
+                    indices[select_and_col],
+                    df.loc[select_and_col, col],
+                )
+            col = "longitude"
+            select_and_col = select & ~missing_lon
+            select_not_col = select & missing_lon
+            if any(select_and_col) and any(select_not_col):
+                df.loc[select_not_col, col] = np.interp(
+                    indices[select_not_col],
+                    indices[select_and_col],
+                    df.loc[select_and_col, col],
+                )
+            col = "datetime"
+            select_and_col = select & ~missing_dt
+            select_not_col = select & missing_dt
+            if any(select_and_col) and any(select_not_col):
+                df.loc[select_not_col, col] = scipy.interpolate.interp1d(
+                    indices[select_and_col],
+                    pd.to_datetime(df.loc[select_and_col, col]),
+                    kind="nearest",
+                    fill_value="extrapolate",
+                )(indices[select_not_col])
+
+    if ds_id in [911904, 918924, 919348]:
+        if verbose >= 1:
+            print(f"{ds_id}: Extracting missing datetime metadata for dataset {ds_id}")
+        # Extract missing datetime from the filename, formatted like (e.g.)
+        # TIMER_2019_03_31_at_05_50_12_IMG_0263
+        has_no_datetime = df["datetime"].isna()
+        fname_inner = df.loc[has_no_datetime, "image"].apply(
+            lambda x: "_".join(x.split("_")[1:-2])
+        )
+        df.loc[has_no_datetime, "datetime"] = pd.to_datetime(
+            fname_inner, format="%Y_%m_%d_at_%H_%M_%S"
+        )
+        if verbose >= 1:
+            print(
+                f"{ds_id}: Interpolating latitude, longitude, and depth for dataset {ds_id}"
+            )
+        df = interpolate_by_datetime(df, ["latitude", "longitude", "depth"])
+
+    if ds_id in [914155]:
+        if verbose >= 1:
+            print(f"{ds_id}: Fixing missing metadata for dataset {ds_id}")
+        # Images without datetime are too dark
+        df = df[~df["datetime"].isna()]
+        # Other images are missing latitude and longitude metadata
+        df = interpolate_by_datetime(df, ["latitude", "longitude"])
+
+    if ds_id in [914156, 914197]:
+        if verbose >= 1:
+            print(f"{ds_id}: Fixing missing metadata for dataset {ds_id}")
+        # Some images are clearly of the same thing, but one is good visibility
+        # with no lat/lon, and the next is too dark and has no datetime.
+        for from_image, to_image in [
+            ("IMG_0393", "IMG_0392"),
+            ("IMG_0395", "IMG_0394"),
+        ]:
+            columns = ["latitude", "longitude"]
+            select_from = df["image"].str.startswith(from_image)
+            select_to = df["image"].str.startswith(to_image)
+            df.loc[select_to, columns] = df.loc[select_from, columns]
+        # Drop images without datetime
+        df = df[~df["datetime"].isna()]
+        # Fill in any missing latitude and longitude metadata
+        df = interpolate_by_datetime(df, ["latitude", "longitude"])
+
+    if ds_id in [914192]:
+        if verbose >= 1:
+            print(f"{ds_id}: Fixing missing metadata for dataset {ds_id}")
+        # Some images are clearly of the same thing, but one is good visibility
+        # with no lat/lon, and the next is too dark and has no datetime.
+        for from_image, to_image in [
+            ("IMG_1776", "IMG_1775"),
+        ]:
+            columns = ["latitude", "longitude"]
+            select_from = df["image"].str.startswith(from_image)
+            select_to = df["image"].str.startswith(to_image)
+            df.loc[select_to, columns] = df.loc[select_from, columns]
+        # Drop images without datetime
+        df = df[~df["datetime"].isna()]
+        # Fill in any missing latitude and longitude metadata
+        df = interpolate_by_datetime(df, ["latitude", "longitude"])
+
+    if any(df["latitude"].isna() | df["longitude"].isna()):
+        # Fill in any missing latitude and longitude values with the
+        # mean coordinate reported at the dataset level
+        ds = PanDataSet(ds_id)
+        if hasattr(ds, "geometryextent"):
+            lat = None
+            long = None
+            for k in ["meanLatitude", "latitude", "Latitude"]:
+                if k in ds.geometryextent:
+                    lat = ds.geometryextent[k]
+                    break
+            for k in ["meanLongitude", "longitude", "Latitude"]:
+                if k in ds.geometryextent:
+                    long = ds.geometryextent[k]
+                    break
+            if lat is not None:
+                if verbose >= 1:
+                    print(f"{ds_id}: Using dataset mean latitude for missing values")
+                df.loc[df["latitude"].isna(), "latitude"] = lat
+            if long is not None:
+                if verbose >= 1:
+                    print(f"{ds_id}: Using dataset mean longitude for missing values")
+                df.loc[df["longitude"].isna(), "longitude"] = long
+
+    return df
+
+
 def process_datasets(input_dirname, output_path=None, verbose=0):
     """
     Process a directory of datasets: clean, concatenate and save.
@@ -775,6 +1471,15 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
         # Check for any rows that are all NaNs
         if sum(df.isna().all("columns")) > 0:
             print(f"{ds_id} has a row which is all NaNs")
+
+        # Remove duplicated "favourited" images
+        df = fixup_favourite_images(df, verbose=verbose)
+
+        # Fix incomplete lat/lon/datetime metadata
+        df = fixup_incomplete_metadata(df, ds_id, verbose=verbose)
+
+        # Add datetime if it is completely missing
+        df = add_missing_datetime(df, ds_id, verbose=verbose)
 
         dfs.append(df)
         dfs_fnames.append(fname)
