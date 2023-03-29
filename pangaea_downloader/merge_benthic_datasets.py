@@ -1495,23 +1495,24 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
         dfs.append(df)
         dfs_fnames.append(fname)
 
-    print(f"There are {n_valid} valid (of {n_total}) valid datasets")
-    print(
-        f"Of which {len(files_with_repeat_urls)} have repeated URLs (before replacing dups with image)"
-    )
-    print(
-        f"Of which {len(files_with_repeat_urls2)} have repeated URLs (after replacing dups with image)"
-    )
-    print()
-    print(f"There are {len(column_count)} unique column names:")
-    print()
+    if verbose >= 0:
+        print(f"There are {n_valid} valid (of {n_total}) valid datasets")
+        print(
+            f"Of which {len(files_with_repeat_urls)} have repeated URLs (before replacing dups with image)"
+        )
+        print(
+            f"Of which {len(files_with_repeat_urls2)} have repeated URLs (after replacing dups with image)"
+        )
+        print()
+        print(f"There are {len(column_count)} unique column names:")
+        print()
 
-    for col, count in dict(
-        sorted(column_count.items(), key=lambda item: item[1], reverse=True)
-    ).items():
-        c = col + " "
-        print(f"{c:.<35s} {count:4d}")
-    print()
+        for col, count in dict(
+            sorted(column_count.items(), key=lambda item: item[1], reverse=True)
+        ).items():
+            c = col + " "
+            print(f"{c:.<35s} {count:4d}")
+        print()
 
     if verbose >= 1:
         print("Filter columns")
