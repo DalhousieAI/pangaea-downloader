@@ -12,7 +12,6 @@ import re
 from collections import defaultdict
 from functools import partial
 
-import dateutil.parser
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
