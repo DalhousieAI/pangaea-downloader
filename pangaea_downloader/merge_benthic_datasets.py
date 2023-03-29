@@ -1433,6 +1433,10 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
             continue
         # for fname in tqdm(os.listdir(input_dirname)):
         ds_id = os.path.splitext(fname)[0]
+        if ds_id == "805690":
+            # The title was not captured from this dataset for some reason,
+            # so we can't exclude it via the title.
+            continue
         df = pd.read_csv(os.path.join(input_dirname, fname), low_memory=False)
         n_total += 1
         if not checker.has_url_col(df):
