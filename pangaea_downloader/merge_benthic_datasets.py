@@ -824,6 +824,8 @@ def fix_missing_datetime_from_image_name(df, ds_id, verbose=1):
     if ds_id in [
         785104,
         785105,
+        785106,
+        785107,
         785108,
         785109,
         785110,
