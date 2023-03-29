@@ -730,7 +730,7 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
             continue
         # for fname in tqdm(os.listdir(input_dirname)):
         ds_id = os.path.splitext(fname)[0]
-        df = pd.read_csv(os.path.join(input_dirname, fname))
+        df = pd.read_csv(os.path.join(input_dirname, fname), low_memory=False)
         n_total += 1
         if not checker.has_url_col(df):
             continue
