@@ -758,7 +758,7 @@ def get_dataset_datetime(ds_id):
         The average datetime between the min and max extent, with precision
         reduced to reflect what can accurately be represented.
     """
-    ds = PanDataSet(ds_id)
+    ds = PanDataSet(ds_id, enable_cache=True)
     dt_min = pd.to_datetime(ds.mintimeextent)
     dt_max = pd.to_datetime(ds.maxtimeextent)
     if dt_min is None and dt_max is None:
@@ -1373,7 +1373,7 @@ def fixup_incomplete_metadata(df, ds_id=None, verbose=1):
     if any(df["latitude"].isna() | df["longitude"].isna()):
         # Fill in any missing latitude and longitude values with the
         # mean coordinate reported at the dataset level
-        ds = PanDataSet(ds_id)
+        ds = PanDataSet(ds_id, enable_cache=True)
         if hasattr(ds, "geometryextent"):
             lat = None
             long = None

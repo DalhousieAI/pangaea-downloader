@@ -17,7 +17,7 @@ def scrape_image_data(url: str, verbose=1) -> Optional[DataFrame]:
     # Load dataset
     t_wait = max(0, datasets.T_POLL_LAST + datasets.T_POLL_INTV - time.time())
     time.sleep(t_wait)  # Stay under 180 requests every 30s
-    ds = PanDataSet(url)
+    ds = PanDataSet(url, enable_cache=True)
     datasets.T_POLL_LAST = time.time()
     # Request dataset url
     if verbose >= 1:

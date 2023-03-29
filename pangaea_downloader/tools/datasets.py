@@ -31,7 +31,7 @@ def fetch_child(
     global T_POLL_INTV
     t_wait = max(0, T_POLL_LAST + T_POLL_INTV - time.time())
     time.sleep(t_wait)  # Stay under 180 requests every 30s
-    ds = PanDataSet(child_url, auth_token=auth_token)
+    ds = PanDataSet(child_url, enable_cache=True, auth_token=auth_token)
     T_POLL_LAST = time.time()
     # Dataset is restricted
     if ds.loginstatus != "unrestricted":
@@ -70,7 +70,7 @@ def fetch_children(
     global T_POLL_INTV
     t_wait = max(0, T_POLL_LAST + T_POLL_INTV - time.time())
     time.sleep(t_wait)  # Stay under 180 requests every 30s
-    ds = PanDataSet(parent_url, auth_token=auth_token)
+    ds = PanDataSet(parent_url, enable_cache=True, auth_token=auth_token)
     T_POLL_LAST = time.time()
     # Check restriction
     if ds.loginstatus != "unrestricted":
@@ -110,7 +110,7 @@ def fetch_children(
         elif typ == "tabular":
             t_wait = max(0, T_POLL_LAST + T_POLL_INTV - time.time())
             time.sleep(t_wait)  # Stay under 180 requests every 30s
-            child = PanDataSet(url, auth_token=auth_token)
+            child = PanDataSet(url, enable_cache=True, auth_token=auth_token)
             T_POLL_LAST = time.time()
             if ds.loginstatus != "unrestricted":
                 if verbose >= 1:
