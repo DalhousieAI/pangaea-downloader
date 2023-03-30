@@ -119,7 +119,7 @@ def fetch_children(
                         + f"\t\t[{i+1}] [ERROR] Access restricted: '{ds.loginstatus}'. {url}"
                         + colorama.Fore.RESET
                     )
-                return
+                continue
             if ensure_url and not checker.has_url_col(child.data):
                 if verbose >= 1:
                     print(
