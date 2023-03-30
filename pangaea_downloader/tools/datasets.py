@@ -105,8 +105,6 @@ def fetch_children(
             if verbose >= 1:
                 print(f"\t\t[{i+1}] Scraping dataset...")
             df = scraper.scrape_image_data(url)
-            if df is not None:
-                df_list.append(df)
         elif typ == "tabular":
             t_wait = max(0, T_POLL_LAST + T_POLL_INTV - time.time())
             time.sleep(t_wait)  # Stay under 180 requests every 30s
@@ -127,12 +125,13 @@ def fetch_children(
                         + f"\t\t[{i+1}] [WARNING] Image URL column NOT found! {url} Skipping..."
                         + colorama.Fore.RESET
                     )
-            else:
-                # Add metadata
-                df = set_metadata(child)
-                # Add child dataset to list
-                df = exclude_rows(df)
-                df_list.append(df)
+                continue
+            # Add metadata
+            df = set_metadata(child)
+            # Add child dataset to list
+            df = exclude_rows(df)
+        if df is not None:
+            df_list.append(df)
 
     # Return result
     if len(df_list) > 0:
