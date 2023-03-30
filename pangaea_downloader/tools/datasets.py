@@ -57,6 +57,10 @@ def fetch_child(
     df = set_metadata(ds)
     # Exclude unwanted rows
     df = exclude_rows(df)
+    # Add dataset ID
+    doi = getattr(ds, "doi", "")
+    ds_id = uri2dsid(doi if doi else child_url)
+    df["ds_id"] = ds_id
     return df
 
 
@@ -89,6 +93,7 @@ def fetch_children(
     df_list = []
     for i, child_uri in enumerate(ds.children):
         url = process.url_from_uri(child_uri)
+        ds_id = uri2dsid(child_uri)
         size = process.get_html_info(url)
         # Assess type
         try:
@@ -132,8 +137,10 @@ def fetch_children(
             df = set_metadata(child)
             # Add child dataset to list
             df = exclude_rows(df)
-        if df is not None:
-            df_list.append(df)
+        if df is None:
+            continue
+        df["ds_id"] = ds_id
+        df_list.append(df)
 
     # Return result
     if len(df_list) > 0:
@@ -222,6 +229,13 @@ def fix_text(text: str) -> str:
     text = text.replace("\\", "_")
     text = text.replace("/", "_")
     return text
+
+
+def uri2dsid(uri: str) -> str:
+    """
+    Extract PANGAEA dataset ID from url/uri/doi string.
+    """
+    return uri.split("PANGAEA.")[-1]
 
 
 def get_dataset_id(df: DataFrame) -> str:
