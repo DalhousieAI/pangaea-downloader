@@ -364,8 +364,6 @@ def reformat_df(df, remove_duplicate_columns=True):
             elif col not in mapping and col not in cols_to_drop:
                 cols_to_drop.append(col)
 
-    # Remove superfluous columns
-    df.drop(labels=cols_to_drop, axis="columns", inplace=True)
     # Rename columns to canonical names
     df.rename(columns=mapping, inplace=True, errors="raise")
 
@@ -397,6 +395,9 @@ def reformat_df(df, remove_duplicate_columns=True):
         col = df.columns[lower_cols.index("elevation")]
         print(f"Using {col} for {df.iloc[0]['dataset']}")
         df["depth"] = -df[col]
+
+    # Remove superfluous columns
+    df.drop(labels=cols_to_drop, axis="columns", inplace=True)
 
     # Add file extension to image
     df["image"] = df.apply(add_file_extension, axis=1)
