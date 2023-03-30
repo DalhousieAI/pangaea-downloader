@@ -104,7 +104,22 @@ def search_and_download(
                             + colorama.Fore.RESET
                         )
                     continue
-                df = pd.concat(df_list)
+                for df in df_list:
+                    if df is None:
+                        continue
+                    # Add the parent's ID to the dataframe
+                    df["parent_ds_id"] = ds_id
+                    # Save the child to its own CSV, including a column that
+                    # records the parent's dataset ID
+                    child_id = df.iloc[0]["ds_id"]
+                    child_output_path = os.path.join(output_dir, f"{child_id}.csv")
+                    saved = datasets.save_df(
+                        df, child_output_path, level=1, verbose=verbose - 1
+                    )
+                    n_downloads += 1 if saved else 0
+                # We have saved all the children individually, so will skip
+                # saving a redundant merged dataframe
+                continue
             else:
                 try:
                     dataset_type = process.ds_type(size)
