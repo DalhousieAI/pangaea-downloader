@@ -372,18 +372,22 @@ def reformat_df(df, remove_duplicate_columns=True):
         col = df.columns[lower_cols.index("latitudesouth")]
         print(f"Using {col} for {df.iloc[0]['dataset']}")
         df["latitude"] = -df[col]
+        cols_to_drop.append("latitudesouth")
     if "latitude" not in df.columns and "latitude-" in lower_cols:
         col = df.columns[lower_cols.index("latitude-")]
         print(f"Using {col} for {df.iloc[0]['dataset']}")
         df["latitude"] = -df[col]
+        cols_to_drop.append("latitude-")
     if "longitude" not in df.columns and "longitudewest" in lower_cols:
         col = df.columns[lower_cols.index("longitudewest")]
         print(f"Using {col} for {df.iloc[0]['dataset']}")
         df["longitude"] = -df[col]
+        cols_to_drop.append("longitudewest")
     if "longitude" not in df.columns and "longitude-" in lower_cols:
         col = df.columns[lower_cols.index("longitude-")]
         print(f"Using {col} for {df.iloc[0]['dataset']}")
         df["longitude"] = -df[col]
+        cols_to_drop.append("longitude-")
 
     # Remove datapoints with erroneous negative depth
     if "depth" in df.columns:
