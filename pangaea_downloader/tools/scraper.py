@@ -29,7 +29,7 @@ def scrape_image_data(url: str, verbose=1) -> Optional[DataFrame]:
     coordinates = get_metadata(soup)
     if coordinates is None and hasattr(ds, "geometryextent"):
         print(
-            colorama.Fore.RED + "\t\t\t[ALERT] Trying to get coordinates from"
+            colorama.Fore.YELLOW + "\t\t\t[ALERT] Trying to get coordinates from"
             " PanDataSet.geometryextent" + colorama.Fore.RESET
         )
         lat = None
