@@ -56,6 +56,10 @@ def search_and_download(
     os.makedirs(output_dir, exist_ok=True)
     df_results.to_csv(output_dir.rstrip("/") + "_search_results.csv", index=False)
 
+    fname_child2parent = output_dir.rstrip("/") + "_child2parent.csv"
+    with open(fname_child2parent, "w") as f:
+        f.write("child,parent\n")
+
     # Process each result dictionary
     n_files = 0
     n_downloads = 0
@@ -117,6 +121,8 @@ def search_and_download(
                         df, child_output_path, level=1, verbose=verbose - 1
                     )
                     n_downloads += 1 if saved else 0
+                    with open(fname_child2parent, "a") as f:
+                        f.write(f"{child_id},{ds_id}\n")
                 # We have saved all the children individually, so will skip
                 # saving a redundant merged dataframe
                 continue
