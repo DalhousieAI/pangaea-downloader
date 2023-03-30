@@ -304,7 +304,6 @@ def reformat_df(df, remove_duplicate_columns=True):
             "bathymetry",
             "bathy",
             "depth",
-            "elevation",
         ],
         "backscatter": [],
         "temperature": ["temperature", "temp"],
@@ -387,6 +386,12 @@ def reformat_df(df, remove_duplicate_columns=True):
         col = df.columns[lower_cols.index("longitude-")]
         print(f"Using {col} for {df.iloc[0]['dataset']}")
         df["longitude"] = -df[col]
+
+    # Use elevation if there was no depth
+    if "depth" not in df.columns and "elevation" in lower_cols:
+        col = df.columns[lower_cols.index("elevation")]
+        print(f"Using {col} for {df.iloc[0]['dataset']}")
+        df["depth"] = -df[col]
 
     # Add file extension to image
     df["image"] = df.apply(add_file_extension, axis=1)
