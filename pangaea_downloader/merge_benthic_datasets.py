@@ -360,6 +360,9 @@ def reformat_df(df, remove_duplicate_columns=True):
             elif col not in mapping and col not in cols_to_drop:
                 cols_to_drop.append(col)
 
+    # Remove superfluous columns
+    df.drop(labels=cols_to_drop, axis="columns", inplace=True)
+
     # Rename columns to canonical names
     df.rename(columns=mapping, inplace=True, errors="raise")
 
@@ -368,30 +371,23 @@ def reformat_df(df, remove_duplicate_columns=True):
         col = df.columns[lower_cols.index("latitudesouth")]
         print(f"Using {col} for {df.iloc[0]['dataset']}")
         df["latitude"] = -df[col]
-        cols_to_drop.append("latitudesouth")
     if "latitude" not in df.columns and "latitude-" in lower_cols:
         col = df.columns[lower_cols.index("latitude-")]
         print(f"Using {col} for {df.iloc[0]['dataset']}")
         df["latitude"] = -df[col]
-        cols_to_drop.append("latitude-")
     if "longitude" not in df.columns and "longitudewest" in lower_cols:
         col = df.columns[lower_cols.index("longitudewest")]
         print(f"Using {col} for {df.iloc[0]['dataset']}")
         df["longitude"] = -df[col]
-        cols_to_drop.append("longitudewest")
     if "longitude" not in df.columns and "longitude-" in lower_cols:
         col = df.columns[lower_cols.index("longitude-")]
         print(f"Using {col} for {df.iloc[0]['dataset']}")
         df["longitude"] = -df[col]
-        cols_to_drop.append("longitude-")
 
     # Remove datapoints with erroneous negative depth
     if "depth_of_observer" in df.columns:
         # Only observed two datapoints where this happens
         df.loc[df["depth_of_observer"] < 0, "depth_of_observer"] = pd.NA
-
-    # Remove superfluous columns
-    df.drop(labels=cols_to_drop, axis="columns", inplace=True)
 
     # Add file extension to image
     df["image"] = df.apply(add_file_extension, axis=1)
