@@ -9,7 +9,7 @@ from pandas import DataFrame
 from pangaeapy import PanDataSet
 from requests.compat import urljoin
 
-from pangaea_downloader.tools import datasets
+from pangaea_downloader.tools import datasets, requesting
 
 
 def scrape_image_data(url: str, verbose=1) -> Optional[DataFrame]:
@@ -22,7 +22,7 @@ def scrape_image_data(url: str, verbose=1) -> Optional[DataFrame]:
     # Request dataset url
     if verbose >= 1:
         print("\t\t\t[INFO] Requesting:", url)
-    resp = requests.get(url)
+    resp = requesting.get_request_with_backoff(url)
     # Parse response
     soup = BeautifulSoup(resp.text, "lxml")
     # Get coordinates of expedition
@@ -58,7 +58,7 @@ def scrape_image_data(url: str, verbose=1) -> Optional[DataFrame]:
     if verbose >= 1:
         print("\t\t\t[INFO] URL to photos page:", download_link)
     # Get to photos page (page 1)
-    resp = requests.get(download_link)
+    resp = requesting.get_request_with_backoff(download_link)
     photos_page = BeautifulSoup(resp.text, "lxml")
     img_urls = get_urls_from_each_page(photos_page, src_url, verbose=verbose)
     if img_urls is None:
@@ -107,7 +107,7 @@ def get_urls_from_each_page(
             if verbose >= 1:
                 print(f"\t\t\t[INFO] Processing Page {n}...")
             url = pagination[n]
-            resp = requests.get(url)
+            resp = requesting.get_request_with_backoff(url)
             soup = BeautifulSoup(resp.text, "lxml")
             urls = get_page_image_urls(soup, verbose=verbose)
             img_urls.extend(urls)

@@ -1,8 +1,9 @@
 """Functions for processing each of the result items."""
 from typing import Optional, Tuple
 
-import requests
 from bs4 import BeautifulSoup
+
+from . import requesting
 
 
 def url_from_uri(uri: str, base_url="https://doi.pangaea.de/") -> str:
@@ -28,7 +29,7 @@ def get_result_info(res: dict) -> Tuple[str, str, str, str, bool]:
 def get_html_info(url: str) -> Optional[str]:
     """Make get request to dataset webpage and return dataset size."""
     # Make get request to webpage
-    resp = requests.get(url)
+    resp = requesting.get_request_with_backoff(url)
     if resp.status_code == 200:
         # Parse html
         soup = BeautifulSoup(resp.text, "lxml")

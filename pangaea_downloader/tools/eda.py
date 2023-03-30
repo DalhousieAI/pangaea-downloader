@@ -4,9 +4,10 @@ import cv2
 import matplotlib.cm
 import matplotlib.colors
 import numpy as np
-import requests
 from matplotlib.pyplot import get_cmap
 from sklearn.neighbors import KernelDensity
+
+from . import requesting
 
 
 def url_from_doi(doi: str) -> str:
@@ -29,7 +30,7 @@ def img_from_url(url: str, verbose=False) -> np.array:
     """Take an image url and return retrieved image array."""
     success = False
     while not success:
-        resp = requests.get(url, stream=True)
+        resp = requesting.get_request_with_backoff(url, stream=True)
         print(f"status code: {resp.status_code}") if verbose else 0
         success = True if (resp.status_code == 200) else False
         if success:
