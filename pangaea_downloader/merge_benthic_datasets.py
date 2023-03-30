@@ -297,7 +297,7 @@ def reformat_df(df, remove_duplicate_columns=True):
         ],
         "x_pos": [],
         "y_pos": [],
-        "altitude": ["altitude", "height"],
+        "altitude": ["altitude", "heightaboveseafloor", "height"],
         "depth": [
             "depthwater",
             "bathydepth",
