@@ -77,7 +77,7 @@ def scrape_image_data(url: str, verbose=1) -> Optional[DataFrame]:
     ds_id = datasets.uri2dsid(doi if doi else url)
     df["ds_id"] = ds_id
     if (len(ds.events) > 0) and (ds.events[0].campaign is not None):
-        df["Campaign"] = ds.events[0].campaign.name
+        df["campaign"] = ds.events[0].campaign.name
     return df
 
 
