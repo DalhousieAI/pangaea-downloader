@@ -371,14 +371,22 @@ def reformat_df(df, remove_duplicate_columns=True):
     df.rename(columns=mapping, inplace=True, errors="raise")
 
     # Handle latitudesouth and longitudewest
-    if "latitude" not in df.columns and "latitudesouth" in df.columns:
-        df["latitude"] = -df["latitudesouth"]
-    if "latitude" not in df.columns and "latitude-" in df.columns:
-        df["latitude"] = -df["latitude-"]
-    if "longitude" not in df.columns and "longitudewest" in df.columns:
-        df["longitude"] = -df["longitudewest"]
-    if "longitude" not in df.columns and "longitude-" in df.columns:
-        df["longitude"] = -df["longitude-"]
+    if "latitude" not in df.columns and "latitudesouth" in lower_cols:
+        col = df.columns[lower_cols.index("latitudesouth")]
+        print(f"Using {col} for {df.iloc[0]['dataset']}")
+        df["latitude"] = -df[col]
+    if "latitude" not in df.columns and "latitude-" in lower_cols:
+        col = df.columns[lower_cols.index("latitude-")]
+        print(f"Using {col} for {df.iloc[0]['dataset']}")
+        df["latitude"] = -df[col]
+    if "longitude" not in df.columns and "longitudewest" in lower_cols:
+        col = df.columns[lower_cols.index("longitudewest")]
+        print(f"Using {col} for {df.iloc[0]['dataset']}")
+        df["longitude"] = -df[col]
+    if "longitude" not in df.columns and "longitude-" in lower_cols:
+        col = df.columns[lower_cols.index("longitude-")]
+        print(f"Using {col} for {df.iloc[0]['dataset']}")
+        df["longitude"] = -df[col]
 
     # Add file extension to image
     df["image"] = df.apply(add_file_extension, axis=1)
