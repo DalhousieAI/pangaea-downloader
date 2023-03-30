@@ -6,6 +6,8 @@ Note: this module is only for Parent and Child datasets.
       use pangaea_downloader.tools.scraper module.
 """
 import os
+import shutil
+import tempfile
 import time
 from typing import List, Optional
 
@@ -165,8 +167,14 @@ def save_df(df: DataFrame, output_path: str, level=1, index=None, verbose=1) -> 
         if verbose >= 1:
             print(f"{tabs}[{idx}] Empty DataFrame! File not saved!")
         return False
-    # Save if dataframe not empty
-    df.to_csv(output_path, index=False)
+    # Save dataframe if it is not empty
+    with tempfile.TemporaryDirectory() as dir_tmp:
+        # Write to a temporary file
+        tmp_path = os.path.join(dir_tmp, os.path.basename(output_path))
+        df.to_csv(tmp_path, index=False)
+        # Move our temporary file to the destination
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        shutil.move(tmp_path, output_path)
     if verbose >= 1:
         print(f"{tabs}[{idx}] Saved to '{output_path}'")
     return True

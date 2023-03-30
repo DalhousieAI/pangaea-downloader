@@ -139,16 +139,7 @@ def search_and_download(
         # ----------------- SAVE TO FILE ----------------- #
         if df is None:
             continue
-        try:
-            saved = datasets.save_df(df, output_path, level=1, verbose=verbose - 1)
-        except Exception as err:
-            # Delete partially saved file, if present
-            if os.path.isfile(output_path):
-                try:
-                    os.remove(output_path)
-                except Exception:
-                    pass
-            raise err
+        saved = datasets.save_df(df, output_path, level=1, verbose=verbose - 1)
         n_downloads += 1 if saved else 0
 
     if verbose >= 0:
