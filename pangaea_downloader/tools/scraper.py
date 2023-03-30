@@ -124,7 +124,7 @@ def get_pagination(page_soup: BeautifulSoup, src_url: str) -> Optional[dict]:
     # List of page URLs
     page_urls = [urljoin(src_url, a["href"]) for a in pagination.find_all("a")][:-1]
     # Page number : Page URL
-    page_dict = {k: v for k, v in zip(page_nums, page_urls)}
+    page_dict = dict(zip(page_nums, page_urls))
     return page_dict
 
 
