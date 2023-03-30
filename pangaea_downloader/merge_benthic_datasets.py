@@ -1154,7 +1154,7 @@ def add_missing_datetime(df, ds_id=None, verbose=1):
     return df
 
 
-def interpolate_by_datetime(df, columns):
+def interpolate_by_datetime(df, columns, **kwargs):
     """
     Use datetime column to interpolate values for selected columns.
 
@@ -1165,6 +1165,8 @@ def interpolate_by_datetime(df, columns):
         in other columns.
     columns : str or iterable of str
         Name of column or columns to fill in missing values with interpolation.
+    **kwargs
+        Additional arguments as per :func:`numpy.interp`.
 
     Returns
     -------
@@ -1185,6 +1187,7 @@ def interpolate_by_datetime(df, columns):
             datetime_actual[has_dt_not_col],
             datetime_actual[has_dt_and_col],
             df.loc[has_dt_and_col, col],
+            **kwargs,
         )
     return df
 
