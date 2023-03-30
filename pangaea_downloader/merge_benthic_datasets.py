@@ -821,7 +821,14 @@ def fix_missing_datetime_from_image_name(df, ds_id, verbose=1):
 
     selected_image_no_ext = selected_image.apply(lambda x: os.path.splitext(x)[0])
 
-    if ds_id in [
+    if 371062 <= ds_id <= 371064:
+        # e.g. PO309_41-1_2004-04-05T08_55_41.jpg
+        # e.g. PO309_41-2-1_2004-04-05T11_28_26.jpg
+        # e.g. PO322_211-4-1_2005-05-18T19_35_31.jpg
+        dtstr = selected_image_no_ext.apply(lambda x: "-".join(x.split("_")[2:]))
+        df.loc[select, "datetime"] = pd.to_datetime(dtstr, format="%Y-%m-%dT%H-%M-%S")
+
+    elif ds_id in [
         785104,
         785105,
         785106,
