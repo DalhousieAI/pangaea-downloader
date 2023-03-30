@@ -1180,6 +1180,12 @@ def interpolate_by_datetime(df, columns, **kwargs):
     if isinstance(columns, str):
         columns = [columns]
     for col in columns:
+        interp_kwargs = kwargs
+        if col in ["depth", "altitude"]:
+            if "left" not in interp_kwargs:
+                interp_kwargs["left"] = np.nan
+            if "right" not in interp_kwargs:
+                interp_kwargs["right"] = np.nan
         has_col = ~df[col].isna()
         has_dt_and_col = has_datetime & has_col
         has_dt_not_col = has_datetime & ~has_col
@@ -1187,7 +1193,7 @@ def interpolate_by_datetime(df, columns, **kwargs):
             datetime_actual[has_dt_not_col],
             datetime_actual[has_dt_and_col],
             df.loc[has_dt_and_col, col],
-            **kwargs,
+            **interp_kwargs,
         )
     return df
 
