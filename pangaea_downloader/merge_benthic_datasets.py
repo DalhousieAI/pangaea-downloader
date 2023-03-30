@@ -298,13 +298,9 @@ def reformat_df(df, remove_duplicate_columns=True):
         "x_pos": [],
         "y_pos": [],
         "altitude": ["altitude", "heightaboveseafloor", "height"],
-        "depth": [
-            "depthwater",
-            "bathydepth",
-            "bathymetry",
-            "bathy",
-            "depth",
-        ],
+        "depth_of_observer": ["depthwater", "depth"],
+        "bathymetry": ["bathydepth", "bathymetry", "bathy"],
+        "elevation": ["elevation"],
         "backscatter": [],
         "temperature": ["temperature", "temp"],
         "salinity": ["salinity", "sal"],
@@ -390,15 +386,9 @@ def reformat_df(df, remove_duplicate_columns=True):
         cols_to_drop.append("longitude-")
 
     # Remove datapoints with erroneous negative depth
-    if "depth" in df.columns:
+    if "depth_of_observer" in df.columns:
         # Only observed two datapoints where this happens
-        df.loc[df["depth"] < 0, "depth"] = pd.NA
-
-    # Use elevation if there was no depth
-    if "depth" not in df.columns and "elevation" in lower_cols:
-        col = df.columns[lower_cols.index("elevation")]
-        print(f"Using {col} for {df.iloc[0]['dataset']}")
-        df["depth"] = -df[col]
+        df.loc[df["depth_of_observer"] < 0, "depth_of_observer"] = pd.NA
 
     # Remove superfluous columns
     df.drop(labels=cols_to_drop, axis="columns", inplace=True)
@@ -1185,8 +1175,10 @@ def interpolate_by_datetime(df, columns, **kwargs):
     if isinstance(columns, str):
         columns = [columns]
     for col in columns:
+        if col not in df:
+            continue
         interp_kwargs = kwargs
-        if col in ["depth", "altitude"]:
+        if col in ["depth", "depth_of_observer", "bathymetry", "altitude"]:
             if "left" not in interp_kwargs:
                 interp_kwargs["left"] = np.nan
             if "right" not in interp_kwargs:
@@ -1273,7 +1265,9 @@ def fixup_incomplete_metadata(df, ds_id=None, verbose=1):
         if verbose >= 1:
             print(f"Interpolating latitude, longitude, and depth for dataset {ds_id}")
         # Interpolate lat, lon, and depth based on datetime
-        df = interpolate_by_datetime(df, ["latitude", "longitude", "depth"])
+        df = interpolate_by_datetime(
+            df, ["latitude", "longitude", "depth_of_observer", "bathymetry"]
+        )
 
     if ds_id in [875071, 875073]:
         if verbose >= 1:
@@ -1284,7 +1278,7 @@ def fixup_incomplete_metadata(df, ds_id=None, verbose=1):
         # from the subsequent image, so we don't need the ones without metadata.
         df = df[~df["datetime"].isna()]
         # Interpolate missing depth values
-        df = interpolate_by_datetime(df, ["depth"])
+        df = interpolate_by_datetime(df, ["depth_of_observer", "bathymetry"])
 
     if ds_id in [875084]:
         if verbose >= 1:
@@ -1293,7 +1287,7 @@ def fixup_incomplete_metadata(df, ds_id=None, verbose=1):
         # The first three are of the deck, the rest are dark watercolumn shots.
         df = df[~df["longitude"].isna()]
         # Interpolate missing depth values
-        df = interpolate_by_datetime(df, ["depth"])
+        df = interpolate_by_datetime(df, ["depth_of_observer", "bathymetry"])
 
     if (878001 <= ds_id <= 878019) or ds_id == 878045:
         if verbose >= 1:
@@ -1366,7 +1360,9 @@ def fixup_incomplete_metadata(df, ds_id=None, verbose=1):
             print(
                 f"{ds_id}: Interpolating latitude, longitude, and depth for dataset {ds_id}"
             )
-        df = interpolate_by_datetime(df, ["latitude", "longitude", "depth"])
+        df = interpolate_by_datetime(
+            df, ["latitude", "longitude", "depth_of_observer", "bathymetry"]
+        )
 
     if ds_id in [914155]:
         if verbose >= 1:
@@ -1421,7 +1417,7 @@ def fixup_incomplete_metadata(df, ds_id=None, verbose=1):
     ):
         if verbose >= 1:
             print(f"{ds_id}: Interpolating missing depth metadata for dataset {ds_id}")
-        df = interpolate_by_datetime(df, ["depth"])
+        df = interpolate_by_datetime(df, ["depth_of_observer", "bathymetry"])
 
     if any(df["latitude"].isna() | df["longitude"].isna()):
         # Fill in any missing latitude and longitude values with the
@@ -1578,7 +1574,8 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
         "latitude",
         "longitude",
         "altitude",
-        "depth",
+        "depth_of_observer",
+        "bathymetry",
         "backscatter",
         "temperature",
         "salinity",
