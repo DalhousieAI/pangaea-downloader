@@ -109,7 +109,7 @@ def search_and_download(
                         )
                     continue
                 for df in df_list:
-                    if df is None:
+                    if df is None or len(df) == 0:
                         continue
                     # Add the parent's ID to the dataframe
                     df["parent_ds_id"] = ds_id
