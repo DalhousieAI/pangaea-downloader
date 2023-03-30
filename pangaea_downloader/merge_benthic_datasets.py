@@ -1406,6 +1406,18 @@ def fixup_incomplete_metadata(df, ds_id=None, verbose=1):
         # Fill in any missing latitude and longitude metadata
         df = interpolate_by_datetime(df, ["latitude", "longitude"])
 
+    if (
+        (702075 <= ds_id <= 702080)
+        or (818484 <= ds_id <= 818509)
+        or ds_id in [849287, 849289]
+        or 862084 <= ds_id <= 862097
+        or ds_id in [875072, 875074]
+        or 875081 <= ds_id <= 875085
+    ):
+        if verbose >= 1:
+            print(f"{ds_id}: Interpolating missing depth metadata for dataset {ds_id}")
+        df = interpolate_by_datetime(df, ["depth"])
+
     if any(df["latitude"].isna() | df["longitude"].isna()):
         # Fill in any missing latitude and longitude values with the
         # mean coordinate reported at the dataset level
