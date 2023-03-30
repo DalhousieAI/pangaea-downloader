@@ -387,6 +387,11 @@ def reformat_df(df, remove_duplicate_columns=True):
         print(f"Using {col} for {df.iloc[0]['dataset']}")
         df["longitude"] = -df[col]
 
+    # Remove datapoints with erroneous negative depth
+    if "depth" in df.columns:
+        # Only observed two datapoints where this happens
+        df.loc[df["depth"] < 0, "depth"] = pd.NA
+
     # Use elevation if there was no depth
     if "depth" not in df.columns and "elevation" in lower_cols:
         col = df.columns[lower_cols.index("elevation")]
