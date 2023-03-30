@@ -103,7 +103,7 @@ def fetch_children(
             continue
         elif typ == "paginated":
             if verbose >= 1:
-                print(f"\t\t[{i+1}] Scrapping dataset...")
+                print(f"\t\t[{i+1}] Scraping dataset...")
             df = scraper.scrape_image_data(url)
             if df is not None:
                 df_list.append(df)
