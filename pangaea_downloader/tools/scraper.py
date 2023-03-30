@@ -9,7 +9,7 @@ from pandas import DataFrame
 from pangaeapy import PanDataSet
 from requests.compat import urljoin
 
-import pangaea_downloader.tools.datasets as datasets
+from pangaea_downloader.tools import datasets
 
 
 def scrape_image_data(url: str, verbose=1) -> Optional[DataFrame]:
