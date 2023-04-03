@@ -1491,7 +1491,11 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
             files_without_url.append(fname)
             continue
 
-        df["ds_id"] = f"pangaea-{ds_id}"
+        if "ds_id" in df.columns:
+            df["ds_id"] = "pangaea-" + df["ds_id"].astype(str)
+        else:
+            df["ds_id"] = f"pangaea-{ds_id}"
+
         df = reformat_df(df)
         if df is None:
             continue
