@@ -1581,6 +1581,7 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
         "salinity",
         "chlorophyll",
         "acidity",
+        "parent_ds_id",
     }
     df_all = pd.concat(
         [df[df.columns.intersection(select_cols)] for df in dfs if len(df) > 0]
