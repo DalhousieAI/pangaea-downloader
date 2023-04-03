@@ -204,7 +204,7 @@ def check_title(title):
     ):
         return False
     if "photographs of tiles" in title.lower():
-        return False
+        pass
 
     return True
 
