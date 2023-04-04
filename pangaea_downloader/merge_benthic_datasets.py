@@ -741,8 +741,10 @@ def fixup_favourite_images(df, verbose=1):
     """
     Drop duplicated favourite images.
 
-    These occur in Ingo Schewe's datasets along OFOS profiles during POLARSTERN
-    cruises, PANGAEA dataset ids 849814--849816 and 873995--874002.
+    These occur in Schewe and Bergmann's datasets along OFOS profiles during
+    POLARSTERN cruises, PANGAEA dataset ids 849814--849816. 873995--874002,
+    895102--895104, 896545--896549, 896653--896657, 912471.
+
 
     Parameters
     ----------
@@ -757,14 +759,22 @@ def fixup_favourite_images(df, verbose=1):
         As input dataframe, but with all Type entries starting with favourite
         removed (case-insensitive).
     """
-    if "Type" not in df.columns:
-        return df
-    # Remove all Favourite timer, Favourite hotkey, FAVOURITE_TIMER, and
-    # FAVOURITE_HOTKEY entries, which although they have unique URLs for their
-    # images are actually identical images to the ones occuring immediately
-    # after them in the dataframe.
     n_samples_before = len(df)
-    df = df[~df["Type"].str.lower().str.startswith("favourite")]
+    if "Type" in df.columns:
+        # Remove all Favourite timer, Favourite hotkey, FAVOURITE_TIMER, and
+        # FAVOURITE_HOTKEY entries, which although they have unique URLs for their
+        # images are actually identical images to the ones occuring immediately
+        # after them in the dataframe.
+        df = df[~df["Type"].str.lower().str.startswith("favourite")]
+    if "image" in df.columns:
+        # Check if the image filename field is repeated except for a leading
+        # "FAVOURITE_" string, if so remove it. These images are identical
+        # copies of the other images.
+        select = df["image"].str.lower().str.startswith("favourite")
+        image_tmp = df["image"].str.replace("FAVOURITE_", "", case=False, regex=False)
+        is_repeated = image_tmp.duplicated(False)
+        # Remove favourite images which are repeated
+        df = df[~(select & is_repeated)]
     n_samples_after = len(df)
     if verbose >= 1 and n_samples_after != n_samples_before:
         print(
