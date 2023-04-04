@@ -1581,9 +1581,13 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
         print(
             f"Of which {len(files_with_repeat_urls)} have repeated URLs (before replacing dups with image)"
         )
+        for fname in files_with_repeat_urls:
+            print(f"    {fname}")
         print(
             f"Of which {len(files_with_repeat_urls2)} have repeated URLs (after replacing dups with image)"
         )
+        for fname in files_with_repeat_urls2:
+            print(f"    {fname}")
         print()
         print(f"There are {len(column_count)} unique column names:")
         print()
