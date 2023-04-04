@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import scipy.interpolate
+from pandas.api.types import is_numeric_dtype
 from pangaeapy import PanDataSet
 from tqdm.auto import tqdm
 
@@ -235,8 +236,21 @@ def reformat_df(df, remove_duplicate_columns=True):
     # Make a copy of the dataframe so we can't overwrite the input
     df = df.copy()
 
-    # Remove bad columns
-    df.drop(labels=["-"], axis="columns", inplace=True, errors="ignore")
+    # Get dataset id from first row
+    ds_id = df.iloc[0]["ds_id"]
+    if isinstance(ds_id, str):
+        ds_id = ds_id.split("-")[-1]
+
+    # Handle Area column
+    for col in ["Area", "Area_2", "Area_3"]:
+        # Area is sometimes the seafloor surface area of the image in
+        # meters^2 and sometimes used as a synonym for location
+        if col in df.columns and not all(df[col].isna()) and is_numeric_dtype(df[col]):
+            print(df.columns)
+            print(f"{ds_id}: Using {col} for area measurement")
+            df.rename(columns={col: "area"}, inplace=True, errors="raise")
+            break
+
     # Remove duplicately named columns
     cols_to_drop = []
     if remove_duplicate_columns:
@@ -250,6 +264,8 @@ def reformat_df(df, remove_duplicate_columns=True):
             ):
                 cols_to_drop.append(col)
         df.drop(labels=cols_to_drop, axis="columns", inplace=True)
+    # Remove bad columns
+    df.drop(labels=["-"], axis="columns", inplace=True, errors="ignore")
 
     # Find the correct URL column, and drop other columns containing "url"
     cols_to_drop = []
@@ -1581,6 +1597,7 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
         "datetime",
         "latitude",
         "longitude",
+        "area",
         "altitude",
         "depth_of_observer",
         "bathymetry",
