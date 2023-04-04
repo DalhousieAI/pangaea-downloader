@@ -265,6 +265,7 @@ def reformat_df(df, remove_duplicate_columns=True):
     # is the output column name, and the value is a list of search names
     # in order of priority. The first match will be kept and others discarded.
     desired_columns = {
+        "url_thumbnail": ["urlthumb", "urlthumbnail"],
         "dataset": ["ds_id"],
         "site": ["Event", "event", "deployment"],
         "image": ["image", "filename"],
@@ -329,6 +330,8 @@ def reformat_df(df, remove_duplicate_columns=True):
             if not found:
                 found = True
                 mapping[col] = canon
+                if col in cols_to_drop:
+                    cols_to_drop.remove(col)
                 if col != canon and canon in df.columns:
                     cols_to_drop.append(canon)
             elif col not in mapping and col not in cols_to_drop:
@@ -342,6 +345,8 @@ def reformat_df(df, remove_duplicate_columns=True):
             if not found:
                 found = True
                 mapping[col] = canon
+                if col in cols_to_drop:
+                    cols_to_drop.remove(col)
                 if col != canon and canon in df.columns:
                     cols_to_drop.append(canon)
             elif col not in mapping and col not in cols_to_drop:
@@ -355,6 +360,8 @@ def reformat_df(df, remove_duplicate_columns=True):
             if not found:
                 found = True
                 mapping[col] = canon
+                if col in cols_to_drop:
+                    cols_to_drop.remove(col)
                 if col != canon and canon in df.columns:
                     cols_to_drop.append(canon)
             elif col not in mapping and col not in cols_to_drop:
@@ -1569,6 +1576,7 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
         "dataset",
         "site",
         "url",
+        "url_thumbnail",
         "image",
         "datetime",
         "latitude",
