@@ -1657,6 +1657,7 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
     df_all = pd.concat(
         [df[df.columns.intersection(select_cols)] for df in dfs if len(df) > 0]
     )
+    df_all.rename(columns={"parent_ds_id": "collection"}, inplace=True)
 
     print(f"There are {len(df_all)} records before dropping duplicated URLs")
 
