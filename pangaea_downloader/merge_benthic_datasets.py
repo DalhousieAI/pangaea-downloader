@@ -1626,10 +1626,13 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
         [df[df.columns.intersection(select_cols)] for df in dfs if len(df) > 0]
     )
 
+    print(f"There are {len(df_all)} records before dropping duplicated URLs")
+
     # Remove duplicate URLs
     if verbose >= 1:
         print("Remove duplicates")
     df_all.drop_duplicates(subset="url", inplace=True, keep="first")
+    print(f"There are {len(df_all)} records after dropping duplicated URLs")
 
     # Fix repeated output paths by replacing with image field
     if fixup_repeated_output_paths is None:
