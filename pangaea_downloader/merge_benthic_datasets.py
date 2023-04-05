@@ -1504,6 +1504,7 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
     n_valid = 0
     dfs = []
     dfs_fnames = []
+    ids_with_potential_labels = []
 
     for fname in tqdm(sorted(sorted(os.listdir(input_dirname)), key=len)):  # noqa: C414
         if not fname.endswith(".csv"):
@@ -1547,6 +1548,30 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
         for col in df.columns:
             column_count[col] += 1
             column_examples[col].append(fname)
+
+        for key in [
+            # "Type",
+            "Content",  # Yes!
+            # "Sample label",
+            # "ID",
+            # "Sample ID",
+            "Classification",  # Yes!
+            "Species",  # Yes!
+            # "Reference",
+            # "Samp type",
+            "Family",
+            "Genus",
+            # "Ind No",
+            # "Imagery",
+            # "Img brightness",  # No
+            "Ground vis",  # Yes!
+            "Marine litter",
+            "Fisheries plastic",
+            "Unident litter",
+        ]:
+            if key in df.columns:
+                print(f"{fname} has {key}")
+                ids_with_potential_labels.append(ds_id)
 
         # Drop rows that are complete duplicates
         df.drop_duplicates(inplace=True)
@@ -1597,6 +1622,13 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
         ).items():
             c = col + " "
             print(f"{c:.<35s} {count:4d}")
+        print()
+        ids_with_potential_labels = sorted(set(ids_with_potential_labels))
+        print(
+            f"There are {len(ids_with_potential_labels)} datasets which might have labels to extract:"
+        )
+        for ds_id in ids_with_potential_labels:
+            print(ds_id)
         print()
 
     if verbose >= 1:
