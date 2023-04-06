@@ -1534,6 +1534,8 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
             df["ds_id"] = "pangaea-" + df["ds_id"].astype(str)
         else:
             df["ds_id"] = f"pangaea-{ds_id}"
+        if "parent_ds_id" in df.columns:
+            df["parent_ds_id"] = "pangaea-" + df["parent_ds_id"].astype(str)
 
         df = reformat_df(df)
         if df is None:
