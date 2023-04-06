@@ -1366,12 +1366,17 @@ def fixup_incomplete_metadata(df, ds_id=None, verbose=1):
             select_and_col = select & ~missing_dt
             select_not_col = select & missing_dt
             if any(select_and_col) and any(select_not_col):
-                df.loc[select_not_col, col] = scipy.interpolate.interp1d(
+                new_values = scipy.interpolate.interp1d(
                     indices[select_and_col],
-                    pd.to_datetime(df.loc[select_and_col, col]),
+                    pd.to_datetime(df.loc[select_and_col, col]).map(
+                        pd.Timestamp.timestamp
+                    ),
                     kind="nearest",
                     fill_value="extrapolate",
                 )(indices[select_not_col])
+                new_values = pd.to_datetime(new_values, unit="s")
+                new_values = new_values.strftime("%Y-%m-%d")
+                df.loc[select_not_col, col] = new_values
 
     if ds_id in [911904, 918924, 919348]:
         if verbose >= 1:
