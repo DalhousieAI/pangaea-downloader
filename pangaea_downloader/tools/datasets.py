@@ -19,7 +19,7 @@ from pangaea_downloader.tools import checker, process, scraper
 
 T_POLL_LAST = 0
 # T_POLL_INTV = 0  # Allow rapid loading of cached records
-T_POLL_INTV = 0.1667  # Rate-limit ourselves; stay under 5 requests within 30s
+T_POLL_INTV = 0.1667  # Rate-limit ourselves; stay under 180 requests within 30s
 
 
 def fetch_child(
