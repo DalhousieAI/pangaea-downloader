@@ -29,6 +29,10 @@ except ImportError:
     fixup_repeated_output_paths = None
     row2basename = None
 
+# Create new `pandas` methods which use `tqdm` progress
+# (can use tqdm_gui, optional kwargs, etc.)
+tqdm.pandas()
+
 TAXONOMY_RANKS = [
     ["Kingdom", "Regnum"],
     ["Phylum", "Division"],
@@ -1480,6 +1484,81 @@ def fixup_incomplete_metadata(df, ds_id=None, verbose=1):
     return df
 
 
+def merge_duplicated_urls(df):
+    """
+    Merge metadata across rows which have the same URL.
+    """
+    print("Original number of rows:", len(df))
+    df.drop_duplicates(inplace=True)
+    print("Number of rows after dropping simple duplicates:", len(df))
+    # Record the original sort index so we can get the data back in the original
+    # order.
+    df["original_index"] = df.index
+    # Determine how many images are at the same location. This indicates how
+    # accurate the latitude and longitude information is. We will want to keep
+    # the most accurate version of this.
+    repeat_location_counts = df[["longitude", "latitude"]].value_counts()
+    repeat_location_counts = repeat_location_counts.to_frame()
+    repeat_location_counts.rename(columns={0: "tally_repeated_location"}, inplace=True)
+    # Add the tally_repeated_location data as a new column
+    df = df.merge(repeat_location_counts, how="left", on=["latitude", "longitude"])
+
+    def resolve_duplicates(sdf):
+        if len(sdf) == 1:
+            # If there's only one row in the group, return it.
+            return sdf.iloc[0]
+        # Take the entry which has the fewest repetitions of the latitude and
+        # longitude value. We will use the version from the first dataset that
+        # had the fewest repetitions of the location for this image.
+        # We adopt this row's collection, dataset, and site values in addition
+        # to its coordinates.
+        idx = np.argmin(sdf["tally_repeated_location"])
+        row = sdf.iloc[idx].copy()
+        # For numeric columns (other than latitude and longitude), take the
+        # average of the values where they are present.
+        for col in [
+            "depth_of_observer",
+            "altitude",
+            "bathymetry",
+            "salinity",
+            "temperature",
+            "acidity",
+            "area",
+        ]:
+            select = ~pd.isna(sdf[col])
+            if select.sum() == 0:
+                continue
+            row[col] = sdf[select][col].mean()
+        # Look to see if we are missing an image or thumbnail entry and one
+        # of the duplicates has its value.
+        for col in ["image", "url_thumbnail"]:
+            if not pd.isna(row[col]):
+                continue
+            values = sdf[col]
+            values = values[~pd.isna(values)]
+            if len(values) == 0:
+                continue
+            row[col] = values.iloc[0]
+        # For datetime, use the fact that we encoded datetime as a string
+        # with varying levels of precision. More digits means higher precision.
+        # Take the most precise value, preferring the value from the selected
+        # record in the event of a tie.
+        datetime_len = sdf["datetime"].str.replace(" 00:00:00", "").str.len()
+        idx_dt = np.argmax(datetime_len)
+        if datetime_len.iloc[idx] != datetime_len.iloc[idx_dt]:
+            row["datetime"] = sdf.iloc[idx_dt]["datetime"]
+        return row
+
+    print("Merging metadata between rows with the same URL")
+    # Group by URL and apply our transformation to each group
+    df_out = df.groupby("url").progress_apply(resolve_duplicates)
+    # Reorder the dataframe to preseve implicit temporal information from the
+    # ordering of the images
+    df_out.sort_values("original_index", inplace=True)
+    df_out.drop(columns=["original_index", "tally_repeated_location"], inplace=True)
+    return df_out
+
+
 def process_datasets(input_dirname, output_path=None, verbose=0):
     """
     Process a directory of datasets: clean, concatenate and save.
@@ -1670,8 +1749,8 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
 
     # Remove duplicate URLs
     if verbose >= 1:
-        print("Remove duplicates")
-    df_all.drop_duplicates(subset="url", inplace=True, keep="first")
+        print("Merge duplicated URLs")
+    df_all = merge_duplicated_urls(df_all)
     print(f"There are {len(df_all)} records after dropping duplicated URLs")
 
     # Fix repeated output paths by replacing with image field
