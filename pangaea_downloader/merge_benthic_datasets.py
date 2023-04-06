@@ -1747,6 +1747,13 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
 
     print(f"There are {len(df_all)} records before dropping duplicated URLs")
 
+    if os.path.dirname(output_path):
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    output_path_with_dups = os.path.splitext(output_path)[0] + "_with-duplicates.csv"
+    if verbose >= 0:
+        print(f"Saving (with duplicates) to {output_path_with_dups}")
+    df_all.to_csv(output_path_with_dups, index=False)
+
     # Remove duplicate URLs
     if verbose >= 1:
         print("Merge duplicated URLs")
@@ -1762,10 +1769,8 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
             print("Fix repeated output paths to prevent collisions")
         df_all = fixup_repeated_output_paths(df_all, inplace=True, verbose=verbose)
 
-    if os.path.dirname(output_path):
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
     if verbose >= 0:
-        print(f"Saving to {output_path}")
+        print(f"Saving (without duplicates) to {output_path}")
     df_all.to_csv(output_path, index=False)
 
 
