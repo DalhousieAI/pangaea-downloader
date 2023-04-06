@@ -1757,6 +1757,8 @@ def process_datasets(input_dirname, output_path=None, verbose=0):
     # Remove duplicate URLs
     if verbose >= 1:
         print("Merge duplicated URLs")
+    # Convert datetime to string
+    df_all["datetime"] = df_all["datetime"].astype(str)
     df_all = merge_duplicated_urls(df_all)
     print(f"There are {len(df_all)} records after dropping duplicated URLs")
 
