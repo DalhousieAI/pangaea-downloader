@@ -538,6 +538,7 @@ def check_image_url(url):
     if (
         url.startswith("https://hs.pangaea.de/Images/Benthos/AntGlassSponges/")
         and "AHEAD" not in url
+        and "DOWN" not in url
     ):
         # Images of AntGlassSponges must contain "AHEAD" to be kept
         # otherwise, they are of sponges after removal
