@@ -1564,6 +1564,81 @@ def merge_duplicated_urls(df):
     return df_out
 
 
+def process_single(df, ds_id=None, verbose=1, remove_duplicate_columns=False):
+    """
+    Reformat and cleanup metadata for a single dataset.
+
+    Parameters
+    ----------
+    df : pandas.Dataframe
+        The dataset to process.
+    ds_id : int, optional
+        The ID number for the PANGAEA dataset. If omitted, it is inferred from
+        the ``ds_id`` column of ``df``.
+    verbose : int, default=1
+        Verbosity level.
+    remove_duplicate_columns : bool, default=False
+        Whether to remove duplicate column names.
+
+    Returns
+    -------
+    df : pandas.Dataframe
+        A processed copy of the dataset.
+    """
+    if df is None or len(df) == 0:
+        return df
+
+    if ds_id is None:
+        ds_id = df.iloc[0]["ds_id"]
+    if isinstance(ds_id, str):
+        ds_id = int(ds_id.split("-")[-1])
+
+    if "ds_id" in df.columns:
+        df["ds_id"] = "pangaea-" + df["ds_id"].astype(str)
+        df["ds_id"] = df["ds_id"].str.replace("pangaea-pangaea-", "pangaea-")
+    else:
+        df["ds_id"] = f"pangaea-{ds_id}"
+    if "parent_ds_id" in df.columns:
+        df["parent_ds_id"] = "pangaea-" + df["parent_ds_id"].astype(str)
+        df["parent_ds_id"] = df["parent_ds_id"].str.replace(
+            "pangaea-pangaea-", "pangaea-"
+        )
+
+    df = reformat_df(df, remove_duplicate_columns=remove_duplicate_columns)
+    if df is None:
+        return df
+
+    url_col = "url"
+    df = df[df[url_col] != ""]
+    if len(df) == 0:
+        return df
+
+    df = filter_urls(df, url_column=url_col)
+    if len(df) == 0:
+        return df
+
+    # Drop rows that are complete duplicates
+    df.drop_duplicates(inplace=True)
+
+    # Try to fix repeated URLs that are accidental dups but should differ
+    df = fixup_repeated_urls(df, url_column=url_col, verbose=verbose)
+
+    # Check for any rows that are all NaNs
+    if sum(df.isna().all("columns")) > 0:
+        print(f"{ds_id} has a row which is all NaNs")
+
+    # Remove duplicated "favourited" images
+    df = fixup_favourite_images(df, verbose=verbose)
+
+    # Fix incomplete lat/lon/datetime metadata
+    df = fixup_incomplete_metadata(df, ds_id, verbose=verbose)
+
+    # Add datetime if it is completely missing
+    df = add_missing_datetime(df, ds_id, verbose=verbose)
+
+    return df
+
+
 def process_datasets(input_dirname, output_path=None, verbose=0):
     """
     Process a directory of datasets: clean, concatenate and save.
