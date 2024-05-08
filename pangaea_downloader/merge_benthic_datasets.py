@@ -425,7 +425,7 @@ def reformat_df(df, remove_duplicate_columns=True):
     if "site" not in df.columns:
         df["site"] = df["dataset"] + "_site"
 
-    if any([c in clean_cols for c in ["Kingdom", "Phylum", "Genus"]]):
+    if any(c in clean_cols for c in ["Kingdom", "Phylum", "Genus"]):
         df["taxonomy"] = df.apply(row2taxonomy, axis=1)
         df.drop(
             labels=[x for syn in TAXONOMY_RANKS for x in syn],
