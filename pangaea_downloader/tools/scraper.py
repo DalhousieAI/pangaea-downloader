@@ -9,7 +9,7 @@ from pandas import DataFrame
 from pangaeapy import PanDataSet
 from requests.compat import urljoin
 
-import pangaea_downloader.tools.datasets as datasets
+from pangaea_downloader.tools import datasets, requesting
 
 
 def scrape_image_data(url: str, verbose=1) -> Optional[DataFrame]:
@@ -17,16 +17,40 @@ def scrape_image_data(url: str, verbose=1) -> Optional[DataFrame]:
     # Load dataset
     t_wait = max(0, datasets.T_POLL_LAST + datasets.T_POLL_INTV - time.time())
     time.sleep(t_wait)  # Stay under 180 requests every 30s
-    ds = PanDataSet(url)
+    ds = PanDataSet(url, enable_cache=True)
     datasets.T_POLL_LAST = time.time()
     # Request dataset url
     if verbose >= 1:
         print("\t\t\t[INFO] Requesting:", url)
-    resp = requests.get(url)
+    resp = requesting.get_request_with_backoff(url)
     # Parse response
     soup = BeautifulSoup(resp.text, "lxml")
     # Get coordinates of expedition
     coordinates = get_metadata(soup)
+    if coordinates is None and hasattr(ds, "geometryextent"):
+        print(
+            colorama.Fore.YELLOW + "\t\t\t[ALERT] Trying to get coordinates from"
+            " PanDataSet.geometryextent" + colorama.Fore.RESET
+        )
+        lat = None
+        long = None
+        for k in ["meanLatitude", "latitude", "Latitude"]:
+            if k in ds.geometryextent:
+                lat = ds.geometryextent[k]
+                break
+        for k in ["meanLongitude", "longitude", "Latitude"]:
+            if k in ds.geometryextent:
+                long = ds.geometryextent[k]
+                break
+        if lat is None and long is None:
+            coordinates = None
+        coordinates = lat, long
+
+    if coordinates is None:
+        print(
+            colorama.Fore.RED + "\t\t\t[ERROR] Coordinate metadata not found on page!"
+            " Saved file won't have Longitude, Latitude columns!" + colorama.Fore.RESET
+        )
 
     # Get download link to photos page
     download_link = soup.find("div", attrs={"class": "text-block top-border"}).a["href"]
@@ -34,7 +58,7 @@ def scrape_image_data(url: str, verbose=1) -> Optional[DataFrame]:
     if verbose >= 1:
         print("\t\t\t[INFO] URL to photos page:", download_link)
     # Get to photos page (page 1)
-    resp = requests.get(download_link)
+    resp = requesting.get_request_with_backoff(download_link)
     photos_page = BeautifulSoup(resp.text, "lxml")
     img_urls = get_urls_from_each_page(photos_page, src_url, verbose=verbose)
     if img_urls is None:
@@ -47,17 +71,13 @@ def scrape_image_data(url: str, verbose=1) -> Optional[DataFrame]:
         lat, long = coordinates
         df["Longitude"] = long
         df["Latitude"] = lat
-    df["Dataset"] = ds.title
-    df["DOI"] = getattr(ds, "doi", "")
-    doi = getattr(ds, "doi", "").split("doi.org/")[-1]
+    df["dataset_title"] = ds.title
+    doi = getattr(ds, "doi", "")
+    df["DOI"] = doi
+    ds_id = datasets.uri2dsid(doi if doi else url)
+    df["ds_id"] = ds_id
     if (len(ds.events) > 0) and (ds.events[0].campaign is not None):
-        df["Campaign"] = ds.events[0].campaign.name
-    else:
-        df["Campaign"] = doi
-    if "Event" in ds.data.columns:
-        df["Site"] = ds.data["Event"]
-    else:
-        df["Site"] = doi + "_site"
+        df["campaign"] = ds.events[0].campaign.name
     return df
 
 
@@ -71,10 +91,6 @@ def get_metadata(page_soup: BeautifulSoup) -> Optional[Tuple[float, float]]:
         lat = float(coordinates.find("span", attrs={"class": "latitude"}).text)
         long = float(coordinates.find("span", attrs={"class": "longitude"}).text)
         return lat, long
-    print(
-        colorama.Fore.RED + "\t\t\t[ERROR] Coordinate metadata not found on page!"
-        " Saved file won't have Longitude, Latitude columns!" + colorama.Fore.RESET
-    )
     return None
 
 
@@ -91,7 +107,7 @@ def get_urls_from_each_page(
             if verbose >= 1:
                 print(f"\t\t\t[INFO] Processing Page {n}...")
             url = pagination[n]
-            resp = requests.get(url)
+            resp = requesting.get_request_with_backoff(url)
             soup = BeautifulSoup(resp.text, "lxml")
             urls = get_page_image_urls(soup, verbose=verbose)
             img_urls.extend(urls)
@@ -111,7 +127,7 @@ def get_pagination(page_soup: BeautifulSoup, src_url: str) -> Optional[dict]:
     # List of page URLs
     page_urls = [urljoin(src_url, a["href"]) for a in pagination.find_all("a")][:-1]
     # Page number : Page URL
-    page_dict = {k: v for k, v in zip(page_nums, page_urls)}
+    page_dict = dict(zip(page_nums, page_urls))
     return page_dict
 
 

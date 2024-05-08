@@ -16,7 +16,12 @@ from pangaea_downloader import __meta__
 from pangaea_downloader.tools import datasets, process, scraper, search
 
 
-def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
+def search_and_download(
+    queries=None,
+    output_dir="query-outputs",
+    auth_token=None,
+    verbose=0,
+):
     """
     Search `PANGAEA`_ for a set of queries, and download datasets for each result.
 
@@ -31,6 +36,8 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
     output_dir : str, default="query-outputs"
         The output directory where downloaded datasets will be saved.
         Any existing output datasets will be skipped instead of downloaded.
+    auth_token : str, optional
+        Bearer authentication token.
     verbose : int, default=1
         Verbosity level.
     """
@@ -48,6 +55,11 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
     df_results = pd.DataFrame(results)
     os.makedirs(output_dir, exist_ok=True)
     df_results.to_csv(output_dir.rstrip("/") + "_search_results.csv", index=False)
+
+    fname_child2parent = output_dir.rstrip("/") + "_child2parent.csv"
+    if not os.path.isfile(fname_child2parent):
+        with open(fname_child2parent, "w") as f:
+            f.write("child,parent\n")
 
     # Process each result dictionary
     n_files = 0
@@ -75,7 +87,11 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
         # ------------- ASSESS DATASET TYPE ------------- #
         try:
             if is_parent:
-                df_list = datasets.fetch_children(url, verbose=verbose - 1)
+                df_list = datasets.fetch_children(
+                    url,
+                    verbose=verbose - 1,
+                    auth_token=auth_token,
+                )
                 if df_list is None:
                     if verbose >= 1:
                         print(
@@ -93,9 +109,32 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
                             + colorama.Fore.RESET
                         )
                     continue
-                df = pd.concat(df_list)
+                for df in df_list:
+                    if df is None or len(df) == 0:
+                        continue
+                    # Add the parent's ID to the dataframe
+                    df["parent_ds_id"] = ds_id
+                    # Save the child to its own CSV, including a column that
+                    # records the parent's dataset ID
+                    child_id = df.iloc[0]["ds_id"]
+                    child_output_path = os.path.join(output_dir, f"{child_id}.csv")
+                    saved = datasets.save_df(
+                        df, child_output_path, level=1, verbose=verbose - 1
+                    )
+                    n_downloads += 1 if saved else 0
+                    with open(fname_child2parent, "a") as f:
+                        f.write(f"{child_id},{ds_id}\n")
+                # We have saved all the children individually, so will skip
+                # saving a redundant merged dataframe
+                # But we will save an empty file so we know to skip
+                with open(output_path, "w") as f:
+                    f.write("is_parent")
+                continue
             else:
-                dataset_type = process.ds_type(size)
+                try:
+                    dataset_type = process.ds_type(size)
+                except Exception:
+                    raise ValueError(f"Can't process type from size for {ds_id}")
                 if dataset_type == "video":
                     if verbose >= 1:
                         print(
@@ -107,7 +146,11 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
                 elif dataset_type == "paginated":
                     df = scraper.scrape_image_data(url, verbose=verbose - 1)
                 elif dataset_type == "tabular":
-                    df = datasets.fetch_child(url, verbose=verbose - 1)
+                    df = datasets.fetch_child(
+                        url,
+                        verbose=verbose - 1,
+                        auth_token=auth_token,
+                    )
         except Exception as err:
             if isinstance(err, KeyboardInterrupt):
                 raise
@@ -121,16 +164,7 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
         # ----------------- SAVE TO FILE ----------------- #
         if df is None:
             continue
-        try:
-            saved = datasets.save_df(df, output_path, level=1, verbose=verbose - 1)
-        except Exception as err:
-            # Delete partially saved file, if present
-            if os.path.isfile(output_path):
-                try:
-                    os.remove(output_path)
-                except Exception:
-                    pass
-            raise err
+        saved = datasets.save_df(df, output_path, level=1, verbose=verbose - 1)
         n_downloads += 1 if saved else 0
 
     if verbose >= 0:
@@ -138,7 +172,9 @@ def search_and_download(queries=None, output_dir="query-outputs", verbose=0):
         print(f"Number of files previously saved: {n_files}.")
         print(f"Total dataset files: {n_files + n_downloads}")
         print(f"Number of dataset errors (excluding access): {len(errors)}.")
-
+        if len(errors) > 0:
+            print()
+            print("Captured errors are now repeated as follows.")
         for msg in errors:
             print()
             print(msg)
@@ -189,6 +225,11 @@ def get_parser():
         type=str,
         default="query-outputs",
         help="Directory for downloaded datasets. Default is %(default)s.",
+    )
+    parser.add_argument(
+        "--auth-token",
+        type=str,
+        help="Bearer authentication token",
     )
     parser.add_argument(
         "--verbose",

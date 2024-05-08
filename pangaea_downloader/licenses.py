@@ -5,9 +5,10 @@ import datetime
 from typing import Dict, Optional, Union
 
 import pandas as pd
-import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
+
+from .tools import requesting
 
 
 def get_dataset_url(ds_id: Union[str, int]) -> str:
@@ -18,7 +19,7 @@ def get_dataset_url(ds_id: Union[str, int]) -> str:
 def get_dataset_license_info(url: str) -> Optional[Dict[str, str]]:
     """Return a dictionary with license information given the dataset URL."""
     # Make a request to the URL and parse the html
-    resp = requests.get(url)
+    resp = requesting.get_request_with_backoff(url)
     soup = BeautifulSoup(resp.text, "lxml")
     # Get the tag containing the license info
     license_tag = soup.find("a", attrs={"rel": "license"})

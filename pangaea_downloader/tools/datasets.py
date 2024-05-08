@@ -6,6 +6,8 @@ Note: this module is only for Parent and Child datasets.
       use pangaea_downloader.tools.scraper module.
 """
 import os
+import shutil
+import tempfile
 import time
 from typing import List, Optional
 
@@ -16,19 +18,24 @@ from pangaeapy import PanDataSet
 from pangaea_downloader.tools import checker, process, scraper
 
 T_POLL_LAST = 0
-T_POLL_INTV = 0.1667
+# T_POLL_INTV = 0  # Allow rapid loading of cached records
+T_POLL_INTV = 0.1667  # Rate-limit ourselves; stay under 180 requests within 30s
 
 
-def fetch_child(child_url: str, verbose=1) -> Optional[DataFrame]:
+def fetch_child(
+    child_url: str,
+    verbose=1,
+    ensure_url=True,
+    auth_token=None,
+) -> Optional[DataFrame]:
     """Fetch Pangaea child dataset using provided URI/DOI and return DataFrame."""
     # Load data set
     global T_POLL_LAST
     global T_POLL_INTV
     t_wait = max(0, T_POLL_LAST + T_POLL_INTV - time.time())
     time.sleep(t_wait)  # Stay under 180 requests every 30s
-    ds = PanDataSet(child_url)
+    ds = PanDataSet(child_url, enable_cache=True, auth_token=auth_token)
     T_POLL_LAST = time.time()
-    doi = getattr(ds, "doi", "").split("doi.org/")[-1]
     # Dataset is restricted
     if ds.loginstatus != "unrestricted":
         if verbose >= 1:
@@ -39,7 +46,7 @@ def fetch_child(child_url: str, verbose=1) -> Optional[DataFrame]:
             )
         return
     # Check for image URL column
-    if not checker.has_url_col(ds.data):
+    if ensure_url and not checker.has_url_col(ds.data):
         if verbose >= 1:
             print(
                 colorama.Fore.YELLOW
@@ -48,20 +55,29 @@ def fetch_child(child_url: str, verbose=1) -> Optional[DataFrame]:
             )
         return
     # Add metadata
-    df = set_metadata(ds, alt=doi)
+    df = set_metadata(ds)
     # Exclude unwanted rows
     df = exclude_rows(df)
+    # Add dataset ID
+    doi = getattr(ds, "doi", "")
+    ds_id = uri2dsid(doi if doi else child_url)
+    df["ds_id"] = ds_id
     return df
 
 
-def fetch_children(parent_url: str, verbose=1) -> Optional[List[DataFrame]]:
+def fetch_children(
+    parent_url: str,
+    verbose=1,
+    ensure_url=True,
+    auth_token=None,
+) -> Optional[List[DataFrame]]:
     """Take in url of a parent dataset, fetch and return list of child datasets."""
     # Fetch dataset
     global T_POLL_LAST
     global T_POLL_INTV
     t_wait = max(0, T_POLL_LAST + T_POLL_INTV - time.time())
     time.sleep(t_wait)  # Stay under 180 requests every 30s
-    ds = PanDataSet(parent_url)
+    ds = PanDataSet(parent_url, enable_cache=True, auth_token=auth_token)
     T_POLL_LAST = time.time()
     # Check restriction
     if ds.loginstatus != "unrestricted":
@@ -78,9 +94,13 @@ def fetch_children(parent_url: str, verbose=1) -> Optional[List[DataFrame]]:
     df_list = []
     for i, child_uri in enumerate(ds.children):
         url = process.url_from_uri(child_uri)
+        ds_id = uri2dsid(child_uri)
         size = process.get_html_info(url)
         # Assess type
-        typ = process.ds_type(size)
+        try:
+            typ = process.ds_type(size)
+        except Exception:
+            raise ValueError(f"Can't process type from size for {url}")
         if typ == "video":
             if verbose >= 1:
                 print(
@@ -91,14 +111,12 @@ def fetch_children(parent_url: str, verbose=1) -> Optional[List[DataFrame]]:
             continue
         elif typ == "paginated":
             if verbose >= 1:
-                print(f"\t\t[{i+1}] Scrapping dataset...")
+                print(f"\t\t[{i+1}] Scraping dataset...")
             df = scraper.scrape_image_data(url)
-            if df is not None:
-                df_list.append(df)
         elif typ == "tabular":
             t_wait = max(0, T_POLL_LAST + T_POLL_INTV - time.time())
             time.sleep(t_wait)  # Stay under 180 requests every 30s
-            child = PanDataSet(url)
+            child = PanDataSet(url, enable_cache=True, auth_token=auth_token)
             T_POLL_LAST = time.time()
             if ds.loginstatus != "unrestricted":
                 if verbose >= 1:
@@ -107,21 +125,23 @@ def fetch_children(parent_url: str, verbose=1) -> Optional[List[DataFrame]]:
                         + f"\t\t[{i+1}] [ERROR] Access restricted: '{ds.loginstatus}'. {url}"
                         + colorama.Fore.RESET
                     )
-                return
-            if not checker.has_url_col(child.data):
+                continue
+            if ensure_url and not checker.has_url_col(child.data):
                 if verbose >= 1:
                     print(
                         colorama.Fore.YELLOW
                         + f"\t\t[{i+1}] [WARNING] Image URL column NOT found! {url} Skipping..."
                         + colorama.Fore.RESET
                     )
-            else:
-                # Add metadata
-                child_doi = getattr(child, "doi", "").split("doi.org/")[-1]
-                df = set_metadata(child, alt=child_doi)
-                # Add child dataset to list
-                df = exclude_rows(df)
-                df_list.append(df)
+                continue
+            # Add metadata
+            df = set_metadata(child)
+            # Add child dataset to list
+            df = exclude_rows(df)
+        if df is None:
+            continue
+        df["ds_id"] = ds_id
+        df_list.append(df)
 
     # Return result
     if len(df_list) > 0:
@@ -131,20 +151,13 @@ def fetch_children(parent_url: str, verbose=1) -> Optional[List[DataFrame]]:
         return None
 
 
-def set_metadata(ds: PanDataSet, alt="unknown") -> DataFrame:
+def set_metadata(ds: PanDataSet) -> DataFrame:
     """Add metadata to a PanDataSet's dataframe."""
     ds.data["dataset_title"] = ds.title
     ds.data["doi"] = getattr(ds, "doi", "")
     # Dataset campaign
     if (len(ds.events) > 0) and (ds.events[0].campaign is not None):
         ds.data["campaign"] = ds.events[0].campaign.name
-    else:
-        ds.data["campaign"] = alt
-    # Dataset site/event/deployment
-    if "Event" in ds.data.columns:
-        ds.data["site"] = ds.data["Event"]
-    else:
-        ds.data["site"] = alt + "_site"
     return ds.data
 
 
@@ -162,9 +175,16 @@ def save_df(df: DataFrame, output_path: str, level=1, index=None, verbose=1) -> 
         if verbose >= 1:
             print(f"{tabs}[{idx}] Empty DataFrame! File not saved!")
         return False
-    # Save if dataframe not empty
-    df.to_csv(output_path, index=False)
-    print(f"{tabs}[{idx}] Saved to '{output_path}'")
+    # Save dataframe if it is not empty
+    with tempfile.TemporaryDirectory() as dir_tmp:
+        # Write to a temporary file
+        tmp_path = os.path.join(dir_tmp, os.path.basename(output_path))
+        df.to_csv(tmp_path, index=False)
+        # Move our temporary file to the destination
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        shutil.move(tmp_path, output_path)
+    if verbose >= 1:
+        print(f"{tabs}[{idx}] Saved to '{output_path}'")
     return True
 
 
@@ -210,6 +230,13 @@ def fix_text(text: str) -> str:
     text = text.replace("\\", "_")
     text = text.replace("/", "_")
     return text
+
+
+def uri2dsid(uri: str) -> str:
+    """
+    Extract PANGAEA dataset ID from url/uri/doi string.
+    """
+    return uri.split("PANGAEA.")[-1]
 
 
 def get_dataset_id(df: DataFrame) -> str:
