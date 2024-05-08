@@ -1526,6 +1526,8 @@ def merge_duplicated_urls(df):
             "acidity",
             "area",
         ]:
+            if col not in sdf.columns:
+                continue
             select = ~pd.isna(sdf[col])
             if select.sum() == 0:
                 continue
@@ -1533,6 +1535,8 @@ def merge_duplicated_urls(df):
         # Look to see if we are missing an image or thumbnail entry and one
         # of the duplicates has its value.
         for col in ["image", "url_thumbnail"]:
+            if col not in sdf.columns:
+                continue
             if not pd.isna(row[col]):
                 continue
             values = sdf[col]
