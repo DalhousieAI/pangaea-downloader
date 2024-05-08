@@ -1,6 +1,6 @@
 name = "pangaea-downloader"
 path = name.lower().replace("-", "_").replace(" ", "_")
-version = "0.1.dev0"
+version = "1.0.0"
 author = "Amit Baroi"
 author_email = "amit.baroi@dal.ca"
 description = (
