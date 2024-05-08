@@ -1,0 +1,583 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pangaea_downloader.tools.datasets &#8212; pangaea-downloader 0.1.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../../../_static/js/rtd_search_config.js"></script>
+    <script src="../../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pangaea_downloader/tools/datasets';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">pangaea-downloader 0.1.dev0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../source/programs/programs.html">CLI Reference</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../source/packages/modules.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../source/packages/pangaea_downloader.html">pangaea_downloader package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../source/packages/pangaea_downloader.tools.html">pangaea_downloader.tools package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source/packages/pangaea_downloader.tools.checker.html">pangaea_downloader.tools.checker module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source/packages/pangaea_downloader.tools.datasets.html">pangaea_downloader.tools.datasets module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source/packages/pangaea_downloader.tools.eda.html">pangaea_downloader.tools.eda module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source/packages/pangaea_downloader.tools.process.html">pangaea_downloader.tools.process module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source/packages/pangaea_downloader.tools.requesting.html">pangaea_downloader.tools.requesting module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source/packages/pangaea_downloader.tools.scraper.html">pangaea_downloader.tools.scraper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source/packages/pangaea_downloader.tools.search.html">pangaea_downloader.tools.search module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source/packages/pangaea_downloader.citations.html">pangaea_downloader.citations module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source/packages/pangaea_downloader.concat_datasets.html">pangaea_downloader.concat_datasets module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source/packages/pangaea_downloader.exclude_datasets.html">pangaea_downloader.exclude_datasets module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source/packages/pangaea_downloader.fix_col_names.html">pangaea_downloader.fix_col_names module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source/packages/pangaea_downloader.licenses.html">pangaea_downloader.licenses module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source/packages/pangaea_downloader.merge_benthic_datasets.html">pangaea_downloader.merge_benthic_datasets module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source/packages/pangaea_downloader.pq_scraper.html">pangaea_downloader.pq_scraper module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../py-modindex.html">Module Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for pangaea_downloader.tools.datasets</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions for fetching Pangaea Datasets.</span>
+
+<span class="sd">Note: this module is only for Parent and Child datasets.</span>
+<span class="sd">      For paginated datasets (images hosted on webpages)</span>
+<span class="sd">      use pangaea_downloader.tools.scraper module.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">colorama</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+<span class="kn">from</span> <span class="nn">pangaeapy</span> <span class="kn">import</span> <span class="n">PanDataSet</span>
+
+<span class="kn">from</span> <span class="nn">pangaea_downloader.tools</span> <span class="kn">import</span> <span class="n">checker</span><span class="p">,</span> <span class="n">process</span><span class="p">,</span> <span class="n">scraper</span>
+
+<span class="n">T_POLL_LAST</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1"># T_POLL_INTV = 0  # Allow rapid loading of cached records</span>
+<span class="n">T_POLL_INTV</span> <span class="o">=</span> <span class="mf">0.1667</span>  <span class="c1"># Rate-limit ourselves; stay under 180 requests within 30s</span>
+
+
+<div class="viewcode-block" id="fetch_child"><a class="viewcode-back" href="../../../source/packages/pangaea_downloader.tools.datasets.html#pangaea_downloader.tools.datasets.fetch_child">[docs]</a><span class="k">def</span> <span class="nf">fetch_child</span><span class="p">(</span>
+    <span class="n">child_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">ensure_url</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">auth_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch Pangaea child dataset using provided URI/DOI and return DataFrame.&quot;&quot;&quot;</span>
+    <span class="c1"># Load data set</span>
+    <span class="k">global</span> <span class="n">T_POLL_LAST</span>
+    <span class="k">global</span> <span class="n">T_POLL_INTV</span>
+    <span class="n">t_wait</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T_POLL_LAST</span> <span class="o">+</span> <span class="n">T_POLL_INTV</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">t_wait</span><span class="p">)</span>  <span class="c1"># Stay under 180 requests every 30s</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">PanDataSet</span><span class="p">(</span><span class="n">child_url</span><span class="p">,</span> <span class="n">enable_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">auth_token</span><span class="o">=</span><span class="n">auth_token</span><span class="p">)</span>
+    <span class="n">T_POLL_LAST</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="c1"># Dataset is restricted</span>
+    <span class="k">if</span> <span class="n">ds</span><span class="o">.</span><span class="n">loginstatus</span> <span class="o">!=</span> <span class="s2">&quot;unrestricted&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">YELLOW</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">[ERROR] Access restricted: &#39;</span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">loginstatus</span><span class="si">}</span><span class="s2">&#39;. URL: </span><span class="si">{</span><span class="n">child_url</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="o">+</span> <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">RESET</span>
+            <span class="p">)</span>
+        <span class="k">return</span>
+    <span class="c1"># Check for image URL column</span>
+    <span class="k">if</span> <span class="n">ensure_url</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">checker</span><span class="o">.</span><span class="n">has_url_col</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">YELLOW</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">[WARNING] Image URL column NOT found! Columns: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2">. Skipping...&quot;</span>
+                <span class="o">+</span> <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">RESET</span>
+            <span class="p">)</span>
+        <span class="k">return</span>
+    <span class="c1"># Add metadata</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">set_metadata</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+    <span class="c1"># Exclude unwanted rows</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">exclude_rows</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="c1"># Add dataset ID</span>
+    <span class="n">doi</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">ds_id</span> <span class="o">=</span> <span class="n">uri2dsid</span><span class="p">(</span><span class="n">doi</span> <span class="k">if</span> <span class="n">doi</span> <span class="k">else</span> <span class="n">child_url</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ds_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds_id</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="fetch_children"><a class="viewcode-back" href="../../../source/packages/pangaea_downloader.tools.datasets.html#pangaea_downloader.tools.datasets.fetch_children">[docs]</a><span class="k">def</span> <span class="nf">fetch_children</span><span class="p">(</span>
+    <span class="n">parent_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">ensure_url</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">auth_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">DataFrame</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Take in url of a parent dataset, fetch and return list of child datasets.&quot;&quot;&quot;</span>
+    <span class="c1"># Fetch dataset</span>
+    <span class="k">global</span> <span class="n">T_POLL_LAST</span>
+    <span class="k">global</span> <span class="n">T_POLL_INTV</span>
+    <span class="n">t_wait</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T_POLL_LAST</span> <span class="o">+</span> <span class="n">T_POLL_INTV</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">t_wait</span><span class="p">)</span>  <span class="c1"># Stay under 180 requests every 30s</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">PanDataSet</span><span class="p">(</span><span class="n">parent_url</span><span class="p">,</span> <span class="n">enable_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">auth_token</span><span class="o">=</span><span class="n">auth_token</span><span class="p">)</span>
+    <span class="n">T_POLL_LAST</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="c1"># Check restriction</span>
+    <span class="k">if</span> <span class="n">ds</span><span class="o">.</span><span class="n">loginstatus</span> <span class="o">!=</span> <span class="s2">&quot;unrestricted&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">YELLOW</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">[ERROR] Access restricted: &#39;</span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">loginstatus</span><span class="si">}</span><span class="s2">&#39;. URL: </span><span class="si">{</span><span class="n">parent_url</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="o">+</span> <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">RESET</span>
+            <span class="p">)</span>
+        <span class="k">return</span>
+    <span class="c1"># Process children</span>
+    <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">[INFO] Fetching </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">children</span><span class="p">)</span><span class="si">}</span><span class="s2"> child datasets...&quot;</span><span class="p">)</span>
+    <span class="n">df_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">child_uri</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">children</span><span class="p">):</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">url_from_uri</span><span class="p">(</span><span class="n">child_uri</span><span class="p">)</span>
+        <span class="n">ds_id</span> <span class="o">=</span> <span class="n">uri2dsid</span><span class="p">(</span><span class="n">child_uri</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">get_html_info</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="c1"># Assess type</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">typ</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">ds_type</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Can&#39;t process type from size for </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;video&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">YELLOW</span>
+                    <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">[</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">] [WARNING] Video dataset! </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2"> Skipping...&quot;</span>
+                    <span class="o">+</span> <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">RESET</span>
+                <span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">elif</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;paginated&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">[</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">] Scraping dataset...&quot;</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">scraper</span><span class="o">.</span><span class="n">scrape_image_data</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;tabular&quot;</span><span class="p">:</span>
+            <span class="n">t_wait</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T_POLL_LAST</span> <span class="o">+</span> <span class="n">T_POLL_INTV</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">t_wait</span><span class="p">)</span>  <span class="c1"># Stay under 180 requests every 30s</span>
+            <span class="n">child</span> <span class="o">=</span> <span class="n">PanDataSet</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">enable_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">auth_token</span><span class="o">=</span><span class="n">auth_token</span><span class="p">)</span>
+            <span class="n">T_POLL_LAST</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">ds</span><span class="o">.</span><span class="n">loginstatus</span> <span class="o">!=</span> <span class="s2">&quot;unrestricted&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">YELLOW</span>
+                        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">[</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">] [ERROR] Access restricted: &#39;</span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">loginstatus</span><span class="si">}</span><span class="s2">&#39;. </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="o">+</span> <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">RESET</span>
+                    <span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">ensure_url</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">checker</span><span class="o">.</span><span class="n">has_url_col</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">YELLOW</span>
+                        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">[</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">] [WARNING] Image URL column NOT found! </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2"> Skipping...&quot;</span>
+                        <span class="o">+</span> <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">RESET</span>
+                    <span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="c1"># Add metadata</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">set_metadata</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+            <span class="c1"># Add child dataset to list</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">exclude_rows</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ds_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds_id</span>
+        <span class="n">df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+    <span class="c1"># Return result</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">df_list</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Empty list</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="set_metadata"><a class="viewcode-back" href="../../../source/packages/pangaea_downloader.tools.datasets.html#pangaea_downloader.tools.datasets.set_metadata">[docs]</a><span class="k">def</span> <span class="nf">set_metadata</span><span class="p">(</span><span class="n">ds</span><span class="p">:</span> <span class="n">PanDataSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add metadata to a PanDataSet&#39;s dataframe.&quot;&quot;&quot;</span>
+    <span class="n">ds</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;dataset_title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">title</span>
+    <span class="n">ds</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;doi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="c1"># Dataset campaign</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">events</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">campaign</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;campaign&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">campaign</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">return</span> <span class="n">ds</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="save_df"><a class="viewcode-back" href="../../../source/packages/pangaea_downloader.tools.datasets.html#pangaea_downloader.tools.datasets.save_df">[docs]</a><span class="k">def</span> <span class="nf">save_df</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">,</span> <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save a DataFrame to a file in the provided output directory.</span>
+
+<span class="sd">    Returns False if dataframe is empty, else returns True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Print formatting</span>
+    <span class="n">tabs</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="n">level</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span> <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">index</span>
+    <span class="c1"># Don&#39;t save empty dataframe</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tabs</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">] Empty DataFrame! File not saved!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="c1"># Save dataframe if it is not empty</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">dir_tmp</span><span class="p">:</span>
+        <span class="c1"># Write to a temporary file</span>
+        <span class="n">tmp_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_tmp</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">output_path</span><span class="p">))</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># Move our temporary file to the destination</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output_path</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tabs</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">] Saved to &#39;</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="get_url_col"><a class="viewcode-back" href="../../../source/packages/pangaea_downloader.tools.datasets.html#pangaea_downloader.tools.datasets.get_url_col">[docs]</a><span class="k">def</span> <span class="nf">get_url_col</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Take a Pandas DataFrame and return the first URL column.&quot;&quot;&quot;</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;url&quot;</span> <span class="ow">in</span> <span class="n">col</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;image&quot;</span> <span class="ow">in</span> <span class="n">col</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="p">]</span>
+    <span class="n">col</span> <span class="o">=</span> <span class="n">cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">col</span></div>
+
+
+<div class="viewcode-block" id="find_column_match"><a class="viewcode-back" href="../../../source/packages/pangaea_downloader.tools.datasets.html#pangaea_downloader.tools.datasets.find_column_match">[docs]</a><span class="k">def</span> <span class="nf">find_column_match</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find a matching column name, changed by casing or non-alphanumeric characters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">column</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot; _-/</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">column</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">c</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;No column matching </span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2"> in dataframe with columns: </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="exclude_rows"><a class="viewcode-back" href="../../../source/packages/pangaea_downloader.tools.datasets.html#pangaea_downloader.tools.datasets.exclude_rows">[docs]</a><span class="k">def</span> <span class="nf">exclude_rows</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove rows with unwanted file extensions and return the resulting dataframe.&quot;&quot;&quot;</span>
+    <span class="n">url_col</span> <span class="o">=</span> <span class="n">get_url_col</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">url_col</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">valid_rows</span> <span class="o">=</span> <span class="o">~</span><span class="n">df</span><span class="p">[</span><span class="n">url_col</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">checker</span><span class="o">.</span><span class="n">is_invalid_file_ext</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">valid_rows</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="fix_text"><a class="viewcode-back" href="../../../source/packages/pangaea_downloader.tools.datasets.html#pangaea_downloader.tools.datasets.fix_text">[docs]</a><span class="k">def</span> <span class="nf">fix_text</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Replace back slash or forward slash characters in string with underscore.</span>
+
+<span class="sd">    Returns modified string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span></div>
+
+
+<div class="viewcode-block" id="uri2dsid"><a class="viewcode-back" href="../../../source/packages/pangaea_downloader.tools.datasets.html#pangaea_downloader.tools.datasets.uri2dsid">[docs]</a><span class="k">def</span> <span class="nf">uri2dsid</span><span class="p">(</span><span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract PANGAEA dataset ID from url/uri/doi string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">uri</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;PANGAEA.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_dataset_id"><a class="viewcode-back" href="../../../source/packages/pangaea_downloader.tools.datasets.html#pangaea_downloader.tools.datasets.get_dataset_id">[docs]</a><span class="k">def</span> <span class="nf">get_dataset_id</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Take a Pandas DataFrame as input and return the datasets Pangaea ID.&quot;&quot;&quot;</span>
+    <span class="n">col</span> <span class="o">=</span> <span class="n">find_column_match</span><span class="p">(</span><span class="s2">&quot;doi&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Amit Baroi
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Amit Baroi.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
